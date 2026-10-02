@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUXSTORE - Hệ Thống Bán Lẻ Hàng Đầu</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+  <!-- HEADER -->
+  <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-lg border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <a href="#" class="flex items-center space-x-2 text-2xl font-black tracking-widest text-amber-400">
+          <i class="fa-solid fa-gem"></i>
+          <span>LUXSTORE</span>
+        </a>
+
+        <!-- Tìm kiếm Desktop -->
+        <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
+          <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Tìm kiếm sản phẩm..." class="w-full bg-slate-800 text-sm text-white px-4 py-2 pl-10 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 border border-slate-700">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-sm"></i>
+        </div>
+
+        <!-- Giỏ hàng nút -->
+        <button onclick="toggleCart(true)" class="relative p-2.5 bg-slate-800 hover:bg-slate-700 rounded-full transition text-amber-400">
+          <i class="fa-solid fa-cart-shopping text-lg"></i>
+          <span id="cartBadge" class="absolute -top-1 -right-1 bg-red-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- BANNER HERO -->
+  <section class="bg-gradient-to-r from-slate-950 via-slate-900 to-stone-900 text-white py-12 px-4 sm:px-6 text-center border-b border-amber-500/20">
+    <div class="max-w-4xl mx-auto">
+      <span class="text-amber-400 text-xs font-bold uppercase tracking-widest bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Bộ Sưu Tập Mới 2026</span>
+      <h1 class="text-3xl sm:text-5xl font-black mt-4 mb-3 tracking-tight">ĐẲNG CẤP & TINH TẾ</h1>
+      <p class="text-gray-400 text-xs sm:text-base max-w-2xl mx-auto">Cam kết sản phẩm chính hãng 100%. Giao hàng hỏa tốc toàn quốc - Kiểm tra hàng trước khi thanh toán.</p>
+    </div>
+  </section>
+
+  <!-- NỘI DUNG CHÍNH -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    
+    <!-- THANH BỘ LỌC CÁC DANH MỤC -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
+      <div id="categoryTabs" class="flex flex-wrap gap-2">
+        <button onclick="filterCategory('ALL')" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>
+        <button onclick="filterCategory('Đồng Hồ Nam')" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nam</button>
+        <button onclick="filterCategory('Đồng Hồ Nữ')" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nữ</button>
+        <button onclick="filterCategory('Phụ Kiện')" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Phụ Kiện</button>
+      </div>
+
+      <div class="text-xs text-gray-500 font-medium">
+        Hiển thị: <span id="productCount" class="font-bold text-gray-800">0</span> sản phẩm
+      </div>
+    </div>
+
+    <!-- LƯỚI SẢN PHẨM -->
+    <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+      <div class="col-span-full text-center py-16">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500"></i>
+        <p class="text-xs text-gray-500 mt-2">Đang kết nối hệ thống...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL GIỎ HÀNG SANG TRỌNG -->
+  <div id="cartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity flex justify-end">
+    <div class="bg-white w-full max-w-md h-full flex flex-col justify-between shadow-2xl">
+      <!-- Header Modal -->
+      <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
+        <h3 class="font-bold text-base flex items-center gap-2">
+          <i class="fa-solid fa-bag-shopping text-amber-400"></i>
+          <span>Giỏ Hàng Của Bạn</span>
+        </h3>
+        <button onclick="toggleCart(false)" class="text-gray-400 hover:text-white text-xl p-1">&times;</button>
+      </div>
+
+      <!-- Danh sách món hàng -->
+      <div id="cartContent" class="p-4 flex-1 overflow-y-auto space-y-4"></div>
+
+      <!-- Footer & Form Đặt Hàng -->
+      <div class="p-4 border-t bg-gray-50 space-y-3">
+        <div class="flex justify-between items-center font-bold text-base text-gray-900">
+          <span>Tổng thành tiền:</span>
+          <span id="cartTotal" class="text-red-600 text-lg">0 ₫</span>
+        </div>
+
+        <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-2.5">
+          <input type="text" id="cName" required placeholder="Họ và tên người nhận *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
+          <input type="tel" id="cPhone" required placeholder="Số điện thoại liên hệ *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
+          <input type="text" id="cAddress" required placeholder="Địa chỉ giao hàng chi tiết *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
+          <textarea id="cNote" placeholder="Ghi chú thêm (Ví dụ: Giao giờ hành chính)" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none h-16"></textarea>
+
+          <button type="submit" id="btnSubmitOrder" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3 rounded-lg text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2">
+            <i class="fa-solid fa-check-circle"></i>
+            <span>XÁC NHẬN ĐẶT HÀNG NGAY</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 text-gray-400 text-xs py-6 border-t border-slate-800 text-center">
+    <p>© 2026 LUXSTORE. All rights reserved. Powered by Supabase & Cloudflare Pages.</p>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // =========================================================
+    // THÔNG TIN KẾT NỐI ĐÃ ĐƯỢC TỰ ĐỘNG CẤU HÌNH:
+    // =========================================================
+    const SUPABASE_URL = "https://uleckabliwereivgxryo.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o";
+    const TELEGRAM_TOKEN = "8715013237:AAHnalBgr7rnIeJewh3GMr_tfFnv8ewJipY";
+    const TELEGRAM_CHAT_ID = "8866272456";
+    // =========================================================
+
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let rawProducts = [];
+    let cart = [];
+    let currentCategory = 'ALL';
+
+    // Tải danh sách sản phẩm từ Supabase
+    async function fetchProducts() {
+      const { data, error } = await db.from('products').select('*').order('id', { ascending: true });
+      if (error) {
+        alert('Lỗi tải dữ liệu sản phẩm!');
+        return;
+      }
+      rawProducts = data;
+      renderProducts();
+    }
+
+    // Hiển thị danh sách ra màn hình
+    function renderProducts() {
+      const grid = document.getElementById('productGrid');
+      const searchKey = document.getElementById('searchInput').value.toLowerCase();
+
+      let filtered = rawProducts.filter(p => {
+        const matchCat = currentCategory === 'ALL' || p.category === currentCategory;
+        const matchSearch = p.name.toLowerCase().includes(searchKey);
+        return matchCat && matchSearch;
+      });
+
+      document.getElementById('productCount').innerText = filtered.length;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-400 text-xs">Không tìm thấy sản phẩm phù hợp.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => `
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group">
+          <div class="relative overflow-hidden bg-gray-100 aspect-square">
+            <img src="${p.main_image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            ${p.old_price ? `<span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Giảm ${Math.round((1 - p.price/p.old_price)*100)}%</span>` : ''}
+          </div>
+          <div class="p-3.5 flex-1 flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">${p.category}</span>
+              <h3 class="font-bold text-xs text-gray-800 line-clamp-2 mt-1">${p.name}</h3>
+            </div>
+            <div class="mt-3">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-sm font-black text-red-600">${Number(p.price).toLocaleString('vi-VN')} ₫</span>
+                ${p.old_price ? `<span class="text-[10px] text-gray-400 line-through">${Number(p.old_price).toLocaleString('vi-VN')} ₫</span>` : ''}
+              </div>
+              <button onclick="addToCart(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
+                <i class="fa-solid fa-plus text-[10px]"></i> Thêm Giỏ Hàng
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Bộ lọc danh mục
+    function filterCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-900', 'text-white', 'shadow');
+        btn.classList.add('bg-white', 'text-gray-700');
+      });
+      event.target.classList.add('bg-slate-900', 'text-white', 'shadow');
+      event.target.classList.remove('bg-white', 'text-gray-700');
+      renderProducts();
+    }
+
+    function handleSearch() { renderProducts(); }
+
+    // Quản lý Giỏ Hàng
+    function addToCart(id) {
+      const prod = rawProducts.find(p => p.id === id);
+      const item = cart.find(i => i.id === id);
+      if (item) { item.qty++; } else { cart.push({ ...prod, qty: 1 }); }
+      updateCartUI();
+      toggleCart(true);
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const totalBadge = cart.reduce((sum, i) => sum + i.qty, 0);
+      document.getElementById('cartBadge').innerText = totalBadge;
+
+      const container = document.getElementById('cartContent');
+      let totalMoney = 0;
+
+      if (cart.length === 0) {
+        container.innerHTML = `<div class="text-center py-12 text-gray-400 text-xs">Giỏ hàng đang trống.</div>`;
+        document.getElementById('cartTotal').innerText = '0 ₫';
+        return;
+      }
+
+      container.innerHTML = cart.map(i => {
+        totalMoney += i.price * i.qty;
+        return `
+          <div class="flex items-center gap-3 p-2 border-b">
+            <img src="${i.main_image}" class="w-12 h-12 object-cover rounded bg-gray-100">
+            <div class="flex-1">
+              <h4 class="font-bold text-xs text-gray-800 line-clamp-1">${i.name}</h4>
+              <span class="text-xs text-red-600 font-bold">${Number(i.price).toLocaleString('vi-VN')} ₫</span>
+            </div>
+            <div class="flex items-center gap-2 border rounded px-1.5 py-0.5">
+              <button onclick="changeQty(${i.id}, -1)" class="text-xs font-bold px-1 text-gray-500">-</button>
+              <span class="text-xs font-bold">${i.qty}</span>
+              <button onclick="changeQty(${i.id}, 1)" class="text-xs font-bold px-1 text-gray-500">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('cartTotal').innerText = totalMoney.toLocaleString('vi-VN') + ' ₫';
+    }
+
+    function toggleCart(show) {
+      document.getElementById('cartModal').classList.toggle('hidden', !show);
+    }
+
+    // Xử lý Gửi Đơn Hàng
+    async function submitOrder(e) {
+      e.preventDefault();
+      if (cart.length === 0) return alert('Giỏ hàng trống!');
+
+      const btn = document.getElementById('btnSubmitOrder');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XỬ LÝ...`;
+
+      const name = document.getElementById('cName').value;
+      const phone = document.getElementById('cPhone').value;
+      const address = document.getElementById('cAddress').value;
+      const note = document.getElementById('cNote').value;
+      const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+      // 1. Lưu đơn vào Supabase
+      const { error } = await db.from('orders').insert([{
+        customer_name: name,
+        customer_phone: phone,
+        address: address,
+        note: note,
+        total_amount: total,
+        cart_items: cart
+      }]);
+
+      if (!error) {
+        // 2. Bắn thông báo về Telegram
+        const itemsText = cart.map(i => `• <b>${i.name}</b> (x${i.qty}) - ${(i.price*i.qty).toLocaleString('vi-VN')}₫`).join('\n');
+        const telegramMsg = `🚨 <b>ĐƠN HÀNG MỚI TỪ WEBSITE!</b>\n\n👤 <b>Khách hàng:</b> ${name}\n📞 <b>Điện thoại:</b> ${phone}\n🏠 <b>Địa chỉ:</b> ${address}\n📝 <b>Ghi chú:</b> ${note || 'Không có'}\n\n📦 <b>Sản phẩm:</b>\n${itemsText}\n\n💰 <b>TỔNG CỘNG:</b> ${total.toLocaleString('vi-VN')} ₫`;
+
+        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
+        });
+
+        alert('🎉 Đặt hàng thành công! Chúng tôi sẽ gọi xác nhận ngay.');
+        cart = [];
+        updateCartUI();
+        toggleCart(false);
+        document.getElementById('checkoutForm').reset();
+      } else {
+        alert('Có lỗi xảy ra, vui lòng thử lại!');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> XÁC NHẬN ĐẶT HÀNG NGAY`;
+    }
+
+    // Khởi tạo ứng dụng
+    fetchProducts();
+  </script>
+</body>
+</html>
