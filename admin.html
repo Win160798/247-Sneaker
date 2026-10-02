@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Trị Shop - LUXSTORE</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- FontAwesome Icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
     body { background: #f4f6f8; color: #333; padding: 20px; }
-    .container { max-width: 1000px; margin: 0 auto; }
+    .container { max-width: 1100px; margin: 0 auto; }
     h1 { text-align: center; margin-bottom: 25px; color: #111; font-size: 26px; }
     .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     .card h2 { font-size: 18px; margin-bottom: 15px; color: #222; border-bottom: 2px solid #007bff; padding-bottom: 8px; }
@@ -41,7 +40,7 @@
 <div class="container">
   <h1>Trang Quản Trị Hệ Thống - LUXSTORE</h1>
 
-  <!-- 1. QUẢN LÝ DANH MỤC SẢN PHẨM (2-3 CẤP) -->
+  <!-- 1. QUẢN LÝ DANH MỤC SẢN PHẨM -->
   <div class="card">
     <h2><i class="fa-solid fa-folder-plus"></i> Quản Lý Danh Mục (2 - 3 Cấp)</h2>
     <form id="add-category-form">
@@ -116,7 +115,7 @@
     <div id="status"></div>
   </div>
 
-  <!-- 3. DANH SÁCH SẢN PHẨM ĐÃ CÓ -->
+  <!-- 3. DANH SÁCH SẢN PHẨM -->
   <div class="card">
     <h2>📦 Danh Sách Sản Phẩm Đang Bán</h2>
     <table class="product-list">
@@ -134,6 +133,27 @@
       </tbody>
     </table>
   </div>
+
+  <!-- 4. QUẢN LÝ ĐƠN HÀNG (MỚI) -->
+  <div class="card">
+    <h2>🛒 Quản Lý Đơn Hàng Khách Đặt</h2>
+    <table class="product-list">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Khách Hàng</th>
+          <th>SĐT / Địa Chỉ</th>
+          <th>Sản Phẩm Đặt</th>
+          <th>Tổng Tiền</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="orders-table-body">
+        <tr><td colspan="6" style="text-align:center;">Đang tải đơn hàng...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
 <script>
@@ -143,123 +163,80 @@
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let categoriesMap = {};
 
-  // ==========================================
-  // XỬ LÝ DANH MỤC (CATEGORIES)
-  // ==========================================
   async function loadCategories() {
     const tbody = document.getElementById('categories-table-body');
     const parentSelect = document.getElementById('cat-parent');
     const productCatSelect = document.getElementById('product-category');
 
     try {
-      const { data: categories, error } = await supabaseClient
-        .from('categories')
-        .select('*')
-        .order('id', { ascending: true });
-
-      if (error) {
-        tbody.innerHTML = `<tr><td colspan="5" style="color:#d9534f; text-align:center; padding:15px;">⚠️ Bảng <b>categories</b> chưa sẵn sàng trên Supabase. Bạn cần chạy lệnh SQL tạo bảng trước.</td></tr>`;
-        return;
-      }
+      const { data: categories, error } = await supabaseClient.from('categories').select('*').order('id', { ascending: true });
+      if (error) { tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Lỗi danh mục: ${error.message}</td></tr>`; return; }
 
       categoriesMap = {};
       parentSelect.innerHTML = `<option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option>`;
       productCatSelect.innerHTML = `<option value="">-- Chưa chọn danh mục --</option>`;
 
       if (!categories || categories.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có danh mục nào. Hãy thêm ở trên!</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có danh mục.</td></tr>';
         return;
       }
 
       categories.forEach(cat => {
         categoriesMap[cat.id] = cat.name;
-
-        // Đổ vào Select Chọn Danh Mục Cha
         if ((cat.level || 1) < 3) {
           const indent = cat.level === 2 ? '--- ' : '';
           parentSelect.innerHTML += `<option value="${cat.id}">${indent}${cat.name} (Cấp ${cat.level || 1})</option>`;
         }
-
-        // Đổ vào Select Khi Thêm Sản Phẩm
         const prefix = cat.level === 2 ? '-- ' : (cat.level === 3 ? '---- ' : '');
         productCatSelect.innerHTML += `<option value="${cat.id}">${prefix}${cat.name}</option>`;
       });
 
-      // Render bảng danh mục
-      tbody.innerHTML = categories.map(cat => {
-        const parentName = cat.parent_id ? (categoriesMap[cat.parent_id] || 'N/A') : 'Không có (Cấp 1)';
-        const badgeClass = cat.level === 1 ? 'badge-lvl1' : (cat.level === 2 ? 'badge-lvl2' : 'badge-lvl3');
-        return `
-          <tr>
-            <td><b>${cat.id}</b></td>
-            <td><b>${cat.name}</b></td>
-            <td><span class="badge ${badgeClass}">Cấp ${cat.level || 1}</span></td>
-            <td style="color:#666;">${parentName}</td>
-            <td><button class="btn-delete" onclick="deleteCategory(${cat.id})">🗑️ Xóa</button></td>
-          </tr>
-        `;
-      }).join('');
-    } catch (err) {
-      tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Lỗi hệ thống: ${err.message}</td></tr>`;
-    }
+      tbody.innerHTML = categories.map(cat => `
+        <tr>
+          <td><b>${cat.id}</b></td>
+          <td><b>${cat.name}</b></td>
+          <td><span class="badge ${cat.level === 1 ? 'badge-lvl1' : (cat.level === 2 ? 'badge-lvl2' : 'badge-lvl3')}">Cấp ${cat.level || 1}</span></td>
+          <td style="color:#666;">${cat.parent_id ? (categoriesMap[cat.parent_id] || 'N/A') : 'Không có'}</td>
+          <td><button class="btn-delete" onclick="deleteCategory(${cat.id})">🗑️ Xóa</button></td>
+        </tr>
+      `).join('');
+    } catch (err) { console.error(err); }
   }
 
-  // Thêm danh mục
   document.getElementById('add-category-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const catStatus = document.getElementById('cat-status');
     const name = document.getElementById('cat-name').value.trim();
     const parentId = document.getElementById('cat-parent').value || null;
-
     let level = 1;
+
     if (parentId) {
       const { data: parentCat } = await supabaseClient.from('categories').select('level').eq('id', parentId).single();
       if (parentCat) level = (parentCat.level || 1) + 1;
     }
 
-    catStatus.style.color = 'blue';
-    catStatus.innerText = '⏳ Đang lưu danh mục...';
-
     const { error } = await supabaseClient.from('categories').insert([{ name, parent_id: parentId, level }]);
-
-    if (error) {
-      catStatus.style.color = 'red';
-      catStatus.innerText = '❌ Lỗi: ' + error.message;
-    } else {
-      catStatus.style.color = 'green';
-      catStatus.innerText = '✅ Thêm danh mục thành công!';
+    if (error) alert('Lỗi: ' + error.message);
+    else {
       document.getElementById('add-category-form').reset();
       await loadCategories();
       loadProducts();
     }
   });
 
-  // Xóa danh mục
   async function deleteCategory(id) {
-    if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-      const { error } = await supabaseClient.from('categories').delete().eq('id', id);
-      if (error) alert('Lỗi xóa danh mục: ' + error.message);
-      else {
-        await loadCategories();
-        loadProducts();
-      }
+    if (confirm('Xóa danh mục này?')) {
+      await supabaseClient.from('categories').delete().eq('id', id);
+      await loadCategories();
+      loadProducts();
     }
   }
 
-  // ==========================================
-  // XỬ LÝ SẢN PHẨM (PRODUCTS)
-  // ==========================================
   async function loadProducts() {
     const tbody = document.getElementById('products-table-body');
     const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
 
-    if (error) {
-      tbody.innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Lỗi tải sản phẩm: ${error.message}</td></tr>`;
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có sản phẩm nào. Hãy thêm ở trên!</td></tr>';
+    if (error || !data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có sản phẩm.</td></tr>';
       return;
     }
 
@@ -267,14 +244,13 @@
       <tr>
         <td><img src="${item.image_url || item.main_image || 'https://via.placeholder.com/50'}" class="product-img"></td>
         <td><b>${item.name}</b></td>
-        <td><span class="badge badge-lvl1">${categoriesMap[item.category_id] || item.category || 'Chưa phân loại'}</span></td>
+        <td><span class="badge badge-lvl1">${categoriesMap[item.category_id] || 'Chưa phân loại'}</span></td>
         <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
         <td><button class="btn-delete" onclick="deleteProduct(${item.id})">🗑️ Xóa</button></td>
       </tr>
     `).join('');
   }
 
-  // Thêm sản phẩm
   document.getElementById('add-product-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const statusDiv = document.getElementById('status');
@@ -286,75 +262,80 @@
     const description = document.getElementById('description').value;
     const fileInput = document.getElementById('image-file');
 
-    if (fileInput.files.length === 0) {
-      alert('Vui lòng chọn ảnh!');
-      return;
-    }
-
     btnSubmit.disabled = true;
-    statusDiv.style.color = 'blue';
-    statusDiv.innerText = '⏳ Đang tải ảnh lên Supabase...';
+    statusDiv.innerText = '⏳ Đang xử lý...';
 
     try {
       const file = fileInput.files[0];
       const fileName = `${Date.now()}_${file.name}`;
-
-      const { error: uploadError } = await supabaseClient.storage
-        .from('products')
-        .upload(fileName, file);
-
+      const { error: uploadError } = await supabaseClient.storage.from('products').upload(fileName, file);
       if (uploadError) throw uploadError;
 
-      const { data: urlData } = supabaseClient.storage
-        .from('products')
-        .getPublicUrl(fileName);
-
+      const { data: urlData } = supabaseClient.storage.from('products').getPublicUrl(fileName);
       const imageUrl = urlData.publicUrl;
 
-      statusDiv.innerText = '⏳ Đang lưu sản phẩm...';
-
-      const payload = { 
-        name, 
-        price: Number(price), 
-        image_url: imageUrl, 
-        main_image: imageUrl,
-        description 
-      };
-
+      const payload = { name, price: Number(price), image_url: imageUrl, main_image: imageUrl, description };
       if (categoryId) payload.category_id = Number(categoryId);
 
-      const { error: insertError } = await supabaseClient
-        .from('products')
-        .insert([payload]);
-
+      const { error: insertError } = await supabaseClient.from('products').insert([payload]);
       if (insertError) throw insertError;
 
-      statusDiv.style.color = 'green';
-      statusDiv.innerText = '✅ Thêm sản phẩm thành công!';
+      statusDiv.innerText = '✅ Thêm thành công!';
       document.getElementById('add-product-form').reset();
       loadProducts();
-
     } catch (err) {
-      statusDiv.style.color = 'red';
-      statusDiv.innerText = '❌ Có lỗi xảy ra: ' + err.message;
+      statusDiv.innerText = '❌ Lỗi: ' + err.message;
     } finally {
       btnSubmit.disabled = false;
     }
   });
 
-  // Xóa sản phẩm
   async function deleteProduct(id) {
-    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-      const { error } = await supabaseClient.from('products').delete().eq('id', id);
-      if (error) alert('Lỗi xóa: ' + error.message);
-      else loadProducts();
+    if (confirm('Xóa sản phẩm này?')) {
+      await supabaseClient.from('products').delete().eq('id', id);
+      loadProducts();
     }
   }
 
-  // Khởi chạy khi trang tải xong
+  // TẢI VÀ QUẢN LÝ ĐƠN HÀNG
+  async function loadOrders() {
+    const tbody = document.getElementById('orders-table-body');
+    const { data, error } = await supabaseClient.from('orders').select('*').order('id', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Chưa có đơn hàng nào.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(o => {
+      const itemsList = Array.isArray(o.cart_items) 
+        ? o.cart_items.map(i => `• ${i.name} (x${i.qty})`).join('<br>') 
+        : 'Không có thông tin';
+
+      return `
+        <tr>
+          <td><b>#${o.id}</b></td>
+          <td><b>${o.customer_name}</b></td>
+          <td>${o.customer_phone}<br><small style="color:#666;">${o.address}</small></td>
+          <td style="font-size:12px;">${itemsList}<br><i>Ghi chú: ${o.note || 'Không'}</i></td>
+          <td><b style="color:red;">${Number(o.total_amount).toLocaleString('vi-VN')} đ</b></td>
+          <td><button class="btn-delete" onclick="deleteOrder(${o.id})">🗑️ Xóa</button></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function deleteOrder(id) {
+    if (confirm('Xóa đơn hàng này?')) {
+      await supabaseClient.from('orders').delete().eq('id', id);
+      loadOrders();
+    }
+  }
+
   async function init() {
     await loadCategories();
     await loadProducts();
+    await loadOrders();
   }
   init();
 </script>
