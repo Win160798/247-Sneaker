@@ -53,10 +53,10 @@
     <!-- THANH BỘ LỌC CÁC DANH MỤC -->
     <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
       <div id="categoryTabs" class="flex flex-wrap gap-2">
-        <button onclick="filterCategory('ALL')" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>
-        <button onclick="filterCategory('Đồng Hồ Nam')" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nam</button>
-        <button onclick="filterCategory('Đồng Hồ Nữ')" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nữ</button>
-        <button onclick="filterCategory('Phụ Kiện')" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Phụ Kiện</button>
+        <button onclick="filterCategory('ALL', this)" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>
+        <button onclick="filterCategory('Đồng Hồ Nam', this)" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nam</button>
+        <button onclick="filterCategory('Đồng Hồ Nữ', this)" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nữ</button>
+        <button onclick="filterCategory('Phụ Kiện', this)" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Phụ Kiện</button>
       </div>
 
       <div class="text-xs text-gray-500 font-medium">
@@ -73,7 +73,7 @@
     </div>
   </main>
 
-  <!-- MODAL CHI TIẾT SẢN PHẨM (MỚI BỔ SUNG) -->
+  <!-- MODAL CHI TIẾT SẢN PHẨM -->
   <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in my-8">
       <!-- Nút Đóng Modal -->
@@ -115,7 +115,7 @@
             </div>
           </div>
 
-          <!-- DUY NHẤT NÚT THÊM VÀO GIỎ HÀNG MÀU ĐỎ -->
+          <!-- NÚT THÊM VÀO GIỎ HÀNG -->
           <button id="detailAddToCartBtn" class="w-full bg-[#a33232] hover:bg-[#822424] text-white font-black py-4 rounded-xl text-sm tracking-wider uppercase shadow-lg transition duration-200 flex items-center justify-center gap-2">
             <i class="fa-solid fa-cart-plus"></i>
             <span>THÊM VÀO GIỎ HÀNG</span>
@@ -169,29 +169,32 @@
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
-    // =========================================================
-    // THÔNG TIN KẾT NỐI ĐÃ ĐƯỢC TỰ ĐỘNG CẤU HÌNH:
-    // =========================================================
     const SUPABASE_URL = "https://uleckabliwereivgxryo.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o";
     const TELEGRAM_TOKEN = "8715013237:AAHnalBgr7rnIeJewh3GMr_tfFnv8ewJipY";
     const TELEGRAM_CHAT_ID = "8866272456";
-    // =========================================================
 
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let rawProducts = [];
     let cart = [];
     let currentCategory = 'ALL';
 
+    // Hàm an toàn để lấy link ảnh
+    function getProductImage(p) {
+      return p.image_url || p.main_image || p.image || 'https://via.placeholder.com/300';
+    }
+
     // Tải danh sách sản phẩm từ Supabase
     async function fetchProducts() {
-      const { data, error } = await db.from('products').select('*').order('id', { ascending: true });
-      if (error) {
-        alert('Lỗi tải dữ liệu sản phẩm!');
-        return;
+      try {
+        const { data, error } = await db.from('products').select('*').order('id', { ascending: true });
+        if (error) throw error;
+        rawProducts = data || [];
+        renderProducts();
+      } catch (err) {
+        console.error("Lỗi Supabase:", err);
+        document.getElementById('productGrid').innerHTML = `<div class="col-span-full text-center py-16 text-red-500 text-xs">Không thể kết nối dữ liệu sản phẩm. Vui lòng kiểm tra lại Supabase!</div>`;
       }
-      rawProducts = data;
-      renderProducts();
     }
 
     // Hiển thị danh sách ra màn hình
@@ -200,8 +203,8 @@
       const searchKey = document.getElementById('searchInput').value.toLowerCase();
 
       let filtered = rawProducts.filter(p => {
-        const matchCat = currentCategory === 'ALL' || p.category === currentCategory;
-        const matchSearch = p.name.toLowerCase().includes(searchKey);
+        const matchCat = currentCategory === 'ALL' || (p.category && p.category.toLowerCase() === currentCategory.toLowerCase());
+        const matchSearch = p.name ? p.name.toLowerCase().includes(searchKey) : false;
         return matchCat && matchSearch;
       });
 
@@ -212,29 +215,35 @@
         return;
       }
 
-      grid.innerHTML = filtered.map(p => `
-        <div onclick="openProductDetail(${p.id})" class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group cursor-pointer">
-          <div class="relative overflow-hidden bg-gray-100 aspect-square">
-            <img src="${p.main_image || p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-            ${p.old_price ? `<span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Giảm ${Math.round((1 - p.price/p.old_price)*100)}%</span>` : ''}
-          </div>
-          <div class="p-3.5 flex-1 flex flex-col justify-between">
-            <div>
-              <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">${p.category || 'LUXSTORE'}</span>
-              <h3 class="font-bold text-xs text-gray-800 line-clamp-2 mt-1">${p.name}</h3>
+      grid.innerHTML = filtered.map(p => {
+        const img = getProductImage(p);
+        const price = Number(p.price || 0);
+        const oldPrice = p.old_price ? Number(p.old_price) : null;
+
+        return `
+          <div onclick="openProductDetail(${p.id})" class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group cursor-pointer">
+            <div class="relative overflow-hidden bg-gray-100 aspect-square">
+              <img src="${img}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              ${oldPrice && oldPrice > price ? `<span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Giảm ${Math.round((1 - price/oldPrice)*100)}%</span>` : ''}
             </div>
-            <div class="mt-3">
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-sm font-black text-red-600">${Number(p.price).toLocaleString('vi-VN')} ₫</span>
-                ${p.old_price ? `<span class="text-[10px] text-gray-400 line-through">${Number(p.old_price).toLocaleString('vi-VN')} ₫</span>` : ''}
+            <div class="p-3.5 flex-1 flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">${p.category || 'LUXSTORE'}</span>
+                <h3 class="font-bold text-xs text-gray-800 line-clamp-2 mt-1">${p.name}</h3>
               </div>
-              <button onclick="event.stopPropagation(); addToCart(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
-                <i class="fa-solid fa-plus text-[10px]"></i> Thêm Giỏ Hàng
-              </button>
+              <div class="mt-3">
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-sm font-black text-red-600">${price.toLocaleString('vi-VN')} ₫</span>
+                  ${oldPrice ? `<span class="text-[10px] text-gray-400 line-through">${oldPrice.toLocaleString('vi-VN')} ₫</span>` : ''}
+                </div>
+                <button onclick="event.stopPropagation(); addToCart(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-plus text-[10px]"></i> Thêm Giỏ Hàng
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // MỞ MODAL XEM CHI TIẾT SẢN PHẨM
@@ -242,13 +251,15 @@
       const p = rawProducts.find(item => item.id === id);
       if (!p) return;
 
-      const imgUrl = p.main_image || p.image_url;
+      const imgUrl = getProductImage(p);
+      const price = Number(p.price || 0);
+
       document.getElementById('detailMainImg').src = imgUrl;
       document.getElementById('detailThumbImg').src = imgUrl;
-      document.getElementById('detailTitle').innerText = p.name;
+      document.getElementById('detailTitle').innerText = p.name || '';
       document.getElementById('detailCode').innerText = 'SP-' + p.id;
       document.getElementById('detailCategory').innerText = p.category || 'LUXSTORE';
-      document.getElementById('detailPrice').innerText = Number(p.price).toLocaleString('vi-VN') + ' ₫';
+      document.getElementById('detailPrice').innerText = price.toLocaleString('vi-VN') + ' ₫';
 
       if (p.old_price) {
         const oldPriceEl = document.getElementById('detailOldPrice');
@@ -260,7 +271,6 @@
 
       document.getElementById('detailDesc').innerText = p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.';
 
-      // Gán sự kiện click cho nút THÊM VÀO GIỎ HÀNG duy nhất
       const cartBtn = document.getElementById('detailAddToCartBtn');
       cartBtn.onclick = function() {
         addToCart(p.id);
@@ -270,20 +280,21 @@
       document.getElementById('productDetailModal').classList.remove('hidden');
     }
 
-    // ĐÓNG MODAL CHI TIẾT
     function closeProductDetail() {
       document.getElementById('productDetailModal').classList.add('hidden');
     }
 
     // Bộ lọc danh mục
-    function filterCategory(cat) {
+    function filterCategory(cat, btnEl) {
       currentCategory = cat;
       document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.classList.remove('bg-slate-900', 'text-white', 'shadow');
         btn.classList.add('bg-white', 'text-gray-700');
       });
-      event.target.classList.add('bg-slate-900', 'text-white', 'shadow');
-      event.target.classList.remove('bg-white', 'text-gray-700');
+      if (btnEl) {
+        btnEl.classList.add('bg-slate-900', 'text-white', 'shadow');
+        btnEl.classList.remove('bg-white', 'text-gray-700');
+      }
       renderProducts();
     }
 
@@ -292,6 +303,7 @@
     // Quản lý Giỏ Hàng
     function addToCart(id) {
       const prod = rawProducts.find(p => p.id === id);
+      if (!prod) return;
       const item = cart.find(i => i.id === id);
       if (item) { item.qty++; } else { cart.push({ ...prod, qty: 1 }); }
       updateCartUI();
@@ -320,13 +332,14 @@
       }
 
       container.innerHTML = cart.map(i => {
-        totalMoney += i.price * i.qty;
+        const itemPrice = Number(i.price || 0);
+        totalMoney += itemPrice * i.qty;
         return `
           <div class="flex items-center gap-3 p-2 border-b">
-            <img src="${i.main_image || i.image_url}" class="w-12 h-12 object-cover rounded bg-gray-100">
+            <img src="${getProductImage(i)}" class="w-12 h-12 object-cover rounded bg-gray-100">
             <div class="flex-1">
               <h4 class="font-bold text-xs text-gray-800 line-clamp-1">${i.name}</h4>
-              <span class="text-xs text-red-600 font-bold">${Number(i.price).toLocaleString('vi-VN')} ₫</span>
+              <span class="text-xs text-red-600 font-bold">${itemPrice.toLocaleString('vi-VN')} ₫</span>
             </div>
             <div class="flex items-center gap-2 border rounded px-1.5 py-0.5">
               <button onclick="changeQty(${i.id}, -1)" class="text-xs font-bold px-1 text-gray-500">-</button>
@@ -357,7 +370,7 @@
       const phone = document.getElementById('cPhone').value;
       const address = document.getElementById('cAddress').value;
       const note = document.getElementById('cNote').value;
-      const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+      const total = cart.reduce((sum, i) => sum + Number(i.price || 0) * i.qty, 0);
 
       // 1. Lưu đơn vào Supabase
       const { error } = await db.from('orders').insert([{
@@ -371,14 +384,18 @@
 
       if (!error) {
         // 2. Bắn thông báo về Telegram
-        const itemsText = cart.map(i => `• <b>${i.name}</b> (x${i.qty}) - ${(i.price*i.qty).toLocaleString('vi-VN')}₫`).join('\n');
+        const itemsText = cart.map(i => `• <b>${i.name}</b> (x${i.qty}) - ${(Number(i.price || 0)*i.qty).toLocaleString('vi-VN')}₫`).join('\n');
         const telegramMsg = `🚨 <b>ĐƠN HÀNG MỚI TỪ WEBSITE!</b>\n\n👤 <b>Khách hàng:</b> ${name}\n📞 <b>Điện thoại:</b> ${phone}\n🏠 <b>Địa chỉ:</b> ${address}\n📝 <b>Ghi chú:</b> ${note || 'Không có'}\n\n📦 <b>Sản phẩm:</b>\n${itemsText}\n\n💰 <b>TỔNG CỘNG:</b> ${total.toLocaleString('vi-VN')} ₫`;
 
-        fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
-        });
+        try {
+          await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
+          });
+        } catch (tgErr) {
+          console.error("Lỗi Telegram:", tgErr);
+        }
 
         alert('🎉 Đặt hàng thành công! Chúng tôi sẽ gọi xác nhận ngay.');
         cart = [];
@@ -386,7 +403,8 @@
         toggleCart(false);
         document.getElementById('checkoutForm').reset();
       } else {
-        alert('Có lỗi xảy ra, vui lòng thử lại!');
+        console.error("Lỗi lưu đơn hàng Supabase:", error);
+        alert('Có lỗi xảy ra khi lưu đơn hàng: ' + (error.message || 'Vui lòng thử lại!'));
       }
 
       btn.disabled = false;
