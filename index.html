@@ -7,6 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .thumb-active { border-color: #f59e0b !important; opacity: 1 !important; }
+  </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
 
@@ -44,7 +47,7 @@
   <!-- NỘI DUNG CHÍNH -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
     
-    <!-- THANH BỘ LỌC DANH MỤC TỰ ĐỘNG -->
+    <!-- BỘ LỌC DANH MỤC -->
     <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
       <div id="categoryTabs" class="flex flex-wrap gap-2">
         <button onclick="filterCategory('ALL', this)" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>
@@ -64,7 +67,7 @@
     </div>
   </main>
 
-  <!-- MODAL CHI TIẾT SẢN PHẨM -->
+  <!-- MODAL CHI TIẾT SẢN PHẨM HỖ TRỢ NHIỀU ẢNH -->
   <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in my-8">
       <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-black rounded-full flex items-center justify-center text-lg transition">
@@ -73,9 +76,12 @@
 
       <div class="flex flex-col md:flex-row p-6 md:p-8 gap-8">
         <div class="w-full md:w-1/2 flex flex-col items-center">
-          <div class="w-full h-80 md:h-96 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4 mb-4">
+          <!-- Ảnh lớn hiển thị -->
+          <div class="w-full h-80 md:h-96 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4 mb-3">
             <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain">
           </div>
+          <!-- Khung ảnh nhỏ xem trước (Thumbnails Gallery) -->
+          <div id="detailThumbnails" class="flex flex-wrap gap-2 w-full overflow-x-auto py-1"></div>
         </div>
 
         <div class="w-full md:w-1/2 flex flex-col justify-between">
@@ -155,10 +161,10 @@
     let currentCategoryId = 'ALL';
 
     function getProductImage(p) {
-      return p.image_url || p.main_image || 'https://via.placeholder.com/300';
+      if (p.images && Array.isArray(p.images) && p.images.length > 0) return p.images[0];
+      return p.main_image || p.image_url || 'https://via.placeholder.com/300';
     }
 
-    // Load danh mục động từ Supabase
     async function fetchCategories() {
       const { data } = await db.from('categories').select('*').order('id', { ascending: true });
       if (data) {
@@ -231,20 +237,38 @@
       }).join('');
     }
 
+    // MỞ CHI TIẾT SẢN PHẨM & HIỂN THỊ THUMBNAIL NHIỀU ẢNH
     function openProductDetail(id) {
       const p = rawProducts.find(item => item.id === id);
       if (!p) return;
 
-      const imgUrl = getProductImage(p);
+      const imgList = (p.images && Array.isArray(p.images) && p.images.length > 0) 
+                      ? p.images 
+                      : [p.main_image || p.image_url || 'https://via.placeholder.com/300'];
+
       const price = Number(p.price || 0);
       const catObj = categoriesList.find(c => c.id == p.category_id);
 
-      document.getElementById('detailMainImg').src = imgUrl;
+      const mainImg = document.getElementById('detailMainImg');
+      mainImg.src = imgList[0];
+      
       document.getElementById('detailTitle').innerText = p.name || '';
       document.getElementById('detailCode').innerText = 'SP-' + p.id;
       document.getElementById('detailCategory').innerText = catObj ? catObj.name : 'LUXSTORE';
       document.getElementById('detailPrice').innerText = price.toLocaleString('vi-VN') + ' ₫';
       document.getElementById('detailDesc').innerText = p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.';
+
+      // Tạo album ảnh nhỏ
+      const thumbContainer = document.getElementById('detailThumbnails');
+      if (imgList.length > 1) {
+        thumbContainer.innerHTML = imgList.map((url, idx) => `
+          <img src="${url}" 
+               onclick="changeDetailImage('${url}', this)" 
+               class="w-14 h-14 object-cover rounded-lg border-2 border-gray-200 opacity-60 hover:opacity-100 cursor-pointer transition ${idx === 0 ? 'thumb-active' : ''}">
+        `).join('');
+      } else {
+        thumbContainer.innerHTML = '';
+      }
 
       const cartBtn = document.getElementById('detailAddToCartBtn');
       cartBtn.onclick = function() {
@@ -253,6 +277,12 @@
       };
 
       document.getElementById('productDetailModal').classList.remove('hidden');
+    }
+
+    function changeDetailImage(url, el) {
+      document.getElementById('detailMainImg').src = url;
+      document.querySelectorAll('#detailThumbnails img').forEach(img => img.classList.remove('thumb-active'));
+      if (el) el.classList.add('thumb-active');
     }
 
     function closeProductDetail() { document.getElementById('productDetailModal').classList.add('hidden'); }
