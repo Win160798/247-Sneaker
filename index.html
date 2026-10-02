@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LUXSTORE - Hệ Thống Bán Lẻ Hàng Đầu</title>
+  <title>LUXSTORE - Mua Sắm Đẳng Cấp</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .thumb-active { border-color: #f59e0b !important; opacity: 1 !important; }
+    .variant-btn-active { border-color: #f59e0b !important; background-color: #fffbeb !important; color: #b45309 !important; font-weight: bold; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
@@ -36,72 +36,67 @@
   </header>
 
   <!-- BANNER HERO -->
-  <section class="bg-gradient-to-r from-slate-950 via-slate-900 to-stone-900 text-white py-12 px-4 sm:px-6 text-center border-b border-amber-500/20">
+  <section class="bg-gradient-to-r from-slate-950 via-slate-900 to-stone-900 text-white py-10 px-4 text-center">
     <div class="max-w-4xl mx-auto">
       <span class="text-amber-400 text-xs font-bold uppercase tracking-widest bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Bộ Sưu Tập Mới 2026</span>
-      <h1 class="text-3xl sm:text-5xl font-black mt-4 mb-3 tracking-tight">ĐẲNG CẤP & TINH TẾ</h1>
-      <p class="text-gray-400 text-xs sm:text-base max-w-2xl mx-auto">Cam kết sản phẩm chính hãng 100%. Giao hàng hỏa tốc toàn quốc - Kiểm tra hàng trước khi thanh toán.</p>
+      <h1 class="text-3xl sm:text-4xl font-black mt-3 mb-2">ĐẲNG CẤP & TINH TẾ</h1>
+      <p class="text-gray-400 text-xs sm:text-sm">Cam kết sản phẩm chính hãng 100% - Bảo hành tận tâm.</p>
     </div>
   </section>
 
-  <!-- NỘI DUNG CHÍNH -->
+  <!-- MAIN CONTAINER -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
     
-    <!-- BỘ LỌC DANH MỤC -->
+    <!-- LỌC DANH MỤC -->
     <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
       <div id="categoryTabs" class="flex flex-wrap gap-2">
         <button onclick="filterCategory('ALL', this)" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>
       </div>
-
       <div class="text-xs text-gray-500 font-medium">
         Hiển thị: <span id="productCount" class="font-bold text-gray-800">0</span> sản phẩm
       </div>
     </div>
 
-    <!-- LƯỚI SẢN PHẨM -->
+    <!-- DANH SÁCH SẢN PHẨM -->
     <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
       <div class="col-span-full text-center py-16">
         <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500"></i>
-        <p class="text-xs text-gray-500 mt-2">Đang kết nối hệ thống...</p>
+        <p class="text-xs text-gray-500 mt-2">Đang tải sản phẩm...</p>
       </div>
     </div>
   </main>
 
-  <!-- MODAL CHI TIẾT SẢN PHẨM HỖ TRỢ NHIỀU ẢNH -->
+  <!-- MODAL CHI TIẾT SẢN PHẨM & CHỌN PHÂN LOẠI -->
   <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in my-8">
-      <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-black rounded-full flex items-center justify-center text-lg transition">
-        &times;
-      </button>
+    <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden relative my-8">
+      <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-lg">&times;</button>
 
-      <div class="flex flex-col md:flex-row p-6 md:p-8 gap-8">
+      <div class="flex flex-col md:flex-row p-6 md:p-8 gap-6">
         <div class="w-full md:w-1/2 flex flex-col items-center">
-          <!-- Ảnh lớn hiển thị -->
-          <div class="w-full h-80 md:h-96 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4 mb-3">
-            <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain">
+          <div class="w-full h-72 md:h-80 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4">
+            <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain transition-all duration-300">
           </div>
-          <!-- Khung ảnh nhỏ xem trước (Thumbnails Gallery) -->
-          <div id="detailThumbnails" class="flex flex-wrap gap-2 w-full overflow-x-auto py-1"></div>
         </div>
 
         <div class="w-full md:w-1/2 flex flex-col justify-between">
           <div>
             <span id="detailCategory" class="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-2.5 py-1 rounded border border-amber-200">LUXSTORE</span>
-            <h2 id="detailTitle" class="text-xl md:text-2xl font-black text-gray-900 mt-3 mb-2 leading-snug">Tên sản phẩm</h2>
-            <p class="text-xs text-gray-400 mb-4">Mã Số: <span id="detailCode" class="font-semibold text-gray-700">SP-000</span></p>
+            <h2 id="detailTitle" class="text-xl font-black text-gray-900 mt-2 mb-1">Tên sản phẩm</h2>
+            <div class="text-2xl font-black text-red-600 mb-4" id="detailPrice">0 ₫</div>
 
-            <div class="flex items-baseline gap-3 mb-6 pb-4 border-b border-gray-100">
-              <span id="detailPrice" class="text-2xl md:text-3xl font-black text-red-600">0 ₫</span>
-              <span id="detailOldPrice" class="text-sm text-gray-400 line-through hidden">0 ₫</span>
+            <!-- KHU VỰC CHỌN PHÂN LOẠI TÙY CHỈNH -->
+            <div id="variantSelectionArea" class="mb-5 hidden">
+              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Chọn Phân Loại (Màu, Size,...):</label>
+              <div id="variantButtons" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <div class="mb-6">
-              <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Mô Tả Sản Phẩm:</h4>
-              <p id="detailDesc" class="text-xs text-gray-600 leading-relaxed max-h-40 overflow-y-auto pr-2">Chưa có mô tả chi tiết.</p>
+            <div class="mb-4">
+              <h4 class="text-xs font-bold text-gray-700 uppercase mb-1">Mô Tả:</h4>
+              <p id="detailDesc" class="text-xs text-gray-600 leading-relaxed max-h-32 overflow-y-auto">Chưa có mô tả.</p>
             </div>
           </div>
 
-          <button id="detailAddToCartBtn" class="w-full bg-[#a33232] hover:bg-[#822424] text-white font-black py-4 rounded-xl text-sm tracking-wider uppercase shadow-lg transition flex items-center justify-center gap-2">
+          <button id="detailAddToCartBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2">
             <i class="fa-solid fa-cart-plus"></i>
             <span>THÊM VÀO GIỎ HÀNG</span>
           </button>
@@ -111,7 +106,7 @@
   </div>
 
   <!-- MODAL GIỎ HÀNG -->
-  <div id="cartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity flex justify-end">
+  <div id="cartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-end">
     <div class="bg-white w-full max-w-md h-full flex flex-col justify-between shadow-2xl">
       <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
         <h3 class="font-bold text-base flex items-center gap-2">
@@ -131,20 +126,20 @@
 
         <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-2.5">
           <input type="text" id="cName" required placeholder="Họ và tên người nhận *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
-          <input type="tel" id="cPhone" required placeholder="Số điện thoại liên hệ *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
-          <input type="text" id="cAddress" required placeholder="Địa chỉ giao hàng chi tiết *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
-          <textarea id="cNote" placeholder="Ghi chú thêm (Ví dụ: Giao giờ hành chính)" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none h-16"></textarea>
+          <input type="tel" id="cPhone" required placeholder="Số điện thoại *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
+          <input type="text" id="cAddress" required placeholder="Địa chỉ giao hàng *" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none">
+          <textarea id="cNote" placeholder="Ghi chú thêm" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-slate-800 outline-none h-16"></textarea>
 
           <button type="submit" id="btnSubmitOrder" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-black py-3 rounded-lg text-xs uppercase tracking-wider transition shadow-lg flex items-center justify-center gap-2">
             <i class="fa-solid fa-check-circle"></i>
-            <span>XÁC NHẬN ĐẶT HÀNG NGAY</span>
+            <span>XÁC NHẬN ĐẶT HÀNG</span>
           </button>
         </form>
       </div>
     </div>
   </div>
 
-  <footer class="bg-slate-950 text-gray-400 text-xs py-6 border-t border-slate-800 text-center">
+  <footer class="bg-slate-950 text-gray-400 text-xs py-6 text-center border-t border-slate-800">
     <p>© 2026 LUXSTORE. All rights reserved.</p>
   </footer>
 
@@ -159,11 +154,8 @@
     let categoriesList = [];
     let cart = [];
     let currentCategoryId = 'ALL';
-
-    function getProductImage(p) {
-      if (p.images && Array.isArray(p.images) && p.images.length > 0) return p.images[0];
-      return p.main_image || p.image_url || 'https://via.placeholder.com/300';
-    }
+    let selectedVariant = null;
+    let currentProduct = null;
 
     async function fetchCategories() {
       const { data } = await db.from('categories').select('*').order('id', { ascending: true });
@@ -179,7 +171,7 @@
 
     async function fetchProducts() {
       try {
-        const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
+        const { data, error } = await db.from('products').select('*, product_variants(*)').order('id', { ascending: false });
         if (error) throw error;
         rawProducts = data || [];
         renderProducts();
@@ -206,16 +198,15 @@
       }
 
       grid.innerHTML = filtered.map(p => {
-        const img = getProductImage(p);
         const price = Number(p.price || 0);
-        const oldPrice = p.old_price ? Number(p.old_price) : null;
         const catObj = categoriesList.find(c => c.id == p.category_id);
+        const hasVariants = p.product_variants && p.product_variants.length > 0;
 
         return `
           <div onclick="openProductDetail(${p.id})" class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group cursor-pointer">
             <div class="relative overflow-hidden bg-gray-100 aspect-square">
-              <img src="${img}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-              ${oldPrice && oldPrice > price ? `<span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Giảm ${Math.round((1 - price/oldPrice)*100)}%</span>` : ''}
+              <img src="${p.main_image || p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              ${hasVariants ? `<span class="absolute top-2 right-2 bg-amber-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full shadow">Nhiều phân loại</span>` : ''}
             </div>
             <div class="p-3.5 flex-1 flex flex-col justify-between">
               <div>
@@ -223,12 +214,9 @@
                 <h3 class="font-bold text-xs text-gray-800 line-clamp-2 mt-1">${p.name}</h3>
               </div>
               <div class="mt-3">
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-sm font-black text-red-600">${price.toLocaleString('vi-VN')} ₫</span>
-                  ${oldPrice ? `<span class="text-[10px] text-gray-400 line-through">${oldPrice.toLocaleString('vi-VN')} ₫</span>` : ''}
-                </div>
-                <button onclick="event.stopPropagation(); addToCart(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
-                  <i class="fa-solid fa-plus text-[10px]"></i> Thêm Giỏ Hàng
+                <div class="text-sm font-black text-red-600">${price.toLocaleString('vi-VN')} ₫</div>
+                <button onclick="event.stopPropagation(); openProductDetail(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-eye text-[10px]"></i> Xem & Chọn Phân Loại
                 </button>
               </div>
             </div>
@@ -237,85 +225,91 @@
       }).join('');
     }
 
-    // MỞ CHI TIẾT SẢN PHẨM & HIỂN THỊ THUMBNAIL NHIỀU ẢNH
     function openProductDetail(id) {
-      const p = rawProducts.find(item => item.id === id);
-      if (!p) return;
+      currentProduct = rawProducts.find(item => item.id === id);
+      if (!currentProduct) return;
 
-      const imgList = (p.images && Array.isArray(p.images) && p.images.length > 0) 
-                      ? p.images 
-                      : [p.main_image || p.image_url || 'https://via.placeholder.com/300'];
-
-      const price = Number(p.price || 0);
-      const catObj = categoriesList.find(c => c.id == p.category_id);
-
-      const mainImg = document.getElementById('detailMainImg');
-      mainImg.src = imgList[0];
-      
-      document.getElementById('detailTitle').innerText = p.name || '';
-      document.getElementById('detailCode').innerText = 'SP-' + p.id;
+      const catObj = categoriesList.find(c => c.id == currentProduct.category_id);
+      document.getElementById('detailTitle').innerText = currentProduct.name;
       document.getElementById('detailCategory').innerText = catObj ? catObj.name : 'LUXSTORE';
-      document.getElementById('detailPrice').innerText = price.toLocaleString('vi-VN') + ' ₫';
-      document.getElementById('detailDesc').innerText = p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.';
+      document.getElementById('detailDesc').innerText = currentProduct.description || 'Chưa có mô tả chi tiết.';
 
-      // Tạo album ảnh nhỏ
-      const thumbContainer = document.getElementById('detailThumbnails');
-      if (imgList.length > 1) {
-        thumbContainer.innerHTML = imgList.map((url, idx) => `
-          <img src="${url}" 
-               onclick="changeDetailImage('${url}', this)" 
-               class="w-14 h-14 object-cover rounded-lg border-2 border-gray-200 opacity-60 hover:opacity-100 cursor-pointer transition ${idx === 0 ? 'thumb-active' : ''}">
+      const variantArea = document.getElementById('variantSelectionArea');
+      const variantButtons = document.getElementById('variantButtons');
+      const vars = currentProduct.product_variants || [];
+
+      if (vars.length > 0) {
+        variantArea.classList.remove('hidden');
+        variantButtons.innerHTML = vars.map((v, idx) => `
+          <button onclick="selectVariant(${idx})" class="variant-btn border border-gray-300 text-xs px-3 py-1.5 rounded-lg hover:border-amber-500 transition">
+            ${v.attribute_name} - ${Number(v.price).toLocaleString('vi-VN')}₫
+          </button>
         `).join('');
+        
+        selectVariant(0);
       } else {
-        thumbContainer.innerHTML = '';
+        variantArea.classList.add('hidden');
+        selectedVariant = null;
+        document.getElementById('detailMainImg').src = currentProduct.main_image || currentProduct.image_url;
+        document.getElementById('detailPrice').innerText = Number(currentProduct.price).toLocaleString('vi-VN') + ' ₫';
       }
 
-      const cartBtn = document.getElementById('detailAddToCartBtn');
-      cartBtn.onclick = function() {
-        addToCart(p.id);
+      document.getElementById('detailAddToCartBtn').onclick = function() {
+        addToCartWithVariant();
         closeProductDetail();
       };
 
       document.getElementById('productDetailModal').classList.remove('hidden');
     }
 
-    function changeDetailImage(url, el) {
-      document.getElementById('detailMainImg').src = url;
-      document.querySelectorAll('#detailThumbnails img').forEach(img => img.classList.remove('thumb-active'));
-      if (el) el.classList.add('thumb-active');
+    function selectVariant(idx) {
+      const vars = currentProduct.product_variants || [];
+      selectedVariant = vars[idx];
+
+      document.getElementById('detailMainImg').src = selectedVariant.image_url || currentProduct.main_image;
+      document.getElementById('detailPrice').innerText = Number(selectedVariant.price).toLocaleString('vi-VN') + ' ₫';
+
+      const btns = document.querySelectorAll('.variant-btn');
+      btns.forEach((btn, i) => {
+        if (i === idx) btn.classList.add('variant-btn-active');
+        else btn.classList.remove('variant-btn-active');
+      });
     }
 
     function closeProductDetail() { document.getElementById('productDetailModal').classList.add('hidden'); }
 
-    function filterCategory(catId, btnEl) {
-      currentCategoryId = catId;
-      document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.classList.remove('bg-slate-900', 'text-white', 'shadow');
-        btn.classList.add('bg-white', 'text-gray-700');
-      });
-      if (btnEl) {
-        btnEl.classList.add('bg-slate-900', 'text-white', 'shadow');
-        btnEl.classList.remove('bg-white', 'text-gray-700');
+    function addToCartWithVariant() {
+      if (!currentProduct) return;
+
+      const cartItemId = selectedVariant ? `${currentProduct.id}_${selectedVariant.id}` : `${currentProduct.id}_default`;
+      const itemPrice = selectedVariant ? Number(selectedVariant.price) : Number(currentProduct.price);
+      const itemImg = selectedVariant ? selectedVariant.image_url : (currentProduct.main_image || currentProduct.image_url);
+      const variantName = selectedVariant ? selectedVariant.attribute_name : null;
+
+      const existingIndex = cart.findIndex(i => i.cartItemId === cartItemId);
+      if (existingIndex > -1) {
+        cart[existingIndex].qty++;
+      } else {
+        cart.push({
+          cartItemId: cartItemId,
+          id: currentProduct.id,
+          name: currentProduct.name,
+          price: itemPrice,
+          image: itemImg,
+          selectedVariant: variantName,
+          qty: 1
+        });
       }
-      renderProducts();
-    }
 
-    function handleSearch() { renderProducts(); }
-
-    function addToCart(id) {
-      const prod = rawProducts.find(p => p.id === id);
-      if (!prod) return;
-      const item = cart.find(i => i.id === id);
-      if (item) { item.qty++; } else { cart.push({ ...prod, qty: 1 }); }
       updateCartUI();
       toggleCart(true);
     }
 
-    function changeQty(id, delta) {
-      const item = cart.find(i => i.id === id);
+    function changeQty(cartItemId, delta) {
+      const item = cart.find(i => i.cartItemId === cartItemId);
       if (!item) return;
       item.qty += delta;
-      if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+      if (item.qty <= 0) cart = cart.filter(i => i.cartItemId !== cartItemId);
       updateCartUI();
     }
 
@@ -333,19 +327,20 @@
       }
 
       container.innerHTML = cart.map(i => {
-        const itemPrice = Number(i.price || 0);
-        totalMoney += itemPrice * i.qty;
+        const itemTotal = i.price * i.qty;
+        totalMoney += itemTotal;
         return `
           <div class="flex items-center gap-3 p-2 border-b">
-            <img src="${getProductImage(i)}" class="w-12 h-12 object-cover rounded bg-gray-100">
+            <img src="${i.image}" class="w-12 h-12 object-cover rounded bg-gray-100">
             <div class="flex-1">
               <h4 class="font-bold text-xs text-gray-800 line-clamp-1">${i.name}</h4>
-              <span class="text-xs text-red-600 font-bold">${itemPrice.toLocaleString('vi-VN')} ₫</span>
+              ${i.selectedVariant ? `<p class="text-[10px] text-amber-600 font-bold">Phân loại: ${i.selectedVariant}</p>` : ''}
+              <span class="text-xs text-red-600 font-bold">${i.price.toLocaleString('vi-VN')} ₫</span>
             </div>
             <div class="flex items-center gap-2 border rounded px-1.5 py-0.5">
-              <button onclick="changeQty(${i.id}, -1)" class="text-xs font-bold px-1 text-gray-500">-</button>
+              <button onclick="changeQty('${i.cartItemId}', -1)" class="text-xs font-bold px-1 text-gray-500">-</button>
               <span class="text-xs font-bold">${i.qty}</span>
-              <button onclick="changeQty(${i.id}, 1)" class="text-xs font-bold px-1 text-gray-500">+</button>
+              <button onclick="changeQty('${i.cartItemId}', 1)" class="text-xs font-bold px-1 text-gray-500">+</button>
             </div>
           </div>
         `;
@@ -355,6 +350,21 @@
     }
 
     function toggleCart(show) { document.getElementById('cartModal').classList.toggle('hidden', !show); }
+
+    function filterCategory(catId, btnEl) {
+      currentCategoryId = catId;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.classList.remove('bg-slate-900', 'text-white', 'shadow');
+        btn.classList.add('bg-white', 'text-gray-700');
+      });
+      if (btnEl) {
+        btnEl.classList.add('bg-slate-900', 'text-white', 'shadow');
+        btnEl.classList.remove('bg-white', 'text-gray-700');
+      }
+      renderProducts();
+    }
+
+    function handleSearch() { renderProducts(); }
 
     async function submitOrder(e) {
       e.preventDefault();
@@ -368,7 +378,7 @@
       const phone = document.getElementById('cPhone').value;
       const address = document.getElementById('cAddress').value;
       const note = document.getElementById('cNote').value;
-      const total = cart.reduce((sum, i) => sum + Number(i.price || 0) * i.qty, 0);
+      const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
       const { error } = await db.from('orders').insert([{
         customer_name: name,
@@ -380,7 +390,7 @@
       }]);
 
       if (!error) {
-        const itemsText = cart.map(i => `• <b>${i.name}</b> (x${i.qty}) - ${(Number(i.price || 0)*i.qty).toLocaleString('vi-VN')}₫`).join('\n');
+        const itemsText = cart.map(i => `• <b>${i.name}</b> ${i.selectedVariant ? `(Phân loại: ${i.selectedVariant})` : ''} - (x${i.qty}) - ${(i.price * i.qty).toLocaleString('vi-VN')}₫`).join('\n');
         const telegramMsg = `🚨 <b>ĐƠN HÀNG MỚI TỪ WEBSITE!</b>\n\n👤 <b>Khách hàng:</b> ${name}\n📞 <b>Điện thoại:</b> ${phone}\n🏠 <b>Địa chỉ:</b> ${address}\n📝 <b>Ghi chú:</b> ${note || 'Không có'}\n\n📦 <b>Sản phẩm:</b>\n${itemsText}\n\n💰 <b>TỔNG CỘNG:</b> ${total.toLocaleString('vi-VN')} ₫`;
 
         try {
@@ -401,7 +411,7 @@
       }
 
       btn.disabled = false;
-      btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> XÁC NHẬN ĐẶT HÀNG NGAY`;
+      btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> XÁC NHẬN ĐẶT HÀNG`;
     }
 
     async function init() {
