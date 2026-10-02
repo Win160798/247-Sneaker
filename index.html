@@ -73,6 +73,58 @@
     </div>
   </main>
 
+  <!-- MODAL CHI TIẾT SẢN PHẨM (MỚI BỔ SUNG) -->
+  <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in my-8">
+      <!-- Nút Đóng Modal -->
+      <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-black rounded-full flex items-center justify-center text-lg transition">
+        &times;
+      </button>
+
+      <div class="flex flex-col md:flex-row p-6 md:p-8 gap-8">
+        <!-- BÊN TRÁI: KHU VỰC HÌNH ẢNH -->
+        <div class="w-full md:w-1/2 flex flex-col items-center">
+          <div class="w-full h-80 md:h-96 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4 mb-4">
+            <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain">
+          </div>
+          <!-- Thumbnails -->
+          <div class="flex gap-2 overflow-x-auto w-full pb-2" id="detailThumbnails">
+            <div class="w-16 h-16 border-2 border-slate-900 rounded-lg p-1 cursor-pointer flex-shrink-0">
+              <img id="detailThumbImg" src="" class="w-full h-full object-cover rounded">
+            </div>
+          </div>
+        </div>
+
+        <!-- BÊN PHẢI: THÔNG TIN SẢN PHẨM -->
+        <div class="w-full md:w-1/2 flex flex-col justify-between">
+          <div>
+            <span id="detailCategory" class="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-2.5 py-1 rounded border border-amber-200">LUXSTORE</span>
+            <h2 id="detailTitle" class="text-xl md:text-2xl font-black text-gray-900 mt-3 mb-2 leading-snug">Tên sản phẩm</h2>
+            <p class="text-xs text-gray-400 mb-4">Mã Số Sản Phẩm: <span id="detailCode" class="font-semibold text-gray-700">SP-000</span></p>
+
+            <div class="flex items-baseline gap-3 mb-6 pb-4 border-b border-gray-100">
+              <span id="detailPrice" class="text-2xl md:text-3xl font-black text-red-600">0 ₫</span>
+              <span id="detailOldPrice" class="text-sm text-gray-400 line-through hidden">0 ₫</span>
+            </div>
+
+            <div class="mb-6">
+              <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Mô Tả Sản Phẩm:</h4>
+              <p id="detailDesc" class="text-xs text-gray-600 leading-relaxed max-h-40 overflow-y-auto pr-2">
+                Chưa có mô tả chi tiết cho sản phẩm này.
+              </p>
+            </div>
+          </div>
+
+          <!-- DUY NHẤT NÚT THÊM VÀO GIỎ HÀNG MÀU ĐỎ -->
+          <button id="detailAddToCartBtn" class="w-full bg-[#a33232] hover:bg-[#822424] text-white font-black py-4 rounded-xl text-sm tracking-wider uppercase shadow-lg transition duration-200 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-cart-plus"></i>
+            <span>THÊM VÀO GIỎ HÀNG</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL GIỎ HÀNG SANG TRỌNG -->
   <div id="cartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity flex justify-end">
     <div class="bg-white w-full max-w-md h-full flex flex-col justify-between shadow-2xl">
@@ -161,14 +213,14 @@
       }
 
       grid.innerHTML = filtered.map(p => `
-        <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group">
+        <div onclick="openProductDetail(${p.id})" class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group cursor-pointer">
           <div class="relative overflow-hidden bg-gray-100 aspect-square">
-            <img src="${p.main_image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+            <img src="${p.main_image || p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
             ${p.old_price ? `<span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Giảm ${Math.round((1 - p.price/p.old_price)*100)}%</span>` : ''}
           </div>
           <div class="p-3.5 flex-1 flex flex-col justify-between">
             <div>
-              <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">${p.category}</span>
+              <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">${p.category || 'LUXSTORE'}</span>
               <h3 class="font-bold text-xs text-gray-800 line-clamp-2 mt-1">${p.name}</h3>
             </div>
             <div class="mt-3">
@@ -176,13 +228,51 @@
                 <span class="text-sm font-black text-red-600">${Number(p.price).toLocaleString('vi-VN')} ₫</span>
                 ${p.old_price ? `<span class="text-[10px] text-gray-400 line-through">${Number(p.old_price).toLocaleString('vi-VN')} ₫</span>` : ''}
               </div>
-              <button onclick="addToCart(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
+              <button onclick="event.stopPropagation(); addToCart(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
                 <i class="fa-solid fa-plus text-[10px]"></i> Thêm Giỏ Hàng
               </button>
             </div>
           </div>
         </div>
       `).join('');
+    }
+
+    // MỞ MODAL XEM CHI TIẾT SẢN PHẨM
+    function openProductDetail(id) {
+      const p = rawProducts.find(item => item.id === id);
+      if (!p) return;
+
+      const imgUrl = p.main_image || p.image_url;
+      document.getElementById('detailMainImg').src = imgUrl;
+      document.getElementById('detailThumbImg').src = imgUrl;
+      document.getElementById('detailTitle').innerText = p.name;
+      document.getElementById('detailCode').innerText = 'SP-' + p.id;
+      document.getElementById('detailCategory').innerText = p.category || 'LUXSTORE';
+      document.getElementById('detailPrice').innerText = Number(p.price).toLocaleString('vi-VN') + ' ₫';
+
+      if (p.old_price) {
+        const oldPriceEl = document.getElementById('detailOldPrice');
+        oldPriceEl.innerText = Number(p.old_price).toLocaleString('vi-VN') + ' ₫';
+        oldPriceEl.classList.remove('hidden');
+      } else {
+        document.getElementById('detailOldPrice').classList.add('hidden');
+      }
+
+      document.getElementById('detailDesc').innerText = p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.';
+
+      // Gán sự kiện click cho nút THÊM VÀO GIỎ HÀNG duy nhất
+      const cartBtn = document.getElementById('detailAddToCartBtn');
+      cartBtn.onclick = function() {
+        addToCart(p.id);
+        closeProductDetail();
+      };
+
+      document.getElementById('productDetailModal').classList.remove('hidden');
+    }
+
+    // ĐÓNG MODAL CHI TIẾT
+    function closeProductDetail() {
+      document.getElementById('productDetailModal').classList.add('hidden');
     }
 
     // Bộ lọc danh mục
@@ -233,7 +323,7 @@
         totalMoney += i.price * i.qty;
         return `
           <div class="flex items-center gap-3 p-2 border-b">
-            <img src="${i.main_image}" class="w-12 h-12 object-cover rounded bg-gray-100">
+            <img src="${i.main_image || i.image_url}" class="w-12 h-12 object-cover rounded bg-gray-100">
             <div class="flex-1">
               <h4 class="font-bold text-xs text-gray-800 line-clamp-1">${i.name}</h4>
               <span class="text-xs text-red-600 font-bold">${Number(i.price).toLocaleString('vi-VN')} ₫</span>
