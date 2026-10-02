@@ -76,18 +76,15 @@
   <!-- MODAL CHI TIẾT SẢN PHẨM -->
   <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in my-8">
-      <!-- Nút Đóng Modal -->
       <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-black rounded-full flex items-center justify-center text-lg transition">
         &times;
       </button>
 
       <div class="flex flex-col md:flex-row p-6 md:p-8 gap-8">
-        <!-- BÊN TRÁI: KHU VỰC HÌNH ẢNH -->
         <div class="w-full md:w-1/2 flex flex-col items-center">
           <div class="w-full h-80 md:h-96 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4 mb-4">
             <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain">
           </div>
-          <!-- Thumbnails -->
           <div class="flex gap-2 overflow-x-auto w-full pb-2" id="detailThumbnails">
             <div class="w-16 h-16 border-2 border-slate-900 rounded-lg p-1 cursor-pointer flex-shrink-0">
               <img id="detailThumbImg" src="" class="w-full h-full object-cover rounded">
@@ -95,7 +92,6 @@
           </div>
         </div>
 
-        <!-- BÊN PHẢI: THÔNG TIN SẢN PHẨM -->
         <div class="w-full md:w-1/2 flex flex-col justify-between">
           <div>
             <span id="detailCategory" class="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-2.5 py-1 rounded border border-amber-200">LUXSTORE</span>
@@ -115,7 +111,6 @@
             </div>
           </div>
 
-          <!-- NÚT THÊM VÀO GIỎ HÀNG -->
           <button id="detailAddToCartBtn" class="w-full bg-[#a33232] hover:bg-[#822424] text-white font-black py-4 rounded-xl text-sm tracking-wider uppercase shadow-lg transition duration-200 flex items-center justify-center gap-2">
             <i class="fa-solid fa-cart-plus"></i>
             <span>THÊM VÀO GIỎ HÀNG</span>
@@ -125,10 +120,9 @@
     </div>
   </div>
 
-  <!-- MODAL GIỎ HÀNG SANG TRỌNG -->
+  <!-- MODAL GIỎ HÀNG -->
   <div id="cartModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity flex justify-end">
     <div class="bg-white w-full max-w-md h-full flex flex-col justify-between shadow-2xl">
-      <!-- Header Modal -->
       <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
         <h3 class="font-bold text-base flex items-center gap-2">
           <i class="fa-solid fa-bag-shopping text-amber-400"></i>
@@ -137,10 +131,8 @@
         <button onclick="toggleCart(false)" class="text-gray-400 hover:text-white text-xl p-1">&times;</button>
       </div>
 
-      <!-- Danh sách món hàng -->
       <div id="cartContent" class="p-4 flex-1 overflow-y-auto space-y-4"></div>
 
-      <!-- Footer & Form Đặt Hàng -->
       <div class="p-4 border-t bg-gray-50 space-y-3">
         <div class="flex justify-between items-center font-bold text-base text-gray-900">
           <span>Tổng thành tiền:</span>
@@ -179,12 +171,10 @@
     let cart = [];
     let currentCategory = 'ALL';
 
-    // Hàm an toàn để lấy link ảnh
     function getProductImage(p) {
       return p.image_url || p.main_image || p.image || 'https://via.placeholder.com/300';
     }
 
-    // Tải danh sách sản phẩm từ Supabase
     async function fetchProducts() {
       try {
         const { data, error } = await db.from('products').select('*').order('id', { ascending: true });
@@ -197,7 +187,6 @@
       }
     }
 
-    // Hiển thị danh sách ra màn hình
     function renderProducts() {
       const grid = document.getElementById('productGrid');
       const searchKey = document.getElementById('searchInput').value.toLowerCase();
@@ -246,7 +235,6 @@
       }).join('');
     }
 
-    // MỞ MODAL XEM CHI TIẾT SẢN PHẨM
     function openProductDetail(id) {
       const p = rawProducts.find(item => item.id === id);
       if (!p) return;
@@ -284,7 +272,6 @@
       document.getElementById('productDetailModal').classList.add('hidden');
     }
 
-    // Bộ lọc danh mục
     function filterCategory(cat, btnEl) {
       currentCategory = cat;
       document.querySelectorAll('.cat-btn').forEach(btn => {
@@ -300,7 +287,6 @@
 
     function handleSearch() { renderProducts(); }
 
-    // Quản lý Giỏ Hàng
     function addToCart(id) {
       const prod = rawProducts.find(p => p.id === id);
       if (!prod) return;
@@ -357,7 +343,7 @@
       document.getElementById('cartModal').classList.toggle('hidden', !show);
     }
 
-    // Xử lý Gửi Đơn Hàng
+    // GỬI ĐƠN HÀNG SANG SUPABASE (CÓ CỘT NOTE) & TELEGRAM
     async function submitOrder(e) {
       e.preventDefault();
       if (cart.length === 0) return alert('Giỏ hàng trống!');
@@ -372,7 +358,7 @@
       const note = document.getElementById('cNote').value;
       const total = cart.reduce((sum, i) => sum + Number(i.price || 0) * i.qty, 0);
 
-      // 1. Lưu đơn vào Supabase
+      // 1. Lưu đơn vào Supabase (Truyền đầy đủ trường note)
       const { error } = await db.from('orders').insert([{
         customer_name: name,
         customer_phone: phone,
@@ -403,8 +389,8 @@
         toggleCart(false);
         document.getElementById('checkoutForm').reset();
       } else {
-        console.error("Lỗi lưu đơn hàng Supabase:", error);
-        alert('Có lỗi xảy ra khi lưu đơn hàng: ' + (error.message || 'Vui lòng thử lại!'));
+        console.error("Lỗi Supabase:", error);
+        alert('Lỗi lưu đơn hàng: ' + (error.message || 'Vui lòng kiểm tra lại Supabase!'));
       }
 
       btn.disabled = false;
