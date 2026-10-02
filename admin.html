@@ -5,58 +5,118 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Trị Shop - LUXSTORE</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- FontAwesome Icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
     body { background: #f4f6f8; color: #333; padding: 20px; }
-    .container { max-width: 900px; margin: 0 auto; }
-    h1 { text-align: center; margin-bottom: 20px; color: #111; }
-    .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 25px; color: #111; font-size: 26px; }
+    .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .card h2 { font-size: 18px; margin-bottom: 15px; color: #222; border-bottom: 2px solid #007bff; padding-bottom: 8px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
     .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; }
-    input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+    input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
     input[type="file"] { width: 100%; padding: 8px; border: 1px dashed #007bff; background: #f0f7ff; border-radius: 5px; cursor: pointer; }
-    button { background: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; }
+    button { background: #28a745; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; transition: 0.2s; }
     button:hover { background: #218838; }
+    .btn-primary { background: #007bff; }
+    .btn-primary:hover { background: #0056b3; }
     .product-list { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .product-list th, .product-list td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-    .product-list th { background: #f8f9fa; }
-    .product-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+    .product-list th, .product-list td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+    .product-list th { background: #f8f9fa; font-weight: bold; }
+    .product-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
     .btn-delete { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: auto; font-size: 12px; }
     .btn-delete:hover { background: #c82333; }
-    #status { margin-top: 10px; font-weight: bold; text-align: center; }
+    .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+    .badge-lvl1 { background: #e3f2fd; color: #0d47a1; }
+    .badge-lvl2 { background: #e8f5e9; color: #1b5e20; }
+    .badge-lvl3 { background: #f3e5f5; color: #4a148c; }
+    #status, #cat-status { margin-top: 10px; font-weight: bold; text-align: center; font-size: 14px; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Trang Quản Lý Sản Phẩm - LUXSTORE</h1>
+  <h1>Trang Quản Trị Hệ Thống - LUXSTORE</h1>
 
-  <!-- FORM THÊM SẢN PHẨM -->
+  <!-- 1. QUẢN LÝ DANH MỤC SẢN PHẨM (2-3 CẤP) -->
+  <div class="card">
+    <h2><i class="fa-solid fa-folder-plus"></i> Quản Lý Danh Mục (2 - 3 Cấp)</h2>
+    <form id="add-category-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tên danh mục *</label>
+          <input type="text" id="cat-name" placeholder="VD: Camera IP Wifi" required>
+        </div>
+        <div class="form-group">
+          <label>Thuộc danh mục cha</label>
+          <select id="cat-parent">
+            <option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option>
+          </select>
+        </div>
+        <div class="form-group" style="display: flex; align-items: flex-end;">
+          <button type="submit" id="btn-add-cat" class="btn-primary"><i class="fa-solid fa-plus"></i> Thêm Danh Mục</button>
+        </div>
+      </div>
+    </form>
+    <div id="cat-status"></div>
+
+    <h3 style="font-size: 15px; margin: 20px 0 10px;">Danh sách danh mục hiện có:</h3>
+    <table class="product-list">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên Danh Mục</th>
+          <th>Cấp Độ</th>
+          <th>Danh Mục Cha</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="categories-table-body">
+        <tr><td colspan="5" style="text-align:center;">Đang tải danh mục...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2. FORM THÊM SẢN PHẨM -->
   <div class="card">
     <h2>➕ Thêm Sản Phẩm Mới</h2>
-    <form id="add-product-form" style="margin-top: 15px;">
-      <div class="form-group">
-        <label>Tên sản phẩm (Tên giày):</label>
-        <input type="text" id="name" placeholder="Ví dụ: Nike Air Force 1 '07" required>
+    <form id="add-product-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tên sản phẩm *</label>
+          <input type="text" id="name" placeholder="Ví dụ: Camera Hikvision 2MP" required>
+        </div>
+        <div class="form-group">
+          <label>Giá bán (VNĐ) *</label>
+          <input type="number" id="price" placeholder="Ví dụ: 850000" required>
+        </div>
+        <div class="form-group">
+          <label>Danh mục sản phẩm</label>
+          <select id="product-category">
+            <option value="">-- Chưa chọn danh mục --</option>
+          </select>
+        </div>
       </div>
+
       <div class="form-group">
-        <label>Giá bán (VNĐ):</label>
-        <input type="number" id="price" placeholder="Ví dụ: 2500000" required>
-      </div>
-      <div class="form-group">
-        <label>Hình ảnh sản phẩm (Tải lên từ máy tính/điện thoại):</label>
+        <label>Hình ảnh sản phẩm *</label>
         <input type="file" id="image-file" accept="image/*" required>
       </div>
+
       <div class="form-group">
-        <label>Mô tả ngắn:</label>
-        <textarea id="description" rows="3" placeholder="Mô tả về chất liệu, size, màu sắc..."></textarea>
+        <label>Mô tả ngắn</label>
+        <textarea id="description" rows="3" placeholder="Mô tả thông số kỹ thuật, bảo hành..."></textarea>
       </div>
+
       <button type="submit" id="btn-submit">🚀 Thêm Sản Phẩm Ngay</button>
     </form>
     <div id="status"></div>
   </div>
 
-  <!-- DANH SÁCH SẢN PHẨM ĐÃ CÓ -->
+  <!-- 3. DANH SÁCH SẢN PHẨM ĐÃ CÓ -->
   <div class="card">
     <h2>📦 Danh Sách Sản Phẩm Đang Bán</h2>
     <table class="product-list">
@@ -64,12 +124,13 @@
         <tr>
           <th>Ảnh</th>
           <th>Tên sản phẩm</th>
+          <th>Danh mục</th>
           <th>Giá bán</th>
           <th>Thao tác</th>
         </tr>
       </thead>
       <tbody id="products-table-body">
-        <tr><td colspan="4" style="text-align:center;">Đang tải danh sách...</td></tr>
+        <tr><td colspan="5" style="text-align:center;">Đang tải danh sách...</td></tr>
       </tbody>
     </table>
   </div>
@@ -83,33 +144,138 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o';
 
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let categoriesMap = {}; // Lưu danh mục để tra cứu tên nhanh
 
-  // Tải danh sách sản phẩm khi mở trang
+  // ==========================================
+  // XỬ LÝ DANH MỤC (CATEGORIES)
+  // ==========================================
+  async function loadCategories() {
+    const tbody = document.getElementById('categories-table-body');
+    const parentSelect = document.getElementById('cat-parent');
+    const productCatSelect = document.getElementById('product-category');
+
+    const { data: categories, error } = await supabaseClient
+      .from('categories')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="5" style="color:red;">Lỗi tải danh mục: ${error.message}</td></tr>`;
+      return;
+    }
+
+    categoriesMap = {};
+    parentSelect.innerHTML = `<option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option>`;
+    productCatSelect.innerHTML = `<option value="">-- Chưa chọn danh mục --</option>`;
+
+    if (!categories || categories.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có danh mục nào. Hãy thêm ở trên!</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = '';
+
+    categories.forEach(cat => {
+      categoriesMap[cat.id] = cat.name;
+
+      // Đổ vào Select Chọn Danh Mục Cha
+      if ((cat.level || 1) < 3) {
+        const indent = cat.level === 2 ? '--- ' : '';
+        parentSelect.innerHTML += `<option value="${cat.id}">${indent}${cat.name} (Cấp ${cat.level || 1})</option>`;
+      }
+
+      // Đổ vào Select Khi Thêm Sản Phẩm
+      const prefix = cat.level === 2 ? '-- ' : (cat.level === 3 ? '---- ' : '');
+      productCatSelect.innerHTML += `<option value="${cat.id}">${prefix}${cat.name}</option>`;
+    });
+
+    // Render bảng danh mục
+    tbody.innerHTML = categories.map(cat => {
+      const parentName = cat.parent_id ? (categoriesMap[cat.parent_id] || 'N/A') : 'Không có (Cấp 1)';
+      const badgeClass = cat.level === 1 ? 'badge-lvl1' : (cat.level === 2 ? 'badge-lvl2' : 'badge-lvl3');
+      return `
+        <tr>
+          <td><b>${cat.id}</b></td>
+          <td><b>${cat.name}</b></td>
+          <td><span class="badge ${badgeClass}">Cấp ${cat.level || 1}</span></td>
+          <td style="color:#666;">${parentName}</td>
+          <td><button class="btn-delete" onclick="deleteCategory(${cat.id})">🗑️ Xóa</button></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Thêm danh mục
+  document.getElementById('add-category-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const catStatus = document.getElementById('cat-status');
+    const name = document.getElementById('cat-name').value.trim();
+    const parentId = document.getElementById('cat-parent').value || null;
+
+    let level = 1;
+    if (parentId) {
+      const { data: parentCat } = await supabaseClient.from('categories').select('level').eq('id', parentId).single();
+      if (parentCat) level = (parentCat.level || 1) + 1;
+    }
+
+    catStatus.style.color = 'blue';
+    catStatus.innerText = '⏳ Đang lưu danh mục...';
+
+    const { error } = await supabaseClient.from('categories').insert([{ name, parent_id: parentId, level }]);
+
+    if (error) {
+      catStatus.style.color = 'red';
+      catStatus.innerText = '❌ Lỗi: ' + error.message;
+    } else {
+      catStatus.style.color = 'green';
+      catStatus.innerText = '✅ Thêm danh mục thành công!';
+      document.getElementById('add-category-form').reset();
+      await loadCategories();
+      loadProducts();
+    }
+  });
+
+  // Xóa danh mục
+  async function deleteCategory(id) {
+    if (confirm('Xóa danh mục này có thể ảnh hưởng đến sản phẩm thuộc về nó. Bạn có chắc chắn?')) {
+      const { error } = await supabaseClient.from('categories').delete().eq('id', id);
+      if (error) alert('Lỗi xóa danh mục: ' + error.message);
+      else {
+        await loadCategories();
+        loadProducts();
+      }
+    }
+  }
+
+  // ==========================================
+  // XỬ LÝ SẢN PHẨM (PRODUCTS)
+  // ==========================================
   async function loadProducts() {
     const tbody = document.getElementById('products-table-body');
     const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
 
     if (error) {
-      tbody.innerHTML = `<tr><td colspan="4" style="color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
       return;
     }
 
     if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Chưa có sản phẩm nào. Hãy thêm ở trên!</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có sản phẩm nào. Hãy thêm ở trên!</td></tr>';
       return;
     }
 
     tbody.innerHTML = data.map(item => `
       <tr>
-        <td><img src="${item.image_url || 'https://via.placeholder.com/60'}" class="product-img"></td>
+        <td><img src="${item.image_url || item.main_image || 'https://via.placeholder.com/50'}" class="product-img"></td>
         <td><b>${item.name}</b></td>
-        <td>${Number(item.price).toLocaleString('vi-VN')} đ</td>
+        <td><span class="badge badge-lvl1">${categoriesMap[item.category_id] || item.category || 'Chưa phân loại'}</span></td>
+        <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
         <td><button class="btn-delete" onclick="deleteProduct(${item.id})">🗑️ Xóa</button></td>
       </tr>
     `).join('');
   }
 
-  // Xử lý thêm sản phẩm
+  // Thêm sản phẩm
   document.getElementById('add-product-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const statusDiv = document.getElementById('status');
@@ -117,6 +283,7 @@
 
     const name = document.getElementById('name').value;
     const price = document.getElementById('price').value;
+    const categoryId = document.getElementById('product-category').value || null;
     const description = document.getElementById('description').value;
     const fileInput = document.getElementById('image-file');
 
@@ -133,26 +300,30 @@
       const file = fileInput.files[0];
       const fileName = `${Date.now()}_${file.name}`;
 
-      // 1. Upload ảnh vào Bucket "products"
-      const { data: uploadData, error: uploadError } = await supabaseClient.storage
+      const { error: uploadError } = await supabaseClient.storage
         .from('products')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      // 2. Lấy URL ảnh công khai
       const { data: urlData } = supabaseClient.storage
         .from('products')
         .getPublicUrl(fileName);
 
       const imageUrl = urlData.publicUrl;
 
-      statusDiv.innerText = '⏳ Đang lưu thông tin sản phẩm...';
+      statusDiv.innerText = '⏳ Đang lưu sản phẩm...';
 
-      // 3. Lưu thông tin vào Bảng products
       const { error: insertError } = await supabaseClient
         .from('products')
-        .insert([{ name, price: Number(price), image_url: imageUrl, description }]);
+        .insert([{ 
+          name, 
+          price: Number(price), 
+          image_url: imageUrl, 
+          main_image: imageUrl,
+          category_id: categoryId ? Number(categoryId) : null,
+          description 
+        }]);
 
       if (insertError) throw insertError;
 
@@ -178,8 +349,12 @@
     }
   }
 
-  // Chạy tải dữ liệu khi trang web load xong
-  loadProducts();
+  // Khởi chạy khi trang tải xong
+  async function init() {
+    await loadCategories();
+    await loadProducts();
+  }
+  init();
 </script>
 
 </body>
