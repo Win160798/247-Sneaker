@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Trị Shop - LUXSTORE</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background: #f4f6f8; color: #333; padding: 20px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { text-align: center; margin-bottom: 20px; color: #111; }
+    .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+    input[type="file"] { width: 100%; padding: 8px; border: 1px dashed #007bff; background: #f0f7ff; border-radius: 5px; cursor: pointer; }
+    button { background: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; }
+    button:hover { background: #218838; }
+    .product-list { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .product-list th, .product-list td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    .product-list th { background: #f8f9fa; }
+    .product-img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+    .btn-delete { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: auto; font-size: 12px; }
+    .btn-delete:hover { background: #c82333; }
+    #status { margin-top: 10px; font-weight: bold; text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Trang Quản Lý Sản Phẩm - LUXSTORE</h1>
+
+  <!-- FORM THÊM SẢN PHẨM -->
+  <div class="card">
+    <h2>➕ Thêm Sản Phẩm Mới</h2>
+    <form id="add-product-form" style="margin-top: 15px;">
+      <div class="form-group">
+        <label>Tên sản phẩm (Tên giày):</label>
+        <input type="text" id="name" placeholder="Ví dụ: Nike Air Force 1 '07" required>
+      </div>
+      <div class="form-group">
+        <label>Giá bán (VNĐ):</label>
+        <input type="number" id="price" placeholder="Ví dụ: 2500000" required>
+      </div>
+      <div class="form-group">
+        <label>Hình ảnh sản phẩm (Tải lên từ máy tính/điện thoại):</label>
+        <input type="file" id="image-file" accept="image/*" required>
+      </div>
+      <div class="form-group">
+        <label>Mô tả ngắn:</label>
+        <textarea id="description" rows="3" placeholder="Mô tả về chất liệu, size, màu sắc..."></textarea>
+      </div>
+      <button type="submit" id="btn-submit">🚀 Thêm Sản Phẩm Ngay</button>
+    </form>
+    <div id="status"></div>
+  </div>
+
+  <!-- DANH SÁCH SẢN PHẨM ĐÃ CÓ -->
+  <div class="card">
+    <h2>📦 Danh Sách Sản Phẩm Đang Bán</h2>
+    <table class="product-list">
+      <thead>
+        <tr>
+          <th>Ảnh</th>
+          <th>Tên sản phẩm</th>
+          <th>Giá bán</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="products-table-body">
+        <tr><td colspan="4" style="text-align:center;">Đang tải danh sách...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // THÔNG TIN KẾT NỐI SUPABASE CỦA BẠN
+  // ==========================================
+  const SUPABASE_URL = 'https://uleckabliwereivgxryo.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o';
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Tải danh sách sản phẩm khi mở trang
+  async function loadProducts() {
+    const tbody = document.getElementById('products-table-body');
+    const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="4" style="color:red;">Lỗi tải dữ liệu: ${error.message}</td></tr>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Chưa có sản phẩm nào. Hãy thêm ở trên!</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(item => `
+      <tr>
+        <td><img src="${item.image_url || 'https://via.placeholder.com/60'}" class="product-img"></td>
+        <td><b>${item.name}</b></td>
+        <td>${Number(item.price).toLocaleString('vi-VN')} đ</td>
+        <td><button class="btn-delete" onclick="deleteProduct(${item.id})">🗑️ Xóa</button></td>
+      </tr>
+    `).join('');
+  }
+
+  // Xử lý thêm sản phẩm
+  document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const statusDiv = document.getElementById('status');
+    const btnSubmit = document.getElementById('btn-submit');
+
+    const name = document.getElementById('name').value;
+    const price = document.getElementById('price').value;
+    const description = document.getElementById('description').value;
+    const fileInput = document.getElementById('image-file');
+
+    if (fileInput.files.length === 0) {
+      alert('Vui lòng chọn ảnh!');
+      return;
+    }
+
+    btnSubmit.disabled = true;
+    statusDiv.style.color = 'blue';
+    statusDiv.innerText = '⏳ Đang tải ảnh lên Supabase...';
+
+    try {
+      const file = fileInput.files[0];
+      const fileName = `${Date.now()}_${file.name}`;
+
+      // 1. Upload ảnh vào Bucket "products"
+      const { data: uploadData, error: uploadError } = await supabaseClient.storage
+        .from('products')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Lấy URL ảnh công khai
+      const { data: urlData } = supabaseClient.storage
+        .from('products')
+        .getPublicUrl(fileName);
+
+      const imageUrl = urlData.publicUrl;
+
+      statusDiv.innerText = '⏳ Đang lưu thông tin sản phẩm...';
+
+      // 3. Lưu thông tin vào Bảng products
+      const { error: insertError } = await supabaseClient
+        .from('products')
+        .insert([{ name, price: Number(price), image_url: imageUrl, description }]);
+
+      if (insertError) throw insertError;
+
+      statusDiv.style.color = 'green';
+      statusDiv.innerText = '✅ Thêm sản phẩm thành công!';
+      document.getElementById('add-product-form').reset();
+      loadProducts();
+
+    } catch (err) {
+      statusDiv.style.color = 'red';
+      statusDiv.innerText = '❌ Có lỗi xảy ra: ' + err.message;
+    } finally {
+      btnSubmit.disabled = false;
+    }
+  });
+
+  // Xóa sản phẩm
+  async function deleteProduct(id) {
+    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+      const { error } = await supabaseClient.from('products').delete().eq('id', id);
+      if (error) alert('Lỗi xóa: ' + error.message);
+      else loadProducts();
+    }
+  }
+
+  // Chạy tải dữ liệu khi trang web load xong
+  loadProducts();
+</script>
+
+</body>
+</html>
