@@ -4,11 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LUXSTORE - Hệ Thống Bán Lẻ Hàng Đầu</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
@@ -17,19 +14,16 @@
   <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-lg border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
-        <!-- Logo -->
         <a href="#" class="flex items-center space-x-2 text-2xl font-black tracking-widest text-amber-400">
           <i class="fa-solid fa-gem"></i>
           <span>LUXSTORE</span>
         </a>
 
-        <!-- Tìm kiếm Desktop -->
         <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
           <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Tìm kiếm sản phẩm..." class="w-full bg-slate-800 text-sm text-white px-4 py-2 pl-10 rounded-full focus:outline-none focus:ring-2 focus:ring-amber-400 border border-slate-700">
           <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-sm"></i>
         </div>
 
-        <!-- Giỏ hàng nút -->
         <button onclick="toggleCart(true)" class="relative p-2.5 bg-slate-800 hover:bg-slate-700 rounded-full transition text-amber-400">
           <i class="fa-solid fa-cart-shopping text-lg"></i>
           <span id="cartBadge" class="absolute -top-1 -right-1 bg-red-600 text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900">0</span>
@@ -50,13 +44,10 @@
   <!-- NỘI DUNG CHÍNH -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
     
-    <!-- THANH BỘ LỌC CÁC DANH MỤC -->
+    <!-- THANH BỘ LỌC DANH MỤC TỰ ĐỘNG -->
     <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
       <div id="categoryTabs" class="flex flex-wrap gap-2">
         <button onclick="filterCategory('ALL', this)" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>
-        <button onclick="filterCategory('Đồng Hồ Nam', this)" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nam</button>
-        <button onclick="filterCategory('Đồng Hồ Nữ', this)" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Đồng Hồ Nữ</button>
-        <button onclick="filterCategory('Phụ Kiện', this)" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">Phụ Kiện</button>
       </div>
 
       <div class="text-xs text-gray-500 font-medium">
@@ -85,18 +76,13 @@
           <div class="w-full h-80 md:h-96 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4 mb-4">
             <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain">
           </div>
-          <div class="flex gap-2 overflow-x-auto w-full pb-2" id="detailThumbnails">
-            <div class="w-16 h-16 border-2 border-slate-900 rounded-lg p-1 cursor-pointer flex-shrink-0">
-              <img id="detailThumbImg" src="" class="w-full h-full object-cover rounded">
-            </div>
-          </div>
         </div>
 
         <div class="w-full md:w-1/2 flex flex-col justify-between">
           <div>
             <span id="detailCategory" class="text-xs font-bold text-amber-600 uppercase tracking-widest bg-amber-50 px-2.5 py-1 rounded border border-amber-200">LUXSTORE</span>
             <h2 id="detailTitle" class="text-xl md:text-2xl font-black text-gray-900 mt-3 mb-2 leading-snug">Tên sản phẩm</h2>
-            <p class="text-xs text-gray-400 mb-4">Mã Số Sản Phẩm: <span id="detailCode" class="font-semibold text-gray-700">SP-000</span></p>
+            <p class="text-xs text-gray-400 mb-4">Mã Số: <span id="detailCode" class="font-semibold text-gray-700">SP-000</span></p>
 
             <div class="flex items-baseline gap-3 mb-6 pb-4 border-b border-gray-100">
               <span id="detailPrice" class="text-2xl md:text-3xl font-black text-red-600">0 ₫</span>
@@ -105,13 +91,11 @@
 
             <div class="mb-6">
               <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Mô Tả Sản Phẩm:</h4>
-              <p id="detailDesc" class="text-xs text-gray-600 leading-relaxed max-h-40 overflow-y-auto pr-2">
-                Chưa có mô tả chi tiết cho sản phẩm này.
-              </p>
+              <p id="detailDesc" class="text-xs text-gray-600 leading-relaxed max-h-40 overflow-y-auto pr-2">Chưa có mô tả chi tiết.</p>
             </div>
           </div>
 
-          <button id="detailAddToCartBtn" class="w-full bg-[#a33232] hover:bg-[#822424] text-white font-black py-4 rounded-xl text-sm tracking-wider uppercase shadow-lg transition duration-200 flex items-center justify-center gap-2">
+          <button id="detailAddToCartBtn" class="w-full bg-[#a33232] hover:bg-[#822424] text-white font-black py-4 rounded-xl text-sm tracking-wider uppercase shadow-lg transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-cart-plus"></i>
             <span>THÊM VÀO GIỎ HÀNG</span>
           </button>
@@ -154,12 +138,10 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer class="bg-slate-950 text-gray-400 text-xs py-6 border-t border-slate-800 text-center">
-    <p>© 2026 LUXSTORE. All rights reserved. Powered by Supabase & Cloudflare Pages.</p>
+    <p>© 2026 LUXSTORE. All rights reserved.</p>
   </footer>
 
-  <!-- JAVASCRIPT LOGIC -->
   <script>
     const SUPABASE_URL = "https://uleckabliwereivgxryo.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o";
@@ -168,22 +150,35 @@
 
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let rawProducts = [];
+    let categoriesList = [];
     let cart = [];
-    let currentCategory = 'ALL';
+    let currentCategoryId = 'ALL';
 
     function getProductImage(p) {
-      return p.image_url || p.main_image || p.image || 'https://via.placeholder.com/300';
+      return p.image_url || p.main_image || 'https://via.placeholder.com/300';
+    }
+
+    // Load danh mục động từ Supabase
+    async function fetchCategories() {
+      const { data } = await db.from('categories').select('*').order('id', { ascending: true });
+      if (data) {
+        categoriesList = data;
+        const tabsContainer = document.getElementById('categoryTabs');
+        tabsContainer.innerHTML = `<button onclick="filterCategory('ALL', this)" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>`;
+        data.forEach(cat => {
+          tabsContainer.innerHTML += `<button onclick="filterCategory(${cat.id}, this)" class="cat-btn bg-white text-gray-700 hover:bg-gray-100 text-xs font-semibold px-4 py-2 rounded-full border transition">${cat.name}</button>`;
+        });
+      }
     }
 
     async function fetchProducts() {
       try {
-        const { data, error } = await db.from('products').select('*').order('id', { ascending: true });
+        const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
         if (error) throw error;
         rawProducts = data || [];
         renderProducts();
       } catch (err) {
-        console.error("Lỗi Supabase:", err);
-        document.getElementById('productGrid').innerHTML = `<div class="col-span-full text-center py-16 text-red-500 text-xs">Không thể kết nối dữ liệu sản phẩm. Vui lòng kiểm tra lại Supabase!</div>`;
+        document.getElementById('productGrid').innerHTML = `<div class="col-span-full text-center py-16 text-red-500 text-xs">Không thể kết nối dữ liệu sản phẩm!</div>`;
       }
     }
 
@@ -192,7 +187,7 @@
       const searchKey = document.getElementById('searchInput').value.toLowerCase();
 
       let filtered = rawProducts.filter(p => {
-        const matchCat = currentCategory === 'ALL' || (p.category && p.category.toLowerCase() === currentCategory.toLowerCase());
+        const matchCat = currentCategoryId === 'ALL' || p.category_id == currentCategoryId;
         const matchSearch = p.name ? p.name.toLowerCase().includes(searchKey) : false;
         return matchCat && matchSearch;
       });
@@ -208,6 +203,7 @@
         const img = getProductImage(p);
         const price = Number(p.price || 0);
         const oldPrice = p.old_price ? Number(p.old_price) : null;
+        const catObj = categoriesList.find(c => c.id == p.category_id);
 
         return `
           <div onclick="openProductDetail(${p.id})" class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group cursor-pointer">
@@ -217,7 +213,7 @@
             </div>
             <div class="p-3.5 flex-1 flex flex-col justify-between">
               <div>
-                <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">${p.category || 'LUXSTORE'}</span>
+                <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">${catObj ? catObj.name : 'LUXSTORE'}</span>
                 <h3 class="font-bold text-xs text-gray-800 line-clamp-2 mt-1">${p.name}</h3>
               </div>
               <div class="mt-3">
@@ -241,22 +237,13 @@
 
       const imgUrl = getProductImage(p);
       const price = Number(p.price || 0);
+      const catObj = categoriesList.find(c => c.id == p.category_id);
 
       document.getElementById('detailMainImg').src = imgUrl;
-      document.getElementById('detailThumbImg').src = imgUrl;
       document.getElementById('detailTitle').innerText = p.name || '';
       document.getElementById('detailCode').innerText = 'SP-' + p.id;
-      document.getElementById('detailCategory').innerText = p.category || 'LUXSTORE';
+      document.getElementById('detailCategory').innerText = catObj ? catObj.name : 'LUXSTORE';
       document.getElementById('detailPrice').innerText = price.toLocaleString('vi-VN') + ' ₫';
-
-      if (p.old_price) {
-        const oldPriceEl = document.getElementById('detailOldPrice');
-        oldPriceEl.innerText = Number(p.old_price).toLocaleString('vi-VN') + ' ₫';
-        oldPriceEl.classList.remove('hidden');
-      } else {
-        document.getElementById('detailOldPrice').classList.add('hidden');
-      }
-
       document.getElementById('detailDesc').innerText = p.description || 'Chưa có mô tả chi tiết cho sản phẩm này.';
 
       const cartBtn = document.getElementById('detailAddToCartBtn');
@@ -268,12 +255,10 @@
       document.getElementById('productDetailModal').classList.remove('hidden');
     }
 
-    function closeProductDetail() {
-      document.getElementById('productDetailModal').classList.add('hidden');
-    }
+    function closeProductDetail() { document.getElementById('productDetailModal').classList.add('hidden'); }
 
-    function filterCategory(cat, btnEl) {
-      currentCategory = cat;
+    function filterCategory(catId, btnEl) {
+      currentCategoryId = catId;
       document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.classList.remove('bg-slate-900', 'text-white', 'shadow');
         btn.classList.add('bg-white', 'text-gray-700');
@@ -339,11 +324,8 @@
       document.getElementById('cartTotal').innerText = totalMoney.toLocaleString('vi-VN') + ' ₫';
     }
 
-    function toggleCart(show) {
-      document.getElementById('cartModal').classList.toggle('hidden', !show);
-    }
+    function toggleCart(show) { document.getElementById('cartModal').classList.toggle('hidden', !show); }
 
-    // GỬI ĐƠN HÀNG SANG SUPABASE (CÓ CỘT NOTE) & TELEGRAM
     async function submitOrder(e) {
       e.preventDefault();
       if (cart.length === 0) return alert('Giỏ hàng trống!');
@@ -358,7 +340,6 @@
       const note = document.getElementById('cNote').value;
       const total = cart.reduce((sum, i) => sum + Number(i.price || 0) * i.qty, 0);
 
-      // 1. Lưu đơn vào Supabase (Truyền đầy đủ trường note)
       const { error } = await db.from('orders').insert([{
         customer_name: name,
         customer_phone: phone,
@@ -369,7 +350,6 @@
       }]);
 
       if (!error) {
-        // 2. Bắn thông báo về Telegram
         const itemsText = cart.map(i => `• <b>${i.name}</b> (x${i.qty}) - ${(Number(i.price || 0)*i.qty).toLocaleString('vi-VN')}₫`).join('\n');
         const telegramMsg = `🚨 <b>ĐƠN HÀNG MỚI TỪ WEBSITE!</b>\n\n👤 <b>Khách hàng:</b> ${name}\n📞 <b>Điện thoại:</b> ${phone}\n🏠 <b>Địa chỉ:</b> ${address}\n📝 <b>Ghi chú:</b> ${note || 'Không có'}\n\n📦 <b>Sản phẩm:</b>\n${itemsText}\n\n💰 <b>TỔNG CỘNG:</b> ${total.toLocaleString('vi-VN')} ₫`;
 
@@ -379,9 +359,7 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramMsg, parse_mode: 'HTML' })
           });
-        } catch (tgErr) {
-          console.error("Lỗi Telegram:", tgErr);
-        }
+        } catch (tgErr) { console.error(tgErr); }
 
         alert('🎉 Đặt hàng thành công! Chúng tôi sẽ gọi xác nhận ngay.');
         cart = [];
@@ -389,16 +367,18 @@
         toggleCart(false);
         document.getElementById('checkoutForm').reset();
       } else {
-        console.error("Lỗi Supabase:", error);
-        alert('Lỗi lưu đơn hàng: ' + (error.message || 'Vui lòng kiểm tra lại Supabase!'));
+        alert('Lỗi lưu đơn hàng: ' + error.message);
       }
 
       btn.disabled = false;
       btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> XÁC NHẬN ĐẶT HÀNG NGAY`;
     }
 
-    // Khởi tạo ứng dụng
-    fetchProducts();
+    async function init() {
+      await fetchCategories();
+      await fetchProducts();
+    }
+    init();
   </script>
 </body>
 </html>
