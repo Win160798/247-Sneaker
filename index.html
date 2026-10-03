@@ -73,18 +73,16 @@
     </div>
   </main>
 
-  <!-- MODAL CHI TIẾT SẢN PHẨM (XEM NHIỀU ẢNH + CHỌN SIZE + CHUNG GIÁ) -->
+  <!-- MODAL CHI TIẾT SẢN PHẨM -->
   <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden relative my-8">
       <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-lg">&times;</button>
 
       <div class="flex flex-col md:flex-row p-6 md:p-8 gap-6">
         <div class="w-full md:w-1/2 flex flex-col items-center">
-          <!-- Ảnh lớn đang xem -->
           <div class="w-full h-72 md:h-80 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-2 relative overflow-hidden group">
             <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain transition-all duration-300">
           </div>
-          <!-- Danh sách thumbnail các ảnh (có thể lên tới 30 ảnh) -->
           <div id="galleryThumbnails" class="flex flex-wrap gap-1.5 mt-3 max-h-36 overflow-y-auto w-full p-1 border rounded-lg bg-gray-50"></div>
         </div>
 
@@ -274,13 +272,11 @@
       selectedImageIndex = 0;
       document.getElementById('detailMainImg').src = images[0];
 
-      // Render thumbnails
       const thumbContainer = document.getElementById('galleryThumbnails');
       thumbContainer.innerHTML = images.map((imgUrl, idx) => `
         <img src="${imgUrl}" onclick="selectGalleryImage(${idx})" class="w-12 h-12 object-cover rounded cursor-pointer border-2 border-transparent hover:border-amber-500 transition ${idx === 0 ? 'thumb-active' : ''}" data-idx="${idx}">
       `).join('');
 
-      // Render sizes
       const sizeArea = document.getElementById('sizeSelectionArea');
       const sizeButtons = document.getElementById('sizeButtons');
       const sizes = currentProduct.sizes || [];
@@ -417,32 +413,74 @@
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XỬ LÝ...`;
 
-      const name = document.getElementById('cName').value;
-      const phone = document.getElementById('cPhone').value;
-      const address = document.getElementById('cAddress').value;
-      const note = document.getElementById('cNote').value;
+      const name = document.getElementById('cName').value.trim();
+      const phone = document.getElementById('cPhone').value.trim();
+      const address = document.getElementById('cAddress').value.trim();
+      const note = document.getElementById('cNote').value.trim();
       const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
-      const { error } = await db.from('orders').insert([{
+      const { data, error } = await db.from('orders').insert([{
         customer_name: name,
         customer_phone: phone,
         address: address,
         note: note,
         total_amount: total,
         cart_items: cart
-      }]);
+      }]).select();
 
       if (!error) {
-        alert("Đặt hàng thành công!");
-        cart = [];
-        updateCartUI();
+        const orderId = data && data[0] ? data[0].id : 'NEW';
+        
         toggleCart(false);
         document.getElementById('checkoutForm').reset();
+        cart = [];
+        updateCartUI();
+
+        showThankYouModal({
+          name: name,
+          phone: phone,
+          orderId: orderId,
+          total: total
+        });
       } else {
         alert("Lỗi đặt hàng: " + error.message);
       }
       btn.disabled = false;
       btn.innerHTML = `<i class="fa-solid fa-check-circle"></i> XÁC NHẬN ĐẶT HÀNG`;
+    }
+
+    function showThankYouModal(info) {
+      let modal = document.getElementById('thankYouModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'thankYouModal';
+        modal.className = 'fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+        document.body.appendChild(modal);
+      }
+
+      modal.innerHTML = `
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 md:p-8 text-center relative animate-fade-in">
+          <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h2 class="text-2xl font-black text-slate-900 mb-2">ĐẶT HÀNG THÀNH CÔNG!</h2>
+          <p class="text-xs text-gray-500 mb-6">Mã đơn hàng của bạn: <b class="text-amber-600">#${info.orderId}</b></p>
+          
+          <div class="bg-gray-50 p-4 rounded-xl border text-left text-xs space-y-2 mb-6">
+            <p><b>Khách hàng:</b> ${info.name}</p>
+            <p><b>Số điện thoại:</b> ${info.phone}</p>
+            <p><b>Tổng thanh toán:</b> <span class="text-red-600 font-bold">${Number(info.total).toLocaleString('vi-VN')} ₫</span></p>
+            <hr class="my-2">
+            <p class="text-gray-600 italic leading-relaxed">
+              "Cảm ơn Quý khách <b class="text-gray-900">${info.name}</b> đã tin tưởng. Nhân viên CSKH sẽ kết bạn và nhắn tin qua Zalo <b class="text-gray-900">${info.phone}</b> để kiểm tra lại thông tin giao hàng và tư vấn chi tiết cho anh/chị nhé. Chúc anh/chị một ngày tốt lành!"
+            </p>
+          </div>
+
+          <button onclick="document.getElementById('thankYouModal').remove()" class="w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-black py-3 rounded-xl text-xs uppercase tracking-wider transition shadow">
+            HOÀN TẤT & TIẾP TỤC MUA SẮM
+          </button>
+        </div>
+      `;
     }
 
     // Init
