@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .variant-img-active { border-color: #f59e0b !important; ring-width: 2px; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+    .thumb-active { border-color: #f59e0b !important; ring-width: 2px; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
     .size-btn-active { background-color: #f59e0b !important; color: #0f172a !important; font-weight: bold; border-color: #f59e0b !important; }
   </style>
 </head>
@@ -73,17 +73,19 @@
     </div>
   </main>
 
-  <!-- MODAL CHI TIẾT -->
+  <!-- MODAL CHI TIẾT SẢN PHẨM (XEM NHIỀU ẢNH + CHỌN SIZE + CHUNG GIÁ) -->
   <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden relative my-8">
       <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-lg">&times;</button>
 
       <div class="flex flex-col md:flex-row p-6 md:p-8 gap-6">
         <div class="w-full md:w-1/2 flex flex-col items-center">
-          <div class="w-full h-72 md:h-80 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4">
+          <!-- Ảnh lớn đang xem -->
+          <div class="w-full h-72 md:h-80 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-2 relative overflow-hidden group">
             <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain transition-all duration-300">
           </div>
-          <div id="variantImagesList" class="flex flex-wrap gap-2 mt-4"></div>
+          <!-- Danh sách thumbnail các ảnh (có thể lên tới 30 ảnh) -->
+          <div id="galleryThumbnails" class="flex flex-wrap gap-1.5 mt-3 max-h-36 overflow-y-auto w-full p-1 border rounded-lg bg-gray-50"></div>
         </div>
 
         <div class="w-full md:w-1/2 flex flex-col justify-between">
@@ -93,13 +95,13 @@
             <div class="text-2xl font-black text-red-600 mb-4" id="detailPrice">0 ₫</div>
 
             <div id="sizeSelectionArea" class="mb-5 hidden">
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Chọn Size (36 - 46):</label>
+              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Chọn Size:</label>
               <div id="sizeButtons" class="flex flex-wrap gap-2"></div>
             </div>
 
             <div class="mb-4">
               <h4 class="text-xs font-bold text-gray-700 uppercase mb-1">Mô Tả:</h4>
-              <p id="detailDesc" class="text-xs text-gray-600 leading-relaxed max-h-32 overflow-y-auto">Chưa có mô tả.</p>
+              <p id="detailDesc" class="text-xs text-gray-600 leading-relaxed max-h-28 overflow-y-auto">Chưa có mô tả.</p>
             </div>
           </div>
 
@@ -160,7 +162,7 @@
     let cart = [];
     let currentCategoryId = 'ALL';
     let currentProduct = null;
-    let selectedImageItem = null;
+    let selectedImageIndex = 0;
     let selectedSize = null;
 
     async function fetchCategories() {
@@ -177,7 +179,7 @@
 
     async function fetchProducts() {
       try {
-        const { data, error } = await db.from('products').select('*, product_variants(*)').order('id', { ascending: false });
+        const { data, error } = await db.from('products').select('*').order('id', { ascending: false });
         if (error) throw error;
         rawProducts = data || [];
         renderProducts();
@@ -233,13 +235,13 @@
       grid.innerHTML = filtered.map(p => {
         const price = Number(p.price || 0);
         const catObj = categoriesList.find(c => c.id == p.category_id);
-        const hasVariants = p.product_variants && p.product_variants.length > 0;
+        const imagesCount = p.images ? p.images.length : 1;
 
         return `
           <div onclick="openProductDetail(${p.id})" class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group cursor-pointer">
             <div class="relative overflow-hidden bg-gray-100 aspect-square">
-              <img src="${p.main_image || p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-              ${hasVariants ? `<span class="absolute top-2 right-2 bg-amber-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full shadow">Nhiều ảnh & giá</span>` : ''}
+              <img src="${p.main_image || (p.images && p.images[0]) || ''}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute top-2 right-2 bg-slate-900/80 text-amber-400 font-bold text-[10px] px-2 py-0.5 rounded-full shadow backdrop-blur-sm"><i class="fa-solid fa-images mr-1"></i>${imagesCount} ảnh</span>
             </div>
             <div class="p-3.5 flex-1 flex flex-col justify-between">
               <div>
@@ -249,7 +251,7 @@
               <div class="mt-3">
                 <div class="text-sm font-black text-red-600">${price.toLocaleString('vi-VN')} ₫</div>
                 <button onclick="event.stopPropagation(); openProductDetail(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
-                  <i class="fa-solid fa-eye text-[10px]"></i> Xem & Chọn Ảnh/Size
+                  <i class="fa-solid fa-eye text-[10px]"></i> Xem chi tiết
                 </button>
               </div>
             </div>
@@ -265,52 +267,23 @@
       const catObj = categoriesList.find(c => c.id == currentProduct.category_id);
       document.getElementById('detailTitle').innerText = currentProduct.name;
       document.getElementById('detailCategory').innerText = catObj ? catObj.name : 'LUXSTORE';
+      document.getElementById('detailPrice').innerText = Number(currentProduct.price).toLocaleString('vi-VN') + ' ₫';
       document.getElementById('detailDesc').innerText = currentProduct.description || 'Chưa có mô tả chi tiết.';
 
-      const vars = currentProduct.product_variants || [];
-      const allImages = [
-        { id: 'main', image_url: currentProduct.main_image || currentProduct.image_url, price: currentProduct.price, sizes: [] },
-        ...vars
-      ];
+      const images = currentProduct.images && currentProduct.images.length > 0 ? currentProduct.images : [currentProduct.main_image];
+      selectedImageIndex = 0;
+      document.getElementById('detailMainImg').src = images[0];
 
-      selectedImageItem = allImages[0];
-      updateModalDisplay();
-
-      const imagesListContainer = document.getElementById('variantImagesList');
-      imagesListContainer.innerHTML = allImages.map((img, idx) => `
-        <img src="${img.image_url}" onclick="selectImageItem(${idx})" class="w-14 h-14 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-amber-500 transition ${idx === 0 ? 'variant-img-active' : ''}" data-index="${idx}">
+      // Render thumbnails
+      const thumbContainer = document.getElementById('galleryThumbnails');
+      thumbContainer.innerHTML = images.map((imgUrl, idx) => `
+        <img src="${imgUrl}" onclick="selectGalleryImage(${idx})" class="w-12 h-12 object-cover rounded cursor-pointer border-2 border-transparent hover:border-amber-500 transition ${idx === 0 ? 'thumb-active' : ''}" data-idx="${idx}">
       `).join('');
 
-      document.getElementById('detailAddToCartBtn').onclick = function() {
-        addToCart();
-        closeProductDetail();
-      };
-
-      document.getElementById('productDetailModal').classList.remove('hidden');
-    }
-
-    function selectImageItem(idx) {
-      const vars = currentProduct.product_variants || [];
-      const allImages = [
-        { id: 'main', image_url: currentProduct.main_image || currentProduct.image_url, price: currentProduct.price, sizes: [] },
-        ...vars
-      ];
-      selectedImageItem = allImages[idx];
-      updateModalDisplay();
-
-      document.querySelectorAll('#variantImagesList img').forEach((imgEl, i) => {
-        if (i === idx) imgEl.classList.add('variant-img-active');
-        else imgEl.classList.remove('variant-img-active');
-      });
-    }
-
-    function updateModalDisplay() {
-      document.getElementById('detailMainImg').src = selectedImageItem.image_url;
-      document.getElementById('detailPrice').innerText = Number(selectedImageItem.price).toLocaleString('vi-VN') + ' ₫';
-
+      // Render sizes
       const sizeArea = document.getElementById('sizeSelectionArea');
       const sizeButtons = document.getElementById('sizeButtons');
-      const sizes = selectedImageItem.sizes || [];
+      const sizes = currentProduct.sizes || [];
 
       if (sizes.length > 0) {
         sizeArea.classList.remove('hidden');
@@ -324,6 +297,19 @@
         sizeArea.classList.add('hidden');
         selectedSize = null;
       }
+
+      document.getElementById('productDetailModal').classList.remove('hidden');
+    }
+
+    function selectGalleryImage(idx) {
+      selectedImageIndex = idx;
+      const images = currentProduct.images && currentProduct.images.length > 0 ? currentProduct.images : [currentProduct.main_image];
+      document.getElementById('detailMainImg').src = images[idx];
+
+      document.querySelectorAll('#galleryThumbnails img').forEach((el, i) => {
+        if (i === idx) el.classList.add('thumb-active');
+        else el.classList.remove('thumb-active');
+      });
     }
 
     function selectSize(sizeVal, btnEl) {
@@ -334,12 +320,13 @@
 
     function closeProductDetail() { document.getElementById('productDetailModal').classList.add('hidden'); }
 
-    function addToCart() {
-      if (!currentProduct || !selectedImageItem) return;
+    document.getElementById('detailAddToCartBtn').onclick = function() {
+      if (!currentProduct) return;
+      const images = currentProduct.images && currentProduct.images.length > 0 ? currentProduct.images : [currentProduct.main_image];
+      const activeImg = images[selectedImageIndex] || currentProduct.main_image;
 
-      const cartItemId = `${currentProduct.id}_${selectedImageItem.image_url}_${selectedSize || 'nosize'}`;
-      const itemPrice = Number(selectedImageItem.price);
-      const itemImg = selectedImageItem.image_url;
+      const cartItemId = `${currentProduct.id}_${selectedSize || 'nosize'}`;
+      const itemPrice = Number(currentProduct.price);
 
       const existingIndex = cart.findIndex(i => i.cartItemId === cartItemId);
       if (existingIndex > -1) {
@@ -350,15 +337,16 @@
           id: currentProduct.id,
           name: currentProduct.name,
           price: itemPrice,
-          image: itemImg,
+          image: activeImg,
           selectedSize: selectedSize,
           qty: 1
         });
       }
 
       updateCartUI();
+      closeProductDetail();
       toggleCart(true);
-    }
+    };
 
     function changeQty(cartItemId, delta) {
       const item = cart.find(i => i.cartItemId === cartItemId);
