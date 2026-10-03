@@ -8,7 +8,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .variant-btn-active { border-color: #f59e0b !important; background-color: #fffbeb !important; color: #b45309 !important; font-weight: bold; }
+    .variant-img-active { border-color: #f59e0b !important; ring-width: 2px; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+    .size-btn-active { background-color: #f59e0b !important; color: #0f172a !important; font-weight: bold; border-color: #f59e0b !important; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
@@ -35,7 +36,7 @@
     </div>
   </header>
 
-  <!-- BANNER HERO -->
+  <!-- BANNER -->
   <section class="bg-gradient-to-r from-slate-950 via-slate-900 to-stone-900 text-white py-10 px-4 text-center">
     <div class="max-w-4xl mx-auto">
       <span class="text-amber-400 text-xs font-bold uppercase tracking-widest bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20">Bộ Sưu Tập Mới 2026</span>
@@ -44,20 +45,26 @@
     </div>
   </section>
 
-  <!-- MAIN CONTAINER -->
+  <!-- MAIN -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
     
-    <!-- LỌC DANH MỤC -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
-      <div id="categoryTabs" class="flex flex-wrap gap-2">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 pb-4 border-b border-gray-200">
+      <div id="categoryTabs" class="flex flex-wrap gap-2 w-full md:w-auto">
         <button onclick="filterCategory('ALL', this)" class="cat-btn active bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-full transition shadow">Tất Cả</button>
       </div>
-      <div class="text-xs text-gray-500 font-medium">
-        Hiển thị: <span id="productCount" class="font-bold text-gray-800">0</span> sản phẩm
+      
+      <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+        <div class="text-xs text-gray-500 font-medium">
+          Hiển thị: <span id="productCount" class="font-bold text-gray-800">0</span> sản phẩm
+        </div>
+        <select id="sortSelect" onchange="renderProducts()" class="bg-white border border-gray-300 text-xs font-semibold px-3 py-2 rounded-lg outline-none focus:ring-2 focus:ring-amber-500">
+          <option value="default">Sắp xếp: Mặc định (Sát từ khóa nhất)</option>
+          <option value="price-asc">Giá: Thấp đến Cao</option>
+          <option value="price-desc">Giá: Cao đến Thấp</option>
+        </select>
       </div>
     </div>
 
-    <!-- DANH SÁCH SẢN PHẨM -->
     <div id="productGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
       <div class="col-span-full text-center py-16">
         <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500"></i>
@@ -66,7 +73,7 @@
     </div>
   </main>
 
-  <!-- MODAL CHI TIẾT SẢN PHẨM & CHỌN PHÂN LOẠI -->
+  <!-- MODAL CHI TIẾT -->
   <div id="productDetailModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden relative my-8">
       <button onclick="closeProductDetail()" class="absolute top-4 right-4 z-10 w-9 h-9 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-lg">&times;</button>
@@ -76,6 +83,7 @@
           <div class="w-full h-72 md:h-80 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center p-4">
             <img id="detailMainImg" src="" alt="Sản phẩm" class="max-w-full max-h-full object-contain transition-all duration-300">
           </div>
+          <div id="variantImagesList" class="flex flex-wrap gap-2 mt-4"></div>
         </div>
 
         <div class="w-full md:w-1/2 flex flex-col justify-between">
@@ -84,10 +92,9 @@
             <h2 id="detailTitle" class="text-xl font-black text-gray-900 mt-2 mb-1">Tên sản phẩm</h2>
             <div class="text-2xl font-black text-red-600 mb-4" id="detailPrice">0 ₫</div>
 
-            <!-- KHU VỰC CHỌN PHÂN LOẠI TÙY CHỈNH -->
-            <div id="variantSelectionArea" class="mb-5 hidden">
-              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Chọn Phân Loại (Màu, Size,...):</label>
-              <div id="variantButtons" class="flex flex-wrap gap-2"></div>
+            <div id="sizeSelectionArea" class="mb-5 hidden">
+              <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Chọn Size (36 - 46):</label>
+              <div id="sizeButtons" class="flex flex-wrap gap-2"></div>
             </div>
 
             <div class="mb-4">
@@ -154,8 +161,9 @@
     let categoriesList = [];
     let cart = [];
     let currentCategoryId = 'ALL';
-    let selectedVariant = null;
     let currentProduct = null;
+    let selectedImageItem = null;
+    let selectedSize = null;
 
     async function fetchCategories() {
       const { data } = await db.from('categories').select('*').order('id', { ascending: true });
@@ -180,14 +188,41 @@
       }
     }
 
+    function getSearchRelevance(product, keyword) {
+      if (!keyword) return 0;
+      const name = (product.name || '').toLowerCase();
+      const kw = keyword.toLowerCase();
+      if (name === kw) return 3;
+      if (name.startsWith(kw)) return 2;
+      if (name.includes(kw)) return 1;
+      return 0;
+    }
+
     function renderProducts() {
       const grid = document.getElementById('productGrid');
-      const searchKey = document.getElementById('searchInput').value.toLowerCase();
+      const searchKey = document.getElementById('searchInput').value.trim().toLowerCase();
+      const sortBy = document.getElementById('sortSelect').value;
 
       let filtered = rawProducts.filter(p => {
         const matchCat = currentCategoryId === 'ALL' || p.category_id == currentCategoryId;
         const matchSearch = p.name ? p.name.toLowerCase().includes(searchKey) : false;
         return matchCat && matchSearch;
+      });
+
+      filtered.sort((a, b) => {
+        if (searchKey) {
+          const scoreA = getSearchRelevance(a, searchKey);
+          const scoreB = getSearchRelevance(b, searchKey);
+          if (scoreB !== scoreA) return scoreB - scoreA;
+        }
+
+        if (sortBy === 'price-asc') {
+          return Number(a.price) - Number(b.price);
+        } else if (sortBy === 'price-desc') {
+          return Number(b.price) - Number(a.price);
+        } else {
+          return b.id - a.id;
+        }
       });
 
       document.getElementById('productCount').innerText = filtered.length;
@@ -206,7 +241,7 @@
           <div onclick="openProductDetail(${p.id})" class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden flex flex-col justify-between group cursor-pointer">
             <div class="relative overflow-hidden bg-gray-100 aspect-square">
               <img src="${p.main_image || p.image_url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-              ${hasVariants ? `<span class="absolute top-2 right-2 bg-amber-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full shadow">Nhiều phân loại</span>` : ''}
+              ${hasVariants ? `<span class="absolute top-2 right-2 bg-amber-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full shadow">Nhiều ảnh & giá</span>` : ''}
             </div>
             <div class="p-3.5 flex-1 flex flex-col justify-between">
               <div>
@@ -216,7 +251,7 @@
               <div class="mt-3">
                 <div class="text-sm font-black text-red-600">${price.toLocaleString('vi-VN')} ₫</div>
                 <button onclick="event.stopPropagation(); openProductDetail(${p.id})" class="mt-2.5 w-full bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold py-2 rounded-lg transition flex items-center justify-center gap-1">
-                  <i class="fa-solid fa-eye text-[10px]"></i> Xem & Chọn Phân Loại
+                  <i class="fa-solid fa-eye text-[10px]"></i> Xem & Chọn Ảnh/Size
                 </button>
               </div>
             </div>
@@ -234,57 +269,79 @@
       document.getElementById('detailCategory').innerText = catObj ? catObj.name : 'LUXSTORE';
       document.getElementById('detailDesc').innerText = currentProduct.description || 'Chưa có mô tả chi tiết.';
 
-      const variantArea = document.getElementById('variantSelectionArea');
-      const variantButtons = document.getElementById('variantButtons');
       const vars = currentProduct.product_variants || [];
+      const allImages = [
+        { id: 'main', image_url: currentProduct.main_image || currentProduct.image_url, price: currentProduct.price, sizes: [] },
+        ...vars
+      ];
 
-      if (vars.length > 0) {
-        variantArea.classList.remove('hidden');
-        variantButtons.innerHTML = vars.map((v, idx) => `
-          <button onclick="selectVariant(${idx})" class="variant-btn border border-gray-300 text-xs px-3 py-1.5 rounded-lg hover:border-amber-500 transition">
-            ${v.attribute_name} - ${Number(v.price).toLocaleString('vi-VN')}₫
-          </button>
-        `).join('');
-        
-        selectVariant(0);
-      } else {
-        variantArea.classList.add('hidden');
-        selectedVariant = null;
-        document.getElementById('detailMainImg').src = currentProduct.main_image || currentProduct.image_url;
-        document.getElementById('detailPrice').innerText = Number(currentProduct.price).toLocaleString('vi-VN') + ' ₫';
-      }
+      selectedImageItem = allImages[0];
+      updateModalDisplay();
+
+      const imagesListContainer = document.getElementById('variantImagesList');
+      imagesListContainer.innerHTML = allImages.map((img, idx) => `
+        <img src="${img.image_url}" onclick="selectImageItem(${idx})" class="w-14 h-14 object-cover rounded-lg border-2 border-gray-200 cursor-pointer hover:border-amber-500 transition ${idx === 0 ? 'variant-img-active' : ''}" data-index="${idx}">
+      `).join('');
 
       document.getElementById('detailAddToCartBtn').onclick = function() {
-        addToCartWithVariant();
+        addToCart();
         closeProductDetail();
       };
 
       document.getElementById('productDetailModal').classList.remove('hidden');
     }
 
-    function selectVariant(idx) {
+    function selectImageItem(idx) {
       const vars = currentProduct.product_variants || [];
-      selectedVariant = vars[idx];
+      const allImages = [
+        { id: 'main', image_url: currentProduct.main_image || currentProduct.image_url, price: currentProduct.price, sizes: [] },
+        ...vars
+      ];
+      selectedImageItem = allImages[idx];
+      updateModalDisplay();
 
-      document.getElementById('detailMainImg').src = selectedVariant.image_url || currentProduct.main_image;
-      document.getElementById('detailPrice').innerText = Number(selectedVariant.price).toLocaleString('vi-VN') + ' ₫';
-
-      const btns = document.querySelectorAll('.variant-btn');
-      btns.forEach((btn, i) => {
-        if (i === idx) btn.classList.add('variant-btn-active');
-        else btn.classList.remove('variant-btn-active');
+      document.querySelectorAll('#variantImagesList img').forEach((imgEl, i) => {
+        if (i === idx) imgEl.classList.add('variant-img-active');
+        else imgEl.classList.remove('variant-img-active');
       });
+    }
+
+    function updateModalDisplay() {
+      document.getElementById('detailMainImg').src = selectedImageItem.image_url;
+      document.getElementById('detailPrice').innerText = Number(selectedImageItem.price).toLocaleString('vi-VN') + ' ₫';
+
+      const sizeArea = document.getElementById('sizeSelectionArea');
+      const sizeButtons = document.getElementById('sizeButtons');
+      const sizes = selectedImageItem.sizes || [];
+
+      if (sizes.length > 0) {
+        sizeArea.classList.remove('hidden');
+        selectedSize = sizes[0];
+        sizeButtons.innerHTML = sizes.map((s, idx) => `
+          <button onclick="selectSize('${s}', this)" class="size-btn border border-gray-300 text-xs px-3.5 py-1.5 rounded-lg hover:border-amber-500 transition ${idx === 0 ? 'size-btn-active' : ''}">
+            Size ${s}
+          </button>
+        `).join('');
+      } else {
+        sizeArea.classList.add('hidden');
+        selectedSize = null;
+      }
+    }
+
+    function selectSize(sizeVal, btnEl) {
+      selectedSize = sizeVal;
+      document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('size-btn-active'));
+      btnEl.classList.add('size-btn-active');
     }
 
     function closeProductDetail() { document.getElementById('productDetailModal').classList.add('hidden'); }
 
-    function addToCartWithVariant() {
-      if (!currentProduct) return;
+    function addToCart() {
+      if (!currentProduct || !selectedImageItem) return;
 
-      const cartItemId = selectedVariant ? `${currentProduct.id}_${selectedVariant.id}` : `${currentProduct.id}_default`;
-      const itemPrice = selectedVariant ? Number(selectedVariant.price) : Number(currentProduct.price);
-      const itemImg = selectedVariant ? selectedVariant.image_url : (currentProduct.main_image || currentProduct.image_url);
-      const variantName = selectedVariant ? selectedVariant.attribute_name : null;
+      const cartItemId = `${currentProduct.id}_${selectedImageItem.image_url}_${selectedSize || 'nosize'}`;
+      const itemPrice = Number(selectedImageItem.price);
+      const itemImg = selectedImageItem.image_url;
 
       const existingIndex = cart.findIndex(i => i.cartItemId === cartItemId);
       if (existingIndex > -1) {
@@ -296,7 +353,7 @@
           name: currentProduct.name,
           price: itemPrice,
           image: itemImg,
-          selectedVariant: variantName,
+          selectedSize: selectedSize,
           qty: 1
         });
       }
@@ -334,7 +391,7 @@
             <img src="${i.image}" class="w-12 h-12 object-cover rounded bg-gray-100">
             <div class="flex-1">
               <h4 class="font-bold text-xs text-gray-800 line-clamp-1">${i.name}</h4>
-              ${i.selectedVariant ? `<p class="text-[10px] text-amber-600 font-bold">Phân loại: ${i.selectedVariant}</p>` : ''}
+              ${i.selectedSize ? `<p class="text-[10px] text-amber-600 font-bold">Size: ${i.selectedSize}</p>` : ''}
               <span class="text-xs text-red-600 font-bold">${i.price.toLocaleString('vi-VN')} ₫</span>
             </div>
             <div class="flex items-center gap-2 border rounded px-1.5 py-0.5">
@@ -390,7 +447,7 @@
       }]);
 
       if (!error) {
-        const itemsText = cart.map(i => `• <b>${i.name}</b> ${i.selectedVariant ? `(Phân loại: ${i.selectedVariant})` : ''} - (x${i.qty}) - ${(i.price * i.qty).toLocaleString('vi-VN')}₫`).join('\n');
+        const itemsText = cart.map(i => `• <b>${i.name}</b> ${i.selectedSize ? `(Size: ${i.selectedSize})` : ''} - (x${i.qty}) - ${(i.price * i.qty).toLocaleString('vi-VN')}₫`).join('\n');
         const telegramMsg = `🚨 <b>ĐƠN HÀNG MỚI TỪ WEBSITE!</b>\n\n👤 <b>Khách hàng:</b> ${name}\n📞 <b>Điện thoại:</b> ${phone}\n🏠 <b>Địa chỉ:</b> ${address}\n📝 <b>Ghi chú:</b> ${note || 'Không có'}\n\n📦 <b>Sản phẩm:</b>\n${itemsText}\n\n💰 <b>TỔNG CỘNG:</b> ${total.toLocaleString('vi-VN')} ₫`;
 
         try {
@@ -401,7 +458,8 @@
           });
         } catch (tgErr) { console.error(tgErr); }
 
-        alert('🎉 Đặt hàng thành công! Chúng tôi sẽ gọi xác nhận ngay.');
+        alert("Đơn hàng của Quý khách đã được hệ thống ghi nhận thành công. Nhân viên CSKH sẽ chủ động nhắn tin qua Zalo trong ít phút nữa để xác nhận thông tin giao nhận. Cảm ơn Quý khách.");
+        
         cart = [];
         updateCartUI();
         toggleCart(false);
