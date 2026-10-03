@@ -154,6 +154,10 @@
     const SUPABASE_URL = "https://uleckabliwereivgxryo.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o";
 
+    // Cấu hình Telegram trực tiếp
+    const TELEGRAM_BOT_TOKEN = "8715013237:AAHnalBgr7rnIeJewh3GMr_tfFnv8ewJipY";
+    const TELEGRAM_CHAT_ID = "8866272456";
+
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let rawProducts = [];
     let categoriesList = [];
@@ -405,6 +409,34 @@
 
     function handleSearch() { renderProducts(); }
 
+    async function sendTelegramNotification(orderInfo) {
+      if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+      
+      let itemsText = orderInfo.items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: ${i.selectedSize})` : ''} - SL: ${i.qty}`).join('\n');
+      
+      let message = `🛒 *CÓ ĐƠN HÀNG MỚI!* (#${orderInfo.orderId})\n\n` +
+                    `👤 *Khách hàng:* ${orderInfo.name}\n` +
+                    `📞 *SĐT:* ${orderInfo.phone}\n` +
+                    `📍 *Địa chỉ:* ${orderInfo.address}\n` +
+                    `📝 *Ghi chú:* ${orderInfo.note || 'Không có'}\n\n` +
+                    `📦 *Sản phẩm:*\n${itemsText}\n\n` +
+                    `💰 *Tổng tiền:* ${Number(orderInfo.total).toLocaleString('vi-VN')} đ`;
+
+      try {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown'
+          })
+        });
+      } catch (err) {
+        console.error("Lỗi gửi Telegram:", err);
+      }
+    }
+
     async function submitOrder(e) {
       e.preventDefault();
       if (cart.length === 0) return alert('Giỏ hàng trống!');
@@ -418,6 +450,7 @@
       const address = document.getElementById('cAddress').value.trim();
       const note = document.getElementById('cNote').value.trim();
       const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const cartSnapshot = [...cart];
 
       const { data, error } = await db.from('orders').insert([{
         customer_name: name,
@@ -425,12 +458,23 @@
         address: address,
         note: note,
         total_amount: total,
-        cart_items: cart
+        cart_items: cartSnapshot
       }]).select();
 
       if (!error) {
         const orderId = data && data[0] ? data[0].id : 'NEW';
         
+        // Gửi thông báo ngay về Telegram với Token và Chat ID đã cấu hình sẵn
+        await sendTelegramNotification({
+          orderId: orderId,
+          name: name,
+          phone: phone,
+          address: address,
+          note: note,
+          items: cartSnapshot,
+          total: total
+        });
+
         toggleCart(false);
         document.getElementById('checkoutForm').reset();
         cart = [];
