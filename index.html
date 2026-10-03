@@ -154,7 +154,6 @@
     const SUPABASE_URL = "https://uleckabliwereivgxryo.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o";
 
-    // Cấu hình Telegram trực tiếp
     const TELEGRAM_BOT_TOKEN = "8715013237:AAHnalBgr7rnIeJewh3GMr_tfFnv8ewJipY";
     const TELEGRAM_CHAT_ID = "8866272456";
 
@@ -412,14 +411,25 @@
     async function sendTelegramNotification(orderInfo) {
       if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
       
+      const formattedCode = `1607${orderInfo.orderId}`;
       let itemsText = orderInfo.items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: ${i.selectedSize})` : ''} - SL: ${i.qty}`).join('\n');
       
-      let message = `🛒 *CÓ ĐƠN HÀNG MỚI!* (#${orderInfo.orderId})\n\n` +
-                    `👤 *Khách hàng:* ${orderInfo.name}\n` +
-                    `📞 *SĐT:* ${orderInfo.phone}\n` +
-                    `📍 *Địa chỉ:* ${orderInfo.address}\n` +
-                    `📝 *Ghi chú:* ${orderInfo.note || 'Không có'}\n\n` +
-                    `📦 *Sản phẩm:*\n${itemsText}\n\n` +
+      let message = `🛒 *CÓ ĐƠN HÀNG MỚI!* (#${formattedCode})
+
+` +
+                    `👤 *Khách hàng:* ${orderInfo.name}
+` +
+                    `📞 *SĐT:* ${orderInfo.phone}
+` +
+                    `📍 *Địa chỉ:* ${orderInfo.address}
+` +
+                    `📝 *Ghi chú:* ${orderInfo.note || 'Không có'}
+
+` +
+                    `📦 *Sản phẩm:*
+${itemsText}
+
+` +
                     `💰 *Tổng tiền:* ${Number(orderInfo.total).toLocaleString('vi-VN')} đ`;
 
       try {
@@ -462,11 +472,11 @@
       }]).select();
 
       if (!error) {
-        const orderId = data && data[0] ? data[0].id : 'NEW';
+        const rawId = data && data[0] ? data[0].id : 'NEW';
+        const formattedOrderId = `1607${rawId}`;
         
-        // Gửi thông báo ngay về Telegram với Token và Chat ID đã cấu hình sẵn
         await sendTelegramNotification({
-          orderId: orderId,
+          orderId: rawId,
           name: name,
           phone: phone,
           address: address,
@@ -483,7 +493,7 @@
         showThankYouModal({
           name: name,
           phone: phone,
-          orderId: orderId,
+          orderId: formattedOrderId,
           total: total
         });
       } else {
