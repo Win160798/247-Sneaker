@@ -34,6 +34,8 @@
     .badge-lvl1 { background: #e3f2fd; color: #0d47a1; }
     .variant-row { background: #f8f9fa; border: 1px dashed #bbb; padding: 12px; border-radius: 6px; margin-bottom: 10px; position: relative; }
     .remove-variant-btn { background: #dc3545; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; position: absolute; right: 10px; top: 10px; font-size: 12px; }
+    .size-checkboxes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ddd; }
+    .size-checkboxes label { font-weight: normal; font-size: 12px; display: flex; align-items: center; gap: 3px; cursor: pointer; }
     #status { margin-top: 10px; font-weight: bold; text-align: center; font-size: 14px; }
   </style>
 </head>
@@ -79,9 +81,9 @@
     </table>
   </div>
 
-  <!-- 2. FORM THÊM SẢN PHẨM & BIẾN THỂ -->
+  <!-- 2. FORM THÊM SẢN PHẨM & ẢNH/GIÁ/SIZE -->
   <div class="card">
-    <h2>➕ Thêm Sản Phẩm & Phân Loại Linh Hoạt (Màu, Size,...)</h2>
+    <h2>➕ Thêm Sản Phẩm (Mỗi Ảnh Một Giá & Chọn Size 36-46)</h2>
     <form id="add-product-form">
       <div class="form-grid">
         <div class="form-group">
@@ -110,11 +112,11 @@
         <textarea id="description" rows="3" placeholder="Chất liệu, thông số..."></textarea>
       </div>
 
-      <!-- PHẦN THÊM BIẾN THỂ TÙY CHỈNH -->
+      <!-- PHẦN THÊM CÁC ẢNH & GIÁ & CHỌN SIZE TÙY CHỌN -->
       <div style="border-top: 2px dashed #007bff; padding-top: 15px; margin-top: 15px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="font-size: 15px; color: #007bff;"><i class="fa-solid fa-tags"></i> Tùy Chỉnh Biến Thể (Mỗi biến thể có Ảnh, Giá, Tên riêng)</h3>
-          <button type="button" class="btn-secondary" onclick="addVariantRow()"><i class="fa-solid fa-plus"></i> Thêm Biến Thể Tùy Chỉnh</button>
+          <h3 style="font-size: 15px; color: #007bff;"><i class="fa-solid fa-images"></i> Cấu Hình Ảnh Riêng, Giá Riêng & Size (36 - 46)</h3>
+          <button type="button" class="btn-secondary" onclick="addVariantRow()"><i class="fa-solid fa-plus"></i> Thêm Ảnh & Giá Riêng</button>
         </div>
         <div id="variants-container"></div>
       </div>
@@ -134,7 +136,7 @@
           <th>Tên sản phẩm</th>
           <th>Danh mục</th>
           <th>Giá cơ bản</th>
-          <th>Các phân loại / Biến thể</th>
+          <th>Các Ảnh/Giá/Size riêng</th>
           <th>Thao tác</th>
         </tr>
       </thead>
@@ -153,7 +155,7 @@
           <th>ID</th>
           <th>Khách Hàng</th>
           <th>SĐT / Địa Chỉ</th>
-          <th>Sản Phẩm Đặt (Chi tiết phân loại/giá)</th>
+          <th>Sản Phẩm Đặt (Chi tiết Ảnh/Giá/Size)</th>
           <th>Tổng Tiền</th>
           <th>Thao tác</th>
         </tr>
@@ -180,21 +182,27 @@
     const row = document.createElement('div');
     row.className = 'variant-row';
     row.id = `vrow-${variantCount}`;
+
+    let sizeCheckboxes = '';
+    for (let s = 36; s <= 46; s++) {
+      sizeCheckboxes += `<label><input type="checkbox" class="v-size-cb" value="${s}"> Size ${s}</label>`;
+    }
+
     row.innerHTML = `
       <button type="button" class="remove-variant-btn" onclick="removeVariantRow(${variantCount})">Xóa dòng này</button>
       <div class="form-grid">
         <div class="form-group">
-          <label>Tên phân loại (Màu, Size,...) *</label>
-          <input type="text" class="v-name" placeholder="VD: Đen - Size 40" required>
-        </div>
-        <div class="form-group">
-          <label>Giá bán riêng (VNĐ) *</label>
+          <label>Giá bán riêng cho ảnh này (VNĐ) *</label>
           <input type="number" class="v-price" placeholder="VD: 850000" required>
         </div>
         <div class="form-group">
-          <label>Ảnh riêng của phân loại này *</label>
+          <label>Tải ảnh riêng của phân loại này *</label>
           <input type="file" class="v-file" accept="image/*" required>
         </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>Chọn các Size áp dụng cho ảnh này (Từ 36 đến 46):</label>
+        <div class="size-checkboxes">${sizeCheckboxes}</div>
       </div>
     `;
     container.appendChild(row);
@@ -285,8 +293,8 @@
     tbody.innerHTML = products.map(item => {
       const vars = item.product_variants || [];
       const varText = vars.length > 0 
-        ? vars.map(v => `• <b>${v.attribute_name}</b> (${Number(v.price).toLocaleString('vi-VN')}đ)`).join('<br>') 
-        : '<span style="color:#999;">Không có phân loại</span>';
+        ? vars.map(v => `• <img src="${v.image_url}" style="width:25px;height:25px;vertical-align:middle;object-fit:cover;border-radius:3px;"> <b>${Number(v.price).toLocaleString('vi-VN')}đ</b> [Size: ${(v.sizes || []).join(', ')}]`).join('<br>') 
+        : '<span style="color:#999;">Không có phân loại ảnh/giá riêng</span>';
 
       return `
         <tr>
@@ -295,7 +303,7 @@
           <td><span class="badge badge-lvl1">${categoriesMap[item.category_id] || 'Chưa phân loại'}</span></td>
           <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
           <td style="font-size:12px;">${varText}</td>
-          <td><button class="btn-delete" onclick="deleteProduct(${item.id})">🗑️️ Xóa</button></td>
+          <td><button class="btn-delete" onclick="deleteProduct(${item.id})">🗑 Xóa</button></td>
         </tr>
       `;
     }).join('');
@@ -318,7 +326,7 @@
     }
 
     btnSubmit.disabled = true;
-    statusDiv.innerText = `⏳ Đang tải sản phẩm và biến thể...`;
+    statusDiv.innerText = `⏳ Đang tải sản phẩm...`;
 
     try {
       const mainFile = mainFileInput.files[0];
@@ -346,21 +354,21 @@
       if (vRows.length > 0) {
         const variantPayloads = [];
         for (let row of vRows) {
-          const attrName = row.querySelector('.v-name').value;
           const vPrice = row.querySelector('.v-price').value;
           const vFileInput = row.querySelector('.v-file');
+          const checkedSizes = Array.from(row.querySelectorAll('.v-size-cb:checked')).map(cb => cb.value);
 
           if (vFileInput.files && vFileInput.files.length > 0) {
             const vFile = vFileInput.files[0];
-            const vFileName = `${Date.now()}_var_${vFile.name.replace(/\s+/g, '_')}`;
+            const vFileName = `${Date.now()}_img_${vFile.name.replace(/\s+/g, '_')}`;
             await supabaseClient.storage.from('products').upload(vFileName, vFile);
             const { data: vUrlData } = supabaseClient.storage.from('products').getPublicUrl(vFileName);
 
             variantPayloads.push({
               product_id: newProd.id,
-              attribute_name: attrName,
+              image_url: vUrlData.publicUrl,
               price: Number(vPrice),
-              image_url: vUrlData.publicUrl
+              sizes: checkedSizes
             });
           }
         }
@@ -383,7 +391,7 @@
   });
 
   async function deleteProduct(id) {
-    if (confirm('Xóa sản phẩm này và toàn bộ phân loại liên quan?')) {
+    if (confirm('Xóa sản phẩm này?')) {
       await supabaseClient.from('products').delete().eq('id', id);
       loadProducts();
     }
@@ -400,7 +408,7 @@
 
     tbody.innerHTML = data.map(o => {
       const itemsList = Array.isArray(o.cart_items) 
-        ? o.cart_items.map(i => `• ${i.name} ${i.selectedVariant ? `(<b>${i.selectedVariant}</b>)` : ''} - x${i.qty}`).join('<br>') 
+        ? o.cart_items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: <b>${i.selectedSize}</b>)` : ''} - x${i.qty}`).join('<br>') 
         : 'Không có';
 
       return `
