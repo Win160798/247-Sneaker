@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Trị Shop - LUXSTORE</title>
+  <title>Quản Trị Shop - 247 SNEAKER</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -22,8 +22,6 @@
     button:hover { background: #218838; }
     .btn-primary { background: #007bff; }
     .btn-primary:hover { background: #0056b3; }
-    .btn-secondary { background: #6c757d; width: auto; padding: 8px 15px; font-size: 13px; }
-    .btn-secondary:hover { background: #5a6268; }
     .product-list { width: 100%; border-collapse: collapse; margin-top: 10px; }
     .product-list th, .product-list td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
     .product-list th { background: #f8f9fa; font-weight: bold; }
@@ -42,7 +40,7 @@
 <body>
 
 <div class="container">
-  <h1>Trang Quản Trị Hệ Thống - LUXSTORE (Tích Hợp Cloudinary & Watermark)</h1>
+  <h1>Trang Quản Trị Hệ Thống - 247 SNEAKER</h1>
 
   <!-- 1. QUẢN LÝ DANH MỤC -->
   <div class="card">
@@ -83,7 +81,7 @@
 
   <!-- 2. FORM THÊM SẢN PHẨM -->
   <div class="card">
-    <h2>➕ Thêm Sản Phẩm (Tải Nhiều Ảnh - Lên tới 30 ảnh, Tự động Watermark "247 Sneaker" lên Cloudinary)</h2>
+    <h2>➕ Thêm Sản Phẩm (Chọn Nhiều Ảnh, Tự động Watermark "247 Sneaker")</h2>
     <form id="add-product-form">
       <div class="form-grid">
         <div class="form-group">
@@ -91,7 +89,7 @@
           <input type="text" id="name" placeholder="Ví dụ: Giày Sneaker Nam Cao Cấp" required>
         </div>
         <div class="form-group">
-          <label>Giá bán chung cho sản phẩm (VNĐ) *</label>
+          <label>Giá bán (VNĐ) *</label>
           <input type="number" id="price" placeholder="Ví dụ: 800000" required>
         </div>
         <div class="form-group">
@@ -103,14 +101,14 @@
       </div>
 
       <div class="form-group">
-        <label>Chọn nhiều ảnh sản phẩm (Có thể chọn cùng lúc tối đa 30 ảnh) *</label>
+        <label>Chọn nhiều ảnh sản phẩm (Tối đa 30 ảnh) *</label>
         <input type="file" id="product-images" accept="image/*" multiple required>
-        <small style="color: #666; display: block; margin-top: 4px;">Ảnh đầu tiên sẽ được chọn làm ảnh đại diện chính của sản phẩm.</small>
+        <small style="color: #666; display: block; margin-top: 4px;">Ảnh đầu tiên sẽ làm ảnh đại diện chính.</small>
         <div id="upload-preview" class="thumb-preview-container"></div>
       </div>
 
       <div class="form-group">
-        <label>Chọn các Size áp dụng cho sản phẩm này (Từ 36 đến 46):</label>
+        <label>Chọn các Size áp dụng (Từ 36 đến 46):</label>
         <div class="size-checkboxes" id="size-checkboxes-container"></div>
       </div>
 
@@ -130,7 +128,7 @@
     <table class="product-list">
       <thead>
         <tr>
-          <th>Ảnh chính & Số lượng</th>
+          <th>Ảnh & Số lượng</th>
           <th>Tên sản phẩm</th>
           <th>Danh mục</th>
           <th>Giá bán</th>
@@ -170,12 +168,8 @@
   const SUPABASE_URL = 'https://uleckabliwereivgxryo.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o';
   
-  // Cấu hình Cloudinary theo yêu cầu của bạn
   const CLOUD_NAME = 'yxjghz1b';
-  // Sử dụng preset unsigned mặc định hoặc upload trực tiếp nếu dùng upload API signed. 
-  // Để đơn giản và hoạt động trực tiếp với cloud_name, chúng ta dùng cách tạo transform URL trực tiếp hoặc qua unsigned upload preset.
-  // Ở đây cấu hình chuyển đổi URL cloudinary gắn text watermark tự động:
-  // Cấu trúc URL Cloudinary có watermark text: https://res.cloudinary.com/yxjghz1b/image/upload/l_text:Arial_24_bold:247%20Sneaker,co_white,g_south_east,y_20,x_20/[public_id]
+  const UPLOAD_PRESET = '247_sneaker'; // Đã cấu hình đúng tên Unsigned Preset của bạn
 
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let categoriesMap = {};
@@ -194,9 +188,6 @@
     const previewContainer = document.getElementById('upload-preview');
     previewContainer.innerHTML = '';
     const files = e.target.files;
-    if (files.length > 30) {
-      alert("Bạn chọn quá 30 ảnh! Hệ thống sẽ chỉ lấy 30 ảnh đầu tiên.");
-    }
     const limit = Math.min(files.length, 30);
     for (let i = 0; i < limit; i++) {
       const reader = new FileReader();
@@ -310,13 +301,11 @@
     }).join('');
   }
 
-  // Hàm tải ảnh lên Cloudinary và tự động chèn Watermark "247 Sneaker"
   async function uploadToCloudinaryWithWatermark(file) {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'ml_default'); // Sử dụng unsigned preset mặc định của Cloudinary hoặc cấu hình của bạn
+    formData.append('upload_preset', UPLOAD_PRESET);
     
-    // Thêm transformation trực tiếp qua upload API nếu hỗ trợ, hoặc chèn đoạn lệnh Watermark vào URL trả về
     const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
       method: 'POST',
       body: formData
@@ -327,13 +316,11 @@
       throw new Error(data.error?.message || 'Không thể tải ảnh lên Cloudinary');
     }
 
-    // Chèn Cloudinary Transformation URL để tự động hiện Watermark "247 Sneaker" trên ảnh khi hiển thị
-    // Cấu trúc biến đổi URL: chèn đoạn l_text:... sau /image/upload/
+    // Tự động gắn Watermark "247 Sneaker" vào URL ảnh trả về
     const uploadPathIndex = data.secure_url.indexOf('/image/upload/');
     if (uploadPathIndex !== -1) {
       const baseUrl = data.secure_url.slice(0, uploadPathIndex + 14);
       const restUrl = data.secure_url.slice(uploadPathIndex + 14);
-      // Tạo watermark: Chữ "247 Sneaker" màu trắng, nền mờ hoặc nổi bật góc dưới bên phải
       const watermarkTransform = 'l_text:Arial_28_bold:247%20Sneaker,co_rgb:FFFFFF,b_rgb:000000_opacity:60,p_10,g_south_east,y_15,x_15/';
       return baseUrl + watermarkTransform + restUrl;
     }
@@ -403,12 +390,6 @@
     }
   }
 
-  async function init() {
-    await loadCategories();
-    await loadProducts();
-    await loadOrders();
-  }
-  
   async function loadOrders() {
     const tbody = document.getElementById('orders-table-body');
     const { data, error } = await supabaseClient.from('orders').select('*').order('id', { ascending: false });
@@ -441,6 +422,12 @@
       await supabaseClient.from('orders').delete().eq('id', id);
       loadOrders();
     }
+  }
+
+  async function init() {
+    await loadCategories();
+    await loadProducts();
+    await loadOrders();
   }
 
   init();
