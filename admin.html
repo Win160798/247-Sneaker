@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Trị Shop - LUXSTORE</title>
+  <title>Quản Trị Shop - 247 Sneaker</title>
+  <link rel="icon" href="img/logo.jpg">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="site-config.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
@@ -17,6 +19,7 @@
     .form-group { margin-bottom: 15px; }
     label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; }
     input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+    input[type="color"] { width: 70px; height: 38px; padding: 2px; border: 1px solid #ccc; border-radius: 5px; }
     input[type="file"] { width: 100%; padding: 8px; border: 1px dashed #007bff; background: #f0f7ff; border-radius: 5px; cursor: pointer; font-size: 12px; }
     button { background: #28a745; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; transition: 0.2s; }
     button:hover { background: #218838; }
@@ -34,15 +37,42 @@
     .badge-lvl1 { background: #e3f2fd; color: #0d47a1; }
     .size-checkboxes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #ddd; }
     .size-checkboxes label { font-weight: normal; font-size: 12px; display: flex; align-items: center; gap: 4px; cursor: pointer; background: #fff; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; }
-    #status { margin-top: 10px; font-weight: bold; text-align: center; font-size: 14px; }
+    #status, #dstatus { margin-top: 10px; font-weight: bold; text-align: center; font-size: 14px; }
     .thumb-preview-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
     .thumb-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+    /* ===== Trình chỉnh giao diện ===== */
+    .sec { border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; background: #fafafa; }
+    .sec summary { padding: 11px 14px; font-weight: bold; cursor: pointer; }
+    .sec .bd { padding: 6px 14px 14px; }
+    .fx { margin-bottom: 10px; }
+    .imgf { display: flex; gap: 8px; align-items: center; }
+    .imgf img { width: 46px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; background: #eee; flex: none; }
+    label.up { display: inline-block; background: #6c757d; color: #fff; padding: 9px 12px; border-radius: 5px; font-size: 12px; margin: 0; cursor: pointer; white-space: nowrap; }
+    .row { border: 1px dashed #bbb; border-radius: 6px; padding: 10px; margin: 8px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; align-items: end; background: #fff; }
+    .tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0 4px; }
+    .tools button { width: auto; }
+    .hint { font-size: 12px; color: #777; margin-top: 3px; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Trang Quản Trị Hệ Thống - LUXSTORE</h1>
+  <h1>Trang Quản Trị Hệ Thống - 247 Sneaker</h1>
+
+  <!-- 0. CHỈNH SỬA GIAO DIỆN WEBSITE -->
+  <div class="card">
+    <h2>🎨 Chỉnh Sửa Giao Diện Website (100%)</h2>
+    <div class="tools">
+      <label style="margin:0;font-weight:normal"><input type="checkbox" id="wm-design" checked> Gắn watermark "247.Sneaker" lên ảnh giao diện khi tải lên</label>
+    </div>
+    <div class="hint" style="margin-bottom:10px">Mọi ảnh tải lên đều được lưu về Cloudinary. Chỉnh xong bấm "Lưu giao diện", rồi tải lại trang web để xem.</div>
+    <div id="design"></div>
+    <div class="tools">
+      <button id="save-design" style="width:auto">💾 Lưu giao diện</button>
+      <button id="reset-design" class="btn-secondary" type="button">↺ Khôi phục mặc định (theo PDF)</button>
+    </div>
+    <div id="dstatus"></div>
+  </div>
 
   <!-- 1. QUẢN LÝ DANH MỤC -->
   <div class="card">
@@ -105,7 +135,7 @@
       <div class="form-group">
         <label>Chọn nhiều ảnh sản phẩm (Có thể chọn cùng lúc tối đa 30 ảnh) *</label>
         <input type="file" id="product-images" accept="image/*" multiple required>
-        <small style="color: #666; display: block; margin-top: 4px;">Ảnh đầu tiên sẽ được chọn làm ảnh đại diện chính của sản phẩm.</small>
+        <small style="color: #666; display: block; margin-top: 4px;">Ảnh đầu tiên sẽ được chọn làm ảnh đại diện chính. Ảnh tự động gắn watermark 247.Sneaker và lưu về Cloudinary.</small>
         <div id="upload-preview" class="thumb-preview-container"></div>
       </div>
 
@@ -169,15 +199,126 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://uleckabliwereivgxryo.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o';
-
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let categoriesMap = {};
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  // Render size checkboxes (36 to 46)
+  /* ===================== CLOUDINARY + WATERMARK ===================== */
+  // Vẽ watermark "247.Sneaker" thẳng lên ảnh (chữ mờ giữa ảnh + chữ rõ góc phải dưới) rồi mới tải lên
+  async function addWatermark(file) {
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+    const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, w, h);
+    x.textBaseline = 'middle'; x.textAlign = 'center';
+    x.font = `bold ${Math.round(w * 0.09)}px Arial`; x.fillStyle = 'rgba(255,255,255,.22)';
+    x.save(); x.translate(w / 2, h / 2); x.rotate(-Math.PI / 7); x.fillText(WATERMARK, 0, 0); x.restore();
+    const f = Math.max(16, Math.round(w * 0.035));
+    x.font = `bold ${f}px Arial`; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.88)';
+    x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = f / 3;
+    x.fillText(WATERMARK, w - f * 0.7, h - f * 0.9);
+    const png = file.type === 'image/png';
+    return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
+  }
+  async function uploadImage(file, wm = true) {
+    const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
+    const fd = new FormData();
+    fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+    const j = await r.json();
+    if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
+    return j.secure_url;
+  }
+
+  /* ===================== CHỈNH SỬA GIAO DIỆN ===================== */
+  let cfg = clone(DEFAULTS);
+  const I = 'img', T = 'text', A = 'area', C = 'color';
+  const SCH = [
+    ['🌐 Chung', [
+      ['title', T, 'Tiêu đề tab trình duyệt'], ['favicon', I, 'Favicon (icon tab trình duyệt)'], ['brand', T, 'Tên thương hiệu (góc trái trên cùng)'],
+      ['c.bg', C, 'Màu nền xanh chủ đạo'], ['c.card', C, 'Màu nền thẻ sản phẩm'], ['c.ink', C, 'Màu chữ chính'],
+      ['font.h', T, 'Font tiêu đề (tên Google Font, VD: Lexend Giga:wght@600)'], ['font.b', T, 'Font nội dung'], ['font.n', T, 'Font menu']]],
+    ['📑 Menu', [['nav', [['t', T, 'Tên mục'], ['u', T, 'Trang: home / products / size / contact — hoặc dán link']], 'Các mục menu']]],
+    ['🖼 Banner & ảnh bo góc', [
+      ['hero.0', I, 'Banner - ảnh 1'], ['hero.1', I, 'Banner - ảnh 2'], ['hero.2', I, 'Banner - ảnh 3'], ['big', T, 'Chữ lớn dưới banner'],
+      ['gal.0', I, 'Nhóm ảnh bo góc 1 - ảnh 1'], ['gal.1', I, 'Nhóm ảnh bo góc 1 - ảnh 2'], ['gal.2', I, 'Nhóm ảnh bo góc 1 - ảnh 3'],
+      ['gal2.0', I, 'Nhóm ảnh bo góc 2 - ảnh 1'], ['gal2.1', I, 'Nhóm ảnh bo góc 2 - ảnh 2'], ['gal2.2', I, 'Nhóm ảnh bo góc 2 - ảnh 3']]],
+    ['🛍 Khối sản phẩm', [['prodTitle', T, 'Tiêu đề khối sản phẩm']]],
+    ['📏 Bảng size', [
+      ['sizeTitle', A, 'Tiêu đề'], ['sizeHead.0', T, 'Tiêu đề cột nam'], ['sizeHead.1', T, 'Tiêu đề cột nữ'], ['sizeHead.2', T, 'Tên cột kích thước'], ['sizeHead.3', T, 'Tên cột size'],
+      ['sizeM', [['k', T, 'Kích thước'], ['s', T, 'Size']], 'Bảng SIZE NAM'], ['sizeF', [['k', T, 'Kích thước'], ['s', T, 'Size']], 'Bảng SIZE NỮ']]],
+    ['📍 Hệ thống cửa hàng', [
+      ['storeTitle', T, 'Tiêu đề'], ['homeIcon', I, 'Icon ngôi nhà'],
+      ['stores', [['img', I, 'Ảnh bản đồ'], ['addr', T, 'Địa chỉ'], ['link', T, 'Link Google Maps']], 'Các cửa hàng']]],
+    ['☎ Liên hệ', [
+      ['logo', I, 'Logo'], ['contacts', [['icon', I, 'Icon'], ['text', T, 'Nội dung hiển thị'], ['link', T, 'Link khi bấm']], 'Các kênh liên hệ'], ['follow', A, 'Câu kêu gọi theo dõi']]],
+    ['🧩 Bố cục từng trang', [
+      ['pages.home', T, 'Trang chủ — khối hiển thị theo thứ tự'], ['pages.products', T, 'Trang Sản phẩm'], ['pages.size', T, 'Trang Hướng dẫn chọn size'], ['pages.contact', T, 'Trang Liên hệ']]]
+  ];
+  const ARR = {};
+  const gp = (o, p) => p.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
+  const sp = (o, p, v) => { const k = p.split('.'), l = k.pop(); k.reduce((a, x) => a[x], o)[l] = v; };
+
+  function fld(f) {
+    const [p, t, lb] = f;
+    if (Array.isArray(t)) {
+      ARR[p] = t;
+      const arr = gp(cfg, p) || [];
+      return `<div class="fx"><label>${lb}</label>${arr.map((_, i) => `<div class="row">${t.map(s => fld([`${p}.${i}.${s[0]}`, s[1], s[2]])).join('')}
+        <div><button type="button" class="btn-delete" data-del="${p}.${i}">🗑 Xóa</button></div></div>`).join('')}
+        <button type="button" class="btn-secondary" data-add="${p}">+ Thêm</button></div>`;
+    }
+    const v = gp(cfg, p) ?? '';
+    let h;
+    if (t === I) h = `<div class="imgf"><img src="${esc(v)}" alt=""><input type="text" data-p="${p}" value="${esc(v)}" placeholder="Dán link ảnh hoặc bấm Tải ảnh"><label class="up">Tải ảnh<input type="file" accept="image/*" hidden data-up="${p}"></label></div>`;
+    else if (t === A) h = `<textarea rows="2" data-p="${p}">${esc(v)}</textarea>`;
+    else if (t === C) h = `<input type="color" data-p="${p}" value="${esc(v)}">`;
+    else h = `<input type="text" data-p="${p}" value="${esc(v)}">`;
+    return `<div class="fx"><label>${lb}</label>${h}</div>`;
+  }
+  function renderDesign() {
+    const open = [...document.querySelectorAll('#design details')].map(d => d.open);
+    $('design').innerHTML = SCH.map(([title, fs], i) => `<details class="sec" ${open[i] ? 'open' : ''}><summary>${title}</summary><div class="bd">${fs.map(fld).join('')}</div></details>`).join('');
+  }
+  $('design').addEventListener('input', e => {
+    const p = e.target.dataset.p; if (!p) return;
+    sp(cfg, p, e.target.value);
+    const box = e.target.closest('.imgf'); if (box) box.querySelector('img').src = e.target.value;
+  });
+  $('design').addEventListener('change', async e => {
+    const p = e.target.dataset.up, file = e.target.files && e.target.files[0]; if (!p || !file) return;
+    const st = $('dstatus'); st.textContent = '⏳ Đang xử lý ảnh & tải lên Cloudinary...';
+    try {
+      const u = await uploadImage(file, $('wm-design').checked);
+      sp(cfg, p, u);
+      const box = e.target.closest('.imgf'); box.querySelector('input[type=text]').value = u; box.querySelector('img').src = u;
+      st.textContent = '✅ Đã tải ảnh lên Cloudinary. Nhớ bấm "Lưu giao diện".';
+    } catch (err) { st.textContent = '❌ ' + err.message; }
+    e.target.value = '';
+  });
+  $('design').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.del) { const k = b.dataset.del.split('.'), i = +k.pop(); gp(cfg, k.join('.')).splice(i, 1); renderDesign(); }
+    if (b.dataset.add) { gp(cfg, b.dataset.add).push(Object.fromEntries(ARR[b.dataset.add].map(s => [s[0], '']))); renderDesign(); }
+  });
+  $('save-design').addEventListener('click', async () => {
+    const { error } = await supabaseClient.from('site_settings').upsert({ id: 'main', data: cfg });
+    $('dstatus').textContent = error ? '❌ ' + error.message + ' (bạn đã chạy file supabase.sql chưa?)' : '✅ Đã lưu giao diện! Tải lại trang web để xem.';
+  });
+  $('reset-design').addEventListener('click', () => {
+    if (confirm('Khôi phục toàn bộ giao diện về mặc định theo file PDF? (chưa lưu cho đến khi bấm Lưu giao diện)')) { cfg = clone(DEFAULTS); renderDesign(); }
+  });
+  async function loadDesign() {
+    const { data } = await supabaseClient.from('site_settings').select('data').eq('id', 'main').maybeSingle();
+    cfg = merge(DEFAULTS, data && data.data);
+    renderDesign();
+  }
+
+  /* ===================== SIZE CHECKBOXES (36 - 46) ===================== */
   function renderSizeCheckboxes() {
-    const container = document.getElementById('size-checkboxes-container');
+    const container = $('size-checkboxes-container');
     let html = '';
     for (let s = 36; s <= 46; s++) {
       html += `<label><input type="checkbox" class="product-size-cb" value="${s}"> Size ${s}</label>`;
@@ -187,8 +328,8 @@
   renderSizeCheckboxes();
 
   // Preview selected files
-  document.getElementById('product-images').addEventListener('change', function(e) {
-    const previewContainer = document.getElementById('upload-preview');
+  $('product-images').addEventListener('change', function(e) {
+    const previewContainer = $('upload-preview');
     previewContainer.innerHTML = '';
     const files = e.target.files;
     if (files.length > 30) {
@@ -207,10 +348,11 @@
     }
   });
 
+  /* ===================== DANH MỤC ===================== */
   async function loadCategories() {
-    const tbody = document.getElementById('categories-table-body');
-    const parentSelect = document.getElementById('cat-parent');
-    const productCatSelect = document.getElementById('product-category');
+    const tbody = $('categories-table-body');
+    const parentSelect = $('cat-parent');
+    const productCatSelect = $('product-category');
 
     try {
       const { data: categories, error } = await supabaseClient.from('categories').select('*').order('id', { ascending: true });
@@ -247,10 +389,10 @@
     } catch (err) { console.error(err); }
   }
 
-  document.getElementById('add-category-form').addEventListener('submit', async (e) => {
+  $('add-category-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('cat-name').value.trim();
-    const parentId = document.getElementById('cat-parent').value || null;
+    const name = $('cat-name').value.trim();
+    const parentId = $('cat-parent').value || null;
     let level = 1;
 
     if (parentId) {
@@ -261,7 +403,7 @@
     const { error } = await supabaseClient.from('categories').insert([{ name, parent_id: parentId, level }]);
     if (error) alert('Lỗi: ' + error.message);
     else {
-      document.getElementById('add-category-form').reset();
+      $('add-category-form').reset();
       await loadCategories();
       loadProducts();
     }
@@ -275,8 +417,9 @@
     }
   }
 
+  /* ===================== SẢN PHẨM ===================== */
   async function loadProducts() {
-    const tbody = document.getElementById('products-table-body');
+    const tbody = $('products-table-body');
     const { data: products, error } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
 
     if (error || !products || products.length === 0) {
@@ -307,16 +450,16 @@
     }).join('');
   }
 
-  document.getElementById('add-product-form').addEventListener('submit', async (e) => {
+  $('add-product-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const statusDiv = document.getElementById('status');
-    const btnSubmit = document.getElementById('btn-submit');
+    const statusDiv = $('status');
+    const btnSubmit = $('btn-submit');
 
-    const name = document.getElementById('name').value;
-    const price = document.getElementById('price').value;
-    const categoryId = document.getElementById('product-category').value || null;
-    const description = document.getElementById('description').value;
-    const fileInput = document.getElementById('product-images');
+    const name = $('name').value;
+    const price = $('price').value;
+    const categoryId = $('product-category').value || null;
+    const description = $('description').value;
+    const fileInput = $('product-images');
     const selectedSizes = Array.from(document.querySelectorAll('.product-size-cb:checked')).map(cb => cb.value);
 
     if (!fileInput.files || fileInput.files.length === 0) {
@@ -325,21 +468,14 @@
     }
 
     btnSubmit.disabled = true;
-    statusDiv.innerText = `⏳ Đang tải ảnh lên (0/${fileInput.files.length})...`;
+    const files = Array.from(fileInput.files).slice(0, 30);
 
     try {
-      const files = Array.from(fileInput.files).slice(0, 30);
       const imageUrls = [];
 
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        statusDiv.innerText = `⏳ Đang tải ảnh ${i + 1}/${files.length}...`;
-        const fileName = `${Date.now()}_${i}_${file.name.replace(/\s+/g, '_')}`;
-        const { error: upErr } = await supabaseClient.storage.from('products').upload(fileName, file);
-        if (upErr) throw upErr;
-
-        const { data: urlData } = supabaseClient.storage.from('products').getPublicUrl(fileName);
-        imageUrls.push(urlData.publicUrl);
+        statusDiv.innerText = `⏳ Đang gắn watermark & tải ảnh ${i + 1}/${files.length} lên Cloudinary...`;
+        imageUrls.push(await uploadImage(files[i], true));   // luôn gắn watermark 247.Sneaker
       }
 
       const productPayload = {
@@ -355,9 +491,9 @@
       const { error: prodErr } = await supabaseClient.from('products').insert([productPayload]);
       if (prodErr) throw prodErr;
 
-      statusDiv.innerText = `✅ Đăng sản phẩm thành công với ${imageUrls.length} ảnh!`;
-      document.getElementById('add-product-form').reset();
-      document.getElementById('upload-preview').innerHTML = '';
+      statusDiv.innerText = `✅ Đăng sản phẩm thành công với ${imageUrls.length} ảnh (đã lưu Cloudinary + watermark)!`;
+      $('add-product-form').reset();
+      $('upload-preview').innerHTML = '';
       renderSizeCheckboxes();
       loadProducts();
     } catch (err) {
@@ -374,14 +510,9 @@
     }
   }
 
-  async function init() {
-    await loadCategories();
-    await loadProducts();
-    await loadOrders();
-  }
-  
+  /* ===================== ĐƠN HÀNG ===================== */
   async function loadOrders() {
-    const tbody = document.getElementById('orders-table-body');
+    const tbody = $('orders-table-body');
     const { data, error } = await supabaseClient.from('orders').select('*').order('id', { ascending: false });
 
     if (error || !data || data.length === 0) {
@@ -390,8 +521,8 @@
     }
 
     tbody.innerHTML = data.map(o => {
-      const itemsList = Array.isArray(o.cart_items) 
-        ? o.cart_items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: <b>${i.selectedSize}</b>)` : ''} - x${i.qty}`).join('<br>') 
+      const itemsList = Array.isArray(o.cart_items)
+        ? o.cart_items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: <b>${i.selectedSize}</b>)` : ''} - x${i.qty}`).join('<br>')
         : 'Không có';
 
       return `
@@ -414,6 +545,13 @@
     }
   }
 
+  async function init() {
+    renderDesign();
+    loadDesign();
+    await loadCategories();
+    await loadProducts();
+    await loadOrders();
+  }
   init();
 </script>
 
