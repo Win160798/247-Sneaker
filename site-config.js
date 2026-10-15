@@ -4,7 +4,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 // Cloudinary: tải ảnh bằng "Unsigned upload preset" (KHÔNG dùng API secret trên web)
 const CLOUD_NAME = 'yxjghz1b';
-const UPLOAD_PRESET = 'sneaker247';
+const UPLOAD_PRESET = '247_sneaker';
 const WATERMARK = '247.Sneaker';
 
 const clone = o => JSON.parse(JSON.stringify(o));
