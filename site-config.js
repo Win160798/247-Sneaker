@@ -43,16 +43,17 @@ const DEFAULTS = {
   big: 'SNEAKER',
   gal: [...G],
   gal2: [...G],
-  prodTitle: 'danh sách sản phẩm',
-  sizeTitle: 'đo từ đỉnh ngón cái\nđến gót chân',
+  prodTitle: 'DANH SÁCH SẢN PHẨM',
+  sizeTitle: 'ĐO TỪ ĐỈNH NGÓN CÁI\nĐẾN GÓT CHÂN',
   sizeHead: ['SIZE NAM', 'SIZE NỮ', 'KÍCH THƯỚC', 'SIZE'],
   sizeM: [['22cm', 38], ['22.5 cm', 39], ['23 cm', 40], ['23.5 cm', 41], ['24 cm', 42], ['24.5 cm', 43], ['25 cm', 44]].map(([k, s]) => ({ k, s: String(s) })),
   sizeF: [['21 cm', 36], ['21.5 cm', 37], ['22cm', 38], ['22.5 cm', 39], ['23 cm', 40], ['23.5 cm', 41], ['24 cm', 42]].map(([k, s]) => ({ k, s: String(s) })),
-  storeTitle: 'hệ thống cửa hàng',
+  storeTitle: 'HỆ THỐNG CỬA HÀNG',
   homeIcon: 'img/home.png',
+  // addr = chữ hiển thị | q = địa chỉ/từ khóa để hiện Google Maps (hoặc dán link nhúng) | link = link khi bấm vào địa chỉ
   stores: [
-    { img: 'img/map1.jpg', addr: '23 Đinh Châu - Cẩm Lệ - Đà Nẵng', link: gm('23 Đinh Châu, Cẩm Lệ, Đà Nẵng') },
-    { img: 'img/map2.jpg', addr: '16 Mai Đăng Chơn - Ngũ Hành Sơn - Đà Nẵng', link: gm('16 Mai Đăng Chơn, Ngũ Hành Sơn, Đà Nẵng') }
+    { addr: '23 Đinh Châu - Cẩm Lệ - Đà Nẵng', q: '23 Đinh Châu, Cẩm Lệ, Đà Nẵng', link: gm('23 Đinh Châu, Cẩm Lệ, Đà Nẵng') },
+    { addr: '16 Mai Đăng Chơn - Ngũ Hành Sơn - Đà Nẵng', q: '16 Mai Đăng Chơn, Ngũ Hành Sơn, Đà Nẵng', link: gm('16 Mai Đăng Chơn, Ngũ Hành Sơn, Đà Nẵng') }
   ],
   logo: 'img/logo.jpg',
   contacts: [
@@ -69,5 +70,6 @@ const DEFAULTS = {
     size: 'hero,size,stores,contact',
     contact: 'hero,contact,stores'
   },
-  st: {}   // kiểu riêng từng phần tử do trình dựng giao diện tạo ra
+  // Kiểu chữ theo nhóm: { ff: font, tt: 'uppercase'|'none', fw: 'bold'|'normal', fi: '1'|'0' }
+  ts: {}
 };
