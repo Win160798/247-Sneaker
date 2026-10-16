@@ -1,559 +1,462 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Trị Shop - 247 Sneaker</title>
-  <link rel="icon" href="img/logo.jpg">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="site-config.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-    body { background: #f4f6f8; color: #333; padding: 20px; }
-    .container { max-width: 1100px; margin: 0 auto; }
-    h1 { text-align: center; margin-bottom: 25px; color: #111; font-size: 26px; }
-    .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-    .card h2 { font-size: 18px; margin-bottom: 15px; color: #222; border-bottom: 2px solid #007bff; padding-bottom: 8px; }
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; }
-    input[type="text"], input[type="number"], select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
-    input[type="color"] { width: 70px; height: 38px; padding: 2px; border: 1px solid #ccc; border-radius: 5px; }
-    input[type="file"] { width: 100%; padding: 8px; border: 1px dashed #007bff; background: #f0f7ff; border-radius: 5px; cursor: pointer; font-size: 12px; }
-    button { background: #28a745; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; transition: 0.2s; }
-    button:hover { background: #218838; }
-    .btn-primary { background: #007bff; }
-    .btn-primary:hover { background: #0056b3; }
-    .btn-secondary { background: #6c757d; width: auto; padding: 8px 15px; font-size: 13px; }
-    .btn-secondary:hover { background: #5a6268; }
-    .product-list { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .product-list th, .product-list td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 13px; }
-    .product-list th { background: #f8f9fa; font-weight: bold; }
-    .product-img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; margin-right: 3px; margin-bottom: 3px; display: inline-block; }
-    .btn-delete { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; width: auto; font-size: 12px; }
-    .btn-delete:hover { background: #c82333; }
-    .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
-    .badge-lvl1 { background: #e3f2fd; color: #0d47a1; }
-    .size-checkboxes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #ddd; }
-    .size-checkboxes label { font-weight: normal; font-size: 12px; display: flex; align-items: center; gap: 4px; cursor: pointer; background: #fff; padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; }
-    #status, #dstatus { margin-top: 10px; font-weight: bold; text-align: center; font-size: 14px; }
-    .thumb-preview-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
-    .thumb-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
-    /* ===== Trình chỉnh giao diện ===== */
-    .sec { border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; background: #fafafa; }
-    .sec summary { padding: 11px 14px; font-weight: bold; cursor: pointer; }
-    .sec .bd { padding: 6px 14px 14px; }
-    .fx { margin-bottom: 10px; }
-    .imgf { display: flex; gap: 8px; align-items: center; }
-    .imgf img { width: 46px; height: 46px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; background: #eee; flex: none; }
-    label.up { display: inline-block; background: #6c757d; color: #fff; padding: 9px 12px; border-radius: 5px; font-size: 12px; margin: 0; cursor: pointer; white-space: nowrap; }
-    .row { border: 1px dashed #bbb; border-radius: 6px; padding: 10px; margin: 8px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; align-items: end; background: #fff; }
-    .tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0 4px; }
-    .tools button { width: auto; }
-    .hint { font-size: 12px; color: #777; margin-top: 3px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản Trị - 247 Sneaker</title>
+<link rel="icon" href="img/logo.jpg">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="site-config.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,'Segoe UI',Arial,sans-serif}
+:root{--p:#3448c5;--pl:#e4e8fb;--bd:#e3e6ee;--tx:#1f2430;--mu:#6b7385}
+body{background:#fff;color:var(--tx);font-size:14px}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sb{border-right:1px solid var(--bd);padding:16px 12px;position:sticky;top:0;height:100vh;overflow:auto;background:#fff}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;padding:4px 8px 16px}.logo img{width:34px;height:34px;border-radius:8px}
+.sb h4{font-size:12px;font-weight:600;color:var(--mu);padding:14px 10px 6px}
+.sb button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:10px;border-radius:8px;font-size:14px;color:var(--tx);cursor:pointer;text-align:left}
+.sb button:hover{background:#f3f4f9}.sb button.on{background:var(--pl);color:var(--p);font-weight:600}.sb i{width:18px;text-align:center}
+.sb a{display:block;padding:10px;color:var(--p);text-decoration:none;font-size:13px}
+main{padding:22px 28px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.top h1{font-size:22px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--bd);margin:12px 0 18px}
+.tabs button{border:0;background:none;padding:11px 14px;font-size:14px;color:var(--tx);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;width:auto}
+.tabs button.on{color:var(--p);border-color:var(--p);font-weight:600;background:var(--pl);border-radius:6px 6px 0 0}
+.v{display:none}.v.on{display:block}
+button{font-family:inherit}
+.btn{background:var(--p);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}.btn:hover{background:#2a3aa3}
+.btn.g{background:#eef0f6;color:var(--tx)}.btn.g:hover{background:#e0e3ee}.btn.d{background:#fdeaea;color:#c0392b;padding:6px 12px;font-size:12px}.btn.d:hover{background:#f9d5d5}
+.btn.s{padding:7px 12px;font-size:12px}
+.card{border:1px solid var(--bd);border-radius:10px;padding:18px;margin-bottom:18px}
+label{display:block;font-weight:600;font-size:12px;margin-bottom:5px;color:#444}
+input[type=text],input[type=number],select,textarea{width:100%;padding:9px 11px;border:1px solid #cfd4e2;border-radius:7px;font-size:13px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--pl);border-color:var(--p)}
+input[type=color]{width:46px;height:34px;padding:2px;border:1px solid #cfd4e2;border-radius:6px;background:#fff}
+input[type=file]{width:100%;padding:9px;border:1px dashed var(--p);background:#f5f7ff;border-radius:7px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}.fg{margin-bottom:14px}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:13px;font-weight:600;padding:12px 10px;border-bottom:1px solid var(--bd)}
+td{padding:12px 10px;border-bottom:1px solid var(--bd);font-size:13px;vertical-align:top}
+.pimg{width:44px;height:44px;object-fit:cover;border-radius:6px;margin:0 3px 3px 0}
+.badge{background:var(--pl);color:var(--p);border-radius:99px;padding:3px 9px;font-size:11px;font-weight:600}
+.sizes{display:flex;flex-wrap:wrap;gap:8px;background:#f8f9fc;padding:10px;border-radius:8px;border:1px solid var(--bd)}
+.sizes label{display:flex;align-items:center;gap:5px;font-weight:400;margin:0;background:#fff;padding:4px 9px;border:1px solid #cfd4e2;border-radius:6px;cursor:pointer}
+.th{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.th img{width:50px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}
+#status,#ds{font-weight:600;font-size:13px}
+/* ===== Trình dựng giao diện ===== */
+.tb{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tb .seg{display:flex;background:#eef0f6;border-radius:8px;padding:3px}.tb .seg button{border:0;background:none;padding:7px 12px;border-radius:6px;font-size:13px;cursor:pointer}.tb .seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
+.dz{display:grid;grid-template-columns:1fr 340px;gap:14px;height:calc(100vh - 190px);min-height:520px}
+.fw{background:#e9ebf2;border-radius:10px;display:flex;justify-content:center;overflow:auto;padding:0}
+.fw iframe{border:0;background:#fff;width:100%;height:100%;transition:width .2s}
+.fw.m iframe{width:390px;margin:10px 0;border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.2)}
+#prop{border:1px solid var(--bd);border-radius:10px;overflow:auto;background:#fff}
+.pt{display:flex;border-bottom:1px solid var(--bd);position:sticky;top:0;background:#fff;z-index:2}.pt button{flex:1;border:0;background:none;padding:11px 4px;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);border-bottom:2px solid transparent}.pt button.on{color:var(--p);border-color:var(--p)}
+.pb{padding:14px}.pb h3{font-size:14px;margin-bottom:12px}.hint{font-size:12px;color:var(--mu);line-height:1.5}
+.rw{display:flex;gap:8px;align-items:center;margin-bottom:12px}.rw>*{flex:1}.rw .btn{flex:none}
+.sg{display:flex;gap:4px}.sg button{flex:1;border:1px solid #cfd4e2;background:#fff;border-radius:6px;padding:7px 0;cursor:pointer;font-size:13px}.sg button.on{background:var(--p);color:#fff;border-color:var(--p)}
+.sl{list-style:none}.sl li{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--bd);border-radius:8px;margin-bottom:6px;background:#fff;cursor:grab}.sl li:hover{background:#f5f7ff}.sl li span{flex:1}.sl li.ov{border-color:var(--p);background:var(--pl)}
+.imgf{display:flex;gap:7px;align-items:center}.imgf img{width:42px;height:42px;object-fit:cover;border-radius:6px;border:1px solid var(--bd);background:#eee;flex:none}
+label.up{display:inline-block;background:#eef0f6;padding:8px 10px;border-radius:7px;font-size:12px;margin:0;cursor:pointer;white-space:nowrap;font-weight:600}
+.row{border:1px dashed #c5cadb;border-radius:8px;padding:10px;margin:8px 0;display:grid;gap:8px;background:#fafbff}
+.fx{margin-bottom:11px}
+</style>
 </head>
 <body>
+<datalist id="fl"></datalist>
+<div class="app">
+  <aside class="sb">
+    <div class="logo"><img src="img/logo.jpg" alt=""> 247 Sneaker</div>
+    <h4>Giao diện</h4>
+    <button data-v="design" class="on"><i class="fa-solid fa-wand-magic-sparkles"></i> Trình dựng giao diện</button>
+    <h4>Cửa hàng</h4>
+    <button data-v="products"><i class="fa-solid fa-box"></i> Sản phẩm</button>
+    <button data-v="cats"><i class="fa-solid fa-folder-tree"></i> Danh mục</button>
+    <button data-v="orders"><i class="fa-solid fa-cart-shopping"></i> Đơn hàng</button>
+    <h4>Liên kết</h4>
+    <a href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem website</a>
+  </aside>
 
-<div class="container">
-  <h1>Trang Quản Trị Hệ Thống - 247 Sneaker</h1>
+  <main>
+    <!-- ===== TRÌNH DỰNG GIAO DIỆN ===== -->
+    <section class="v on" id="v-design">
+      <div class="top"><h1>Trình dựng giao diện</h1></div>
+      <div class="tb">
+        <div class="seg" id="pgs"><button data-pg="home" class="on">Trang chủ</button><button data-pg="products">Sản phẩm</button><button data-pg="size">Chọn size</button><button data-pg="contact">Liên hệ</button></div>
+        <div class="seg" id="dev"><button data-d="" class="on" title="Máy tính"><i class="fa-solid fa-desktop"></i></button><button data-d="m" title="Điện thoại"><i class="fa-solid fa-mobile-screen"></i></button></div>
+        <label style="margin:0;font-weight:500;display:flex;gap:6px;align-items:center"><input type="checkbox" id="wm" checked> Gắn watermark khi tải ảnh</label>
+        <span style="flex:1"></span><span id="ds"></span>
+        <button class="btn g" id="reset"><i class="fa-solid fa-rotate-left"></i> Mặc định</button>
+        <button class="btn" id="save"><i class="fa-solid fa-floppy-disk"></i> Lưu giao diện</button>
+      </div>
+      <div class="dz">
+        <div class="fw" id="fw"><iframe id="fr" src="index.html?edit=1"></iframe></div>
+        <div id="prop"></div>
+      </div>
+    </section>
 
-  <!-- 0. CHỈNH SỬA GIAO DIỆN WEBSITE -->
-  <div class="card">
-    <h2>🎨 Chỉnh Sửa Giao Diện Website (100%)</h2>
-    <div class="tools">
-      <label style="margin:0;font-weight:normal"><input type="checkbox" id="wm-design" checked> Gắn watermark "247.Sneaker" lên ảnh giao diện khi tải lên</label>
-    </div>
-    <div class="hint" style="margin-bottom:10px">Mọi ảnh tải lên đều được lưu về Cloudinary. Chỉnh xong bấm "Lưu giao diện", rồi tải lại trang web để xem.</div>
-    <div id="design"></div>
-    <div class="tools">
-      <button id="save-design" style="width:auto">💾 Lưu giao diện</button>
-      <button id="reset-design" class="btn-secondary" type="button">↺ Khôi phục mặc định (theo PDF)</button>
-    </div>
-    <div id="dstatus"></div>
-  </div>
-
-  <!-- 1. QUẢN LÝ DANH MỤC -->
-  <div class="card">
-    <h2><i class="fa-solid fa-folder-plus"></i> Quản Lý Danh Mục</h2>
-    <form id="add-category-form">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Tên danh mục *</label>
-          <input type="text" id="cat-name" placeholder="VD: Giày Thể Thao" required>
-        </div>
-        <div class="form-group">
-          <label>Thuộc danh mục cha</label>
-          <select id="cat-parent">
-            <option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option>
-          </select>
-        </div>
-        <div class="form-group" style="display: flex; align-items: flex-end;">
-          <button type="submit" class="btn-primary"><i class="fa-solid fa-plus"></i> Thêm Danh Mục</button>
+    <!-- ===== SẢN PHẨM ===== -->
+    <section class="v" id="v-products">
+      <div class="top"><h1>Sản phẩm</h1></div>
+      <div class="tabs"><button class="on" data-t="pl">Danh sách</button><button data-t="pa">Thêm sản phẩm</button></div>
+      <div id="t-pl">
+        <table>
+          <thead><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá bán</th><th>Size</th><th></th></tr></thead>
+          <tbody id="products-table-body"><tr><td colspan="6">Đang tải...</td></tr></tbody>
+        </table>
+      </div>
+      <div id="t-pa" style="display:none">
+        <div class="card">
+          <form id="add-product-form">
+            <div class="grid">
+              <div class="fg"><label>Tên sản phẩm *</label><input type="text" id="name" placeholder="Ví dụ: Giày Sneaker Nam Cao Cấp" required></div>
+              <div class="fg"><label>Giá bán chung (VNĐ) *</label><input type="number" id="price" placeholder="800000" required></div>
+              <div class="fg"><label>Danh mục</label><select id="product-category"><option value="">-- Chưa chọn danh mục --</option></select></div>
+            </div>
+            <div class="fg">
+              <label>Ảnh sản phẩm (tối đa 30 ảnh) *</label>
+              <input type="file" id="product-images" accept="image/*" multiple required>
+              <div class="hint" style="margin-top:5px">Ảnh đầu tiên là ảnh đại diện. Ảnh tự gắn watermark 247.Sneaker và lưu về Cloudinary.</div>
+              <div id="upload-preview" class="th"></div>
+            </div>
+            <div class="fg"><label>Size áp dụng (36 - 46)</label><div class="sizes" id="size-checkboxes-container"></div></div>
+            <div class="fg"><label>Mô tả</label><textarea id="description" rows="3" placeholder="Chất liệu, thông số..."></textarea></div>
+            <button class="btn" id="btn-submit" type="submit">ĐĂNG SẢN PHẨM</button>
+            <div id="status" style="margin-top:10px"></div>
+          </form>
         </div>
       </div>
-    </form>
+    </section>
 
-    <table class="product-list" style="margin-top: 15px;">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Tên Danh Mục</th>
-          <th>Cấp Độ</th>
-          <th>Danh Mục Cha</th>
-          <th>Thao tác</th>
-        </tr>
-      </thead>
-      <tbody id="categories-table-body">
-        <tr><td colspan="5" style="text-align:center;">Đang tải danh mục...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- 2. FORM THÊM SẢN PHẨM (TẢI ĐẾN 30 ẢNH, CHUNG GIÁ, CHUNG SIZE) -->
-  <div class="card">
-    <h2>➕ Thêm Sản Phẩm (Tải Nhiều Ảnh - Lên tới 30 ảnh, Dùng Chung 1 Giá & Chọn Size 36-46)</h2>
-    <form id="add-product-form">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Tên sản phẩm *</label>
-          <input type="text" id="name" placeholder="Ví dụ: Giày Sneaker Nam Cao Cấp" required>
-        </div>
-        <div class="form-group">
-          <label>Giá bán chung cho sản phẩm (VNĐ) *</label>
-          <input type="number" id="price" placeholder="Ví dụ: 800000" required>
-        </div>
-        <div class="form-group">
-          <label>Danh mục sản phẩm</label>
-          <select id="product-category">
-            <option value="">-- Chưa chọn danh mục --</option>
-          </select>
-        </div>
+    <!-- ===== DANH MỤC ===== -->
+    <section class="v" id="v-cats">
+      <div class="top"><h1>Danh mục</h1></div>
+      <div class="card">
+        <form id="add-category-form">
+          <div class="grid" style="align-items:end">
+            <div class="fg"><label>Tên danh mục *</label><input type="text" id="cat-name" placeholder="VD: Giày Thể Thao" required></div>
+            <div class="fg"><label>Thuộc danh mục cha</label><select id="cat-parent"><option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option></select></div>
+            <div class="fg"><button class="btn" type="submit">+ Thêm danh mục</button></div>
+          </div>
+        </form>
       </div>
+      <table>
+        <thead><tr><th>ID</th><th>Tên danh mục</th><th>Cấp độ</th><th>Danh mục cha</th><th></th></tr></thead>
+        <tbody id="categories-table-body"><tr><td colspan="5">Đang tải...</td></tr></tbody>
+      </table>
+    </section>
 
-      <div class="form-group">
-        <label>Chọn nhiều ảnh sản phẩm (Có thể chọn cùng lúc tối đa 30 ảnh) *</label>
-        <input type="file" id="product-images" accept="image/*" multiple required>
-        <small style="color: #666; display: block; margin-top: 4px;">Ảnh đầu tiên sẽ được chọn làm ảnh đại diện chính. Ảnh tự động gắn watermark 247.Sneaker và lưu về Cloudinary.</small>
-        <div id="upload-preview" class="thumb-preview-container"></div>
-      </div>
-
-      <div class="form-group">
-        <label>Chọn các Size áp dụng cho sản phẩm này (Từ 36 đến 46):</label>
-        <div class="size-checkboxes" id="size-checkboxes-container">
-          <!-- Rendered by JS -->
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>Mô tả chi tiết sản phẩm</label>
-        <textarea id="description" rows="3" placeholder="Chất liệu, thông số..."></textarea>
-      </div>
-
-      <button type="submit" id="btn-submit" style="margin-top: 15px;">🚀 ĐĂNG SẢN PHẨM</button>
-    </form>
-    <div id="status"></div>
-  </div>
-
-  <!-- 3. DANH SÁCH SẢN PHẨM -->
-  <div class="card">
-    <h2>📦 Danh Sách Sản Phẩm Đang Bán</h2>
-    <table class="product-list">
-      <thead>
-        <tr>
-          <th>Ảnh chính & Số lượng</th>
-          <th>Tên sản phẩm</th>
-          <th>Danh mục</th>
-          <th>Giá bán</th>
-          <th>Size hỗ trợ</th>
-          <th>Thao tác</th>
-        </tr>
-      </thead>
-      <tbody id="products-table-body">
-        <tr><td colspan="6" style="text-align:center;">Đang tải danh sách...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- 4. QUẢN LÝ ĐƠN HÀNG -->
-  <div class="card">
-    <h2>🛒 Quản Lý Đơn Hàng Khách Đặt</h2>
-    <table class="product-list">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Khách Hàng</th>
-          <th>SĐT / Địa Chỉ</th>
-          <th>Sản Phẩm Đặt</th>
-          <th>Tổng Tiền</th>
-          <th>Thao tác</th>
-        </tr>
-      </thead>
-      <tbody id="orders-table-body">
-        <tr><td colspan="6" style="text-align:center;">Đang tải đơn hàng...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
+    <!-- ===== ĐƠN HÀNG ===== -->
+    <section class="v" id="v-orders">
+      <div class="top"><h1>Đơn hàng</h1></div>
+      <table>
+        <thead><tr><th>ID</th><th>Khách hàng</th><th>SĐT / Địa chỉ</th><th>Sản phẩm đặt</th><th>Tổng tiền</th><th></th></tr></thead>
+        <tbody id="orders-table-body"><tr><td colspan="6">Đang tải...</td></tr></tbody>
+      </table>
+    </section>
+  </main>
 </div>
 
 <script>
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  let categoriesMap = {};
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let categoriesMap = {};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fam = x => String(x || '').split(':')[0];
+$('fl').innerHTML = FONTS.map(f => `<option value="${esc(f)}">`).join('');
 
-  /* ===================== CLOUDINARY + WATERMARK ===================== */
-  // Vẽ watermark "247.Sneaker" thẳng lên ảnh (chữ mờ giữa ảnh + chữ rõ góc phải dưới) rồi mới tải lên
-  async function addWatermark(file) {
-    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
-    const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, w, h);
-    x.textBaseline = 'middle'; x.textAlign = 'center';
-    x.font = `bold ${Math.round(w * 0.09)}px Arial`; x.fillStyle = 'rgba(255,255,255,.22)';
-    x.save(); x.translate(w / 2, h / 2); x.rotate(-Math.PI / 7); x.fillText(WATERMARK, 0, 0); x.restore();
-    const f = Math.max(16, Math.round(w * 0.035));
-    x.font = `bold ${f}px Arial`; x.textAlign = 'right'; x.fillStyle = 'rgba(255,255,255,.88)';
-    x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = f / 3;
-    x.fillText(WATERMARK, w - f * 0.7, h - f * 0.9);
-    const png = file.type === 'image/png';
-    return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
+/* ---------- Điều hướng ---------- */
+document.querySelectorAll('.sb button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.sb button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.v').forEach(v => v.classList.toggle('on', v.id === 'v-' + b.dataset.v));
+});
+document.querySelectorAll('#v-products .tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('#v-products .tabs button').forEach(x => x.classList.toggle('on', x === b));
+  $('t-pl').style.display = b.dataset.t === 'pl' ? '' : 'none'; $('t-pa').style.display = b.dataset.t === 'pa' ? '' : 'none';
+});
+
+/* ===================== CLOUDINARY + WATERMARK (mật độ vừa phải) ===================== */
+async function addWatermark(file) {
+  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, w, h);
+  // lớp chữ chéo lặp đều khắp ảnh
+  const f = Math.round(Math.max(w, h) * 0.04), sx = f * 8.5, sy = f * 5.2, d = Math.hypot(w, h);
+  x.save(); x.translate(w / 2, h / 2); x.rotate(-Math.PI / 6);
+  x.font = `bold ${f}px Arial`; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillStyle = 'rgba(255,255,255,.34)'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = f / 6;
+  let row = 0;
+  for (let yy = -d / 2; yy < d / 2; yy += sy, row++)
+    for (let xx = -d / 2 + (row % 2) * sx / 2; xx < d / 2; xx += sx) x.fillText(WATERMARK, xx, yy);
+  x.restore();
+  // chữ rõ ở góc phải dưới
+  const g = Math.max(16, Math.round(w * 0.035));
+  x.font = `bold ${g}px Arial`; x.textAlign = 'right'; x.textBaseline = 'alphabetic'; x.fillStyle = 'rgba(255,255,255,.9)';
+  x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = g / 3; x.fillText(WATERMARK, w - g * 0.7, h - g * 0.9);
+  const png = file.type === 'image/png';
+  return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
+}
+async function uploadImage(file, wm = true) {
+  const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
+  const fd = new FormData();
+  fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
+  const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  const j = await r.json();
+  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
+  return j.secure_url;
+}
+
+/* ===================== TRÌNH DỰNG GIAO DIỆN ===================== */
+let F = null, SEL = null, ptab = 'el', rt;
+const C = () => F.__cfg();
+const rd = () => { clearTimeout(rt); rt = setTimeout(() => F.__redraw(), 90); };
+const say = t => { $('ds').textContent = t; };
+window.onReady = () => { F = $('fr').contentWindow; renderPanel(); };
+window.onSel = (kind, key) => { SEL = { kind, key }; ptab = 'el'; renderPanel(); };
+
+$('pgs').onclick = e => { const b = e.target.closest('button'); if (!b || !F) return; document.querySelectorAll('#pgs button').forEach(x => x.classList.toggle('on', x === b)); F.location.hash = '#' + b.dataset.pg; setTimeout(() => ptab === 'pg' && renderPanel(), 150); };
+$('dev').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#dev button').forEach(x => x.classList.toggle('on', x === b)); $('fw').classList.toggle('m', b.dataset.d === 'm'); };
+$('save').onclick = async () => {
+  if (!F) return;
+  const { error } = await supabaseClient.from('site_settings').upsert({ id: 'main', data: C() });
+  say(error ? '❌ ' + error.message + ' (đã chạy supabase.sql chưa?)' : '✅ Đã lưu! Tải lại web để xem.');
+};
+$('reset').onclick = () => { if (F && confirm('Khôi phục toàn bộ giao diện về mặc định theo PDF? (chưa lưu cho đến khi bấm Lưu giao diện)')) { F.__set(clone(DEFAULTS)); SEL = null; renderPanel(); } };
+
+const SECN = { hero: 'Banner & chữ SNEAKER', gal: 'Ảnh bo góc 1', prod: 'Danh sách sản phẩm', gal2: 'Ảnh bo góc 2', stores: 'Hệ thống cửa hàng', contact: 'Liên hệ', size: 'Bảng size', header: 'Thanh đầu trang' };
+const pgKey = () => F.__page();
+const pgList = () => (C().pages[pgKey()] || '').split(',').map(s => s.trim()).filter(Boolean);
+const pgSave = a => { C().pages[pgKey()] = a.join(','); F.__redraw(); renderPanel(); };
+const stOf = k => (C().st[k] = C().st[k] || {});
+function setSt(p, v, rerender) {
+  const s = stOf(SEL.key); if (v === '' || v == null) delete s[p]; else s[p] = v;
+  F.__redraw(); if (rerender) renderPanel();
+}
+function setTxt(v) { sp(C(), SEL.key, v); rd(); }
+function resetSt() { delete C().st[SEL.kind === 'sec' ? 'sec:' + SEL.key : SEL.key]; F.__redraw(); renderPanel(); }
+async function upSel(inp) {
+  const f = inp.files[0]; if (!f) return; say('⏳ Đang gắn watermark & tải lên Cloudinary...');
+  try { const u = await uploadImage(f, $('wm').checked); sp(C(), SEL.key, u); F.__redraw(); renderPanel(); say('✅ Đã tải ảnh. Nhớ bấm Lưu giao diện.'); } catch (e) { say('❌ ' + e.message); }
+}
+const fontOpts = cur => FONTS.map(f => `<option value="${esc(f)}" ${f === cur ? 'selected' : ''}>${esc(fam(f))}</option>`).join('');
+
+function elPanel() {
+  if (!SEL) return `<div class="pb"><h3>Chỉnh sửa phần tử</h3><p class="hint">Bấm vào <b>chữ</b>, <b>ảnh</b> hoặc <b>một khối</b> trên trang để chỉnh. Nhấp đúp vào chữ để gõ trực tiếp.<br><br>Tab <b>Trang</b>: kéo thả sắp xếp các khối.<br>Tab <b>Toàn cục</b>: màu, font, favicon, Zalo.<br>Tab <b>Nội dung</b>: thêm/xóa cửa hàng, liên hệ, bảng size...</p></div>`;
+  const k = SEL.key;
+  if (SEL.kind === 'img') {
+    const v = gp(C(), k) || '';
+    return `<div class="pb"><h3>🖼 Ảnh</h3><div class="imgf" style="margin-bottom:12px"><img src="${esc(v)}" alt="" style="width:100%;height:120px;object-fit:contain"></div>
+      <div class="fg"><label>Link ảnh</label><input type="text" value="${esc(v)}" oninput="sp(C(),SEL.key,this.value);rd()"></div>
+      <label class="up" style="display:block;text-align:center;padding:12px"><i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh mới lên Cloudinary<input type="file" accept="image/*" hidden onchange="upSel(this)"></label></div>`;
   }
-  async function uploadImage(file, wm = true) {
-    const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
-    const fd = new FormData();
-    fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
-    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-    const j = await r.json();
-    if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
-    return j.secure_url;
+  if (SEL.kind === 'sec') {
+    const s = C().st['sec:' + k] || {}, ls = pgList(), i = ls.indexOf(k);
+    return `<div class="pb"><h3>▭ Khối: ${esc(SECN[k] || k)}</h3>
+      <div class="fg"><label>Màu nền</label><div class="rw"><input type="color" value="${s.bg || '#ffffff'}" oninput="SEL.kind='sec';stSec('bg',this.value)"><button class="btn g s" onclick="stSec('bg','',1)">Bỏ màu</button></div></div>
+      <div class="fg"><label>Khoảng cách trên: <b>${s.pt ?? 'mặc định'}</b></label><input type="range" min="0" max="250" value="${s.pt ?? 60}" oninput="stSec('pt',this.value)"></div>
+      <div class="fg"><label>Khoảng cách dưới: <b>${s.pb ?? 'mặc định'}</b></label><input type="range" min="0" max="250" value="${s.pb ?? 60}" oninput="stSec('pb',this.value)"></div>
+      ${i > -1 ? `<div class="rw"><button class="btn g s" onclick="mvSec(-1)">↑ Lên</button><button class="btn g s" onclick="mvSec(1)">↓ Xuống</button><button class="btn d" onclick="hideSec()">Ẩn khối</button></div>` : ''}
+      <button class="btn g s" onclick="resetSt()">Đặt lại kiểu</button></div>`;
   }
+  const s = C().st[k] || {};
+  return `<div class="pb"><h3>🔤 Chữ</h3>
+    <div class="fg"><label>Nội dung</label><textarea rows="3" oninput="setTxt(this.value)">${esc(gp(C(), k))}</textarea></div>
+    <div class="fg"><label>Phông chữ</label><select onchange="setSt('ff',this.value)"><option value="">Mặc định</option>${fontOpts(s.ff)}</select>
+      <input type="text" list="fl" placeholder="Hoặc gõ tên Google Font..." style="margin-top:6px" onchange="setSt('ff',this.value)"></div>
+    <div class="fg"><label>Cỡ chữ: <b>${s.fs || 100}%</b></label><input type="range" min="40" max="300" step="5" value="${s.fs || 100}" oninput="this.previousElementSibling.firstElementChild.textContent=this.value+'%';setSt('fs',this.value)"></div>
+    <div class="fg"><label>Kiểu chữ</label><div class="sg"><button class="${s.fw === '700' ? 'on' : ''}" onclick="setSt('fw','${s.fw === '700' ? '' : '700'}',1)"><b>B</b></button><button class="${s.fi ? 'on' : ''}" onclick="setSt('fi','${s.fi ? '' : '1'}',1)"><i>I</i></button>
+      <button class="${s.ta === 'left' ? 'on' : ''}" onclick="setSt('ta','left',1)"><i class="fa-solid fa-align-left"></i></button><button class="${s.ta === 'center' ? 'on' : ''}" onclick="setSt('ta','center',1)"><i class="fa-solid fa-align-center"></i></button><button class="${s.ta === 'right' ? 'on' : ''}" onclick="setSt('ta','right',1)"><i class="fa-solid fa-align-right"></i></button></div></div>
+    <div class="fg"><label>Màu chữ</label><div class="rw"><input type="color" value="${s.color || '#000000'}" oninput="setSt('color',this.value)"><button class="btn g s" onclick="setSt('color','',1)">Bỏ màu</button></div></div>
+    <button class="btn g s" onclick="resetSt()">Đặt lại kiểu</button></div>`;
+}
+function stSec(p, v, r) { const s = (C().st['sec:' + SEL.key] = C().st['sec:' + SEL.key] || {}); if (v === '') delete s[p]; else s[p] = v; F.__redraw(); if (r) renderPanel(); }
+function mvSec(d) { const a = pgList(), i = a.indexOf(SEL.key), j = i + d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; pgSave(a); }
+function hideSec() { pgSave(pgList().filter(x => x !== SEL.key)); SEL = null; renderPanel(); }
 
-  /* ===================== CHỈNH SỬA GIAO DIỆN ===================== */
-  let cfg = clone(DEFAULTS);
-  const I = 'img', T = 'text', A = 'area', C = 'color';
-  const SCH = [
-    ['🌐 Chung', [
-      ['title', T, 'Tiêu đề tab trình duyệt'], ['favicon', I, 'Favicon (icon tab trình duyệt)'], ['brand', T, 'Tên thương hiệu (góc trái trên cùng)'],
-      ['c.bg', C, 'Màu nền xanh chủ đạo'], ['c.card', C, 'Màu nền thẻ sản phẩm'], ['c.ink', C, 'Màu chữ chính'],
-      ['font.h', T, 'Font tiêu đề (tên Google Font, VD: Lexend Giga:wght@600)'], ['font.b', T, 'Font nội dung'], ['font.n', T, 'Font menu']]],
-    ['📑 Menu', [['nav', [['t', T, 'Tên mục'], ['u', T, 'Trang: home / products / size / contact — hoặc dán link']], 'Các mục menu']]],
-    ['🖼 Banner & ảnh bo góc', [
-      ['hero.0', I, 'Banner - ảnh 1'], ['hero.1', I, 'Banner - ảnh 2'], ['hero.2', I, 'Banner - ảnh 3'], ['big', T, 'Chữ lớn dưới banner'],
-      ['gal.0', I, 'Nhóm ảnh bo góc 1 - ảnh 1'], ['gal.1', I, 'Nhóm ảnh bo góc 1 - ảnh 2'], ['gal.2', I, 'Nhóm ảnh bo góc 1 - ảnh 3'],
-      ['gal2.0', I, 'Nhóm ảnh bo góc 2 - ảnh 1'], ['gal2.1', I, 'Nhóm ảnh bo góc 2 - ảnh 2'], ['gal2.2', I, 'Nhóm ảnh bo góc 2 - ảnh 3']]],
-    ['🛍 Khối sản phẩm', [['prodTitle', T, 'Tiêu đề khối sản phẩm']]],
-    ['📏 Bảng size', [
-      ['sizeTitle', A, 'Tiêu đề'], ['sizeHead.0', T, 'Tiêu đề cột nam'], ['sizeHead.1', T, 'Tiêu đề cột nữ'], ['sizeHead.2', T, 'Tên cột kích thước'], ['sizeHead.3', T, 'Tên cột size'],
-      ['sizeM', [['k', T, 'Kích thước'], ['s', T, 'Size']], 'Bảng SIZE NAM'], ['sizeF', [['k', T, 'Kích thước'], ['s', T, 'Size']], 'Bảng SIZE NỮ']]],
-    ['📍 Hệ thống cửa hàng', [
-      ['storeTitle', T, 'Tiêu đề'], ['homeIcon', I, 'Icon ngôi nhà'],
-      ['stores', [['img', I, 'Ảnh bản đồ'], ['addr', T, 'Địa chỉ'], ['link', T, 'Link Google Maps']], 'Các cửa hàng']]],
-    ['☎ Liên hệ', [
-      ['logo', I, 'Logo'], ['contacts', [['icon', I, 'Icon'], ['text', T, 'Nội dung hiển thị'], ['link', T, 'Link khi bấm']], 'Các kênh liên hệ'], ['follow', A, 'Câu kêu gọi theo dõi']]],
-    ['🧩 Bố cục từng trang', [
-      ['pages.home', T, 'Trang chủ — khối hiển thị theo thứ tự'], ['pages.products', T, 'Trang Sản phẩm'], ['pages.size', T, 'Trang Hướng dẫn chọn size'], ['pages.contact', T, 'Trang Liên hệ']]]
-  ];
-  const ARR = {};
-  const gp = (o, p) => p.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
-  const sp = (o, p, v) => { const k = p.split('.'), l = k.pop(); k.reduce((a, x) => a[x], o)[l] = v; };
+let dragI = null;
+function pgPanel() {
+  const a = pgList(), rest = Object.keys(SECN).filter(x => x !== 'header' && !a.includes(x));
+  return `<div class="pb"><h3>Cấu trúc trang "${esc(pgKey())}"</h3><p class="hint" style="margin-bottom:10px">Kéo thả để đổi thứ tự các khối.</p>
+    <ul class="sl">${a.map((s, i) => `<li draggable="true" ondragstart="dragI=${i}" ondragover="event.preventDefault();this.classList.add('ov')" ondragleave="this.classList.remove('ov')" ondrop="dropSec(${i})"><i class="fa-solid fa-grip-vertical"></i><span>${esc(SECN[s] || s)}</span><button class="btn g s" onclick="SEL={kind:'sec',key:'${s}'};ptab='el';renderPanel()">Chỉnh</button><button class="btn d" onclick="delSec(${i})">✕</button></li>`).join('')}</ul>
+    ${rest.length ? `<div class="rw" style="margin-top:12px"><select id="addsec">${rest.map(s => `<option value="${s}">${esc(SECN[s])}</option>`).join('')}</select><button class="btn s" onclick="pgSave([...pgList(),$('addsec').value])">+ Thêm</button></div>` : ''}</div>`;
+}
+function dropSec(j) { const a = pgList(); if (dragI === null) return; a.splice(j, 0, a.splice(dragI, 1)[0]); dragI = null; pgSave(a); }
+function delSec(i) { const a = pgList(); a.splice(i, 1); pgSave(a); }
 
-  function fld(f) {
-    const [p, t, lb] = f;
-    if (Array.isArray(t)) {
-      ARR[p] = t;
-      const arr = gp(cfg, p) || [];
-      return `<div class="fx"><label>${lb}</label>${arr.map((_, i) => `<div class="row">${t.map(s => fld([`${p}.${i}.${s[0]}`, s[1], s[2]])).join('')}
-        <div><button type="button" class="btn-delete" data-del="${p}.${i}">🗑 Xóa</button></div></div>`).join('')}
-        <button type="button" class="btn-secondary" data-add="${p}">+ Thêm</button></div>`;
-    }
-    const v = gp(cfg, p) ?? '';
-    let h;
-    if (t === I) h = `<div class="imgf"><img src="${esc(v)}" alt=""><input type="text" data-p="${p}" value="${esc(v)}" placeholder="Dán link ảnh hoặc bấm Tải ảnh"><label class="up">Tải ảnh<input type="file" accept="image/*" hidden data-up="${p}"></label></div>`;
-    else if (t === A) h = `<textarea rows="2" data-p="${p}">${esc(v)}</textarea>`;
-    else if (t === C) h = `<input type="color" data-p="${p}" value="${esc(v)}">`;
-    else h = `<input type="text" data-p="${p}" value="${esc(v)}">`;
-    return `<div class="fx"><label>${lb}</label>${h}</div>`;
+/* ----- Form nội dung (danh sách thêm/xóa, bảng size...) ----- */
+const I = 'img', T = 'text', A = 'area', Cl = 'color';
+const SCH = [
+  ['g', '🌐 Chung', [['title', T, 'Tiêu đề tab trình duyệt'], ['favicon', I, 'Favicon (icon tab trình duyệt)'], ['c.bg', Cl, 'Màu nền xanh chủ đạo'], ['c.card', Cl, 'Màu nền thẻ sản phẩm'], ['c.ink', Cl, 'Màu chữ chính'],
+    ['font.h', T, 'Font tiêu đề (chọn hoặc gõ tên Google Font)'], ['font.b', T, 'Font nội dung'], ['font.n', T, 'Font menu']]],
+  ['g', '💬 Zalo (nút nổi & Mua ngay)', [['zalo.link', T, 'Link Zalo (VD: https://zalo.me/0777873464)'], ['zalo.icon', I, 'Icon nút Zalo']]],
+  ['f', '📑 Menu', [['nav', [['t', T, 'Tên mục'], ['u', T, 'Trang: home / products / size / contact — hoặc dán link']], 'Các mục menu']]],
+  ['f', '📏 Bảng size', [['sizeHead.0', T, 'Tiêu đề cột nam'], ['sizeHead.1', T, 'Tiêu đề cột nữ'], ['sizeHead.2', T, 'Tên cột kích thước'], ['sizeHead.3', T, 'Tên cột size'],
+    ['sizeM', [['k', T, 'Kích thước'], ['s', T, 'Size']], 'Bảng SIZE NAM'], ['sizeF', [['k', T, 'Kích thước'], ['s', T, 'Size']], 'Bảng SIZE NỮ']]],
+  ['f', '📍 Cửa hàng', [['homeIcon', I, 'Icon ngôi nhà'], ['stores', [['img', I, 'Ảnh bản đồ'], ['addr', T, 'Địa chỉ'], ['link', T, 'Link Google Maps']], 'Các cửa hàng']]],
+  ['f', '☎ Liên hệ', [['contacts', [['icon', I, 'Icon'], ['text', T, 'Nội dung hiển thị'], ['link', T, 'Link khi bấm']], 'Các kênh liên hệ']]]
+];
+const ARR = {};
+function fld(f) {
+  const [p, t, lb] = f;
+  if (Array.isArray(t)) {
+    ARR[p] = t; const arr = gp(C(), p) || [];
+    return `<div class="fx"><label>${lb}</label>${arr.map((_, i) => `<div class="row">${t.map(s => fld([`${p}.${i}.${s[0]}`, s[1], s[2]])).join('')}<div><button type="button" class="btn d" data-del="${p}.${i}">🗑 Xóa</button></div></div>`).join('')}<button type="button" class="btn g s" data-add="${p}">+ Thêm</button></div>`;
   }
-  function renderDesign() {
-    const open = [...document.querySelectorAll('#design details')].map(d => d.open);
-    $('design').innerHTML = SCH.map(([title, fs], i) => `<details class="sec" ${open[i] ? 'open' : ''}><summary>${title}</summary><div class="bd">${fs.map(fld).join('')}</div></details>`).join('');
+  const v = gp(C(), p) ?? '', lst = p.startsWith('font.') ? 'list="fl"' : '';
+  let h;
+  if (t === I) h = `<div class="imgf"><img src="${esc(v)}" alt=""><input type="text" data-p="${p}" value="${esc(v)}"><label class="up">Tải ảnh<input type="file" accept="image/*" hidden data-up="${p}"></label></div>`;
+  else if (t === A) h = `<textarea rows="2" data-p="${p}">${esc(v)}</textarea>`;
+  else if (t === Cl) h = `<input type="color" data-p="${p}" value="${esc(v)}">`;
+  else h = `<input type="text" ${lst} data-p="${p}" value="${esc(v)}">`;
+  return `<div class="fx"><label>${lb}</label>${h}</div>`;
+}
+const formPanel = g => `<div class="pb fm">${SCH.filter(s => s[0] === g).map(s => `<h3 style="margin-top:6px">${s[1]}</h3>${s[2].map(fld).join('')}`).join('')}</div>`;
+
+function renderPanel() {
+  if (!F) return;
+  const tabs = [['el', 'Phần tử'], ['pg', 'Trang'], ['g', 'Toàn cục'], ['f', 'Nội dung']];
+  $('prop').innerHTML = `<div class="pt">${tabs.map(([k, n]) => `<button class="${ptab === k ? 'on' : ''}" onclick="ptab='${k}';renderPanel()">${n}</button>`).join('')}</div>` +
+    (ptab === 'el' ? elPanel() : ptab === 'pg' ? pgPanel() : formPanel(ptab));
+}
+document.addEventListener('input', e => {
+  const p = e.target.dataset.p; if (!p || !e.target.closest('.fm')) return;
+  sp(C(), p, e.target.value);
+  const b = e.target.closest('.imgf'); if (b) b.querySelector('img').src = e.target.value;
+  rd();
+});
+document.addEventListener('change', async e => {
+  const p = e.target.dataset.up, f = e.target.files && e.target.files[0]; if (!p || !f) return;
+  say('⏳ Đang gắn watermark & tải lên Cloudinary...');
+  try { const u = await uploadImage(f, $('wm').checked); sp(C(), p, u); const b = e.target.closest('.imgf'); b.querySelector('input[type=text]').value = u; b.querySelector('img').src = u; F.__redraw(); say('✅ Đã tải ảnh. Nhớ bấm Lưu giao diện.'); } catch (er) { say('❌ ' + er.message); }
+  e.target.value = '';
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || !b.closest('.fm')) return;
+  if (b.dataset.del) { const k = b.dataset.del.split('.'), i = +k.pop(); gp(C(), k.join('.')).splice(i, 1); F.__redraw(); renderPanel(); }
+  if (b.dataset.add) { gp(C(), b.dataset.add).push(Object.fromEntries(ARR[b.dataset.add].map(s => [s[0], '']))); F.__redraw(); renderPanel(); }
+});
+
+/* ===================== SIZE 36-46 ===================== */
+function renderSizeCheckboxes() {
+  let html = '';
+  for (let s = 36; s <= 46; s++) html += `<label><input type="checkbox" class="product-size-cb" value="${s}"> Size ${s}</label>`;
+  $('size-checkboxes-container').innerHTML = html;
+}
+renderSizeCheckboxes();
+$('product-images').addEventListener('change', function (e) {
+  const pc = $('upload-preview'); pc.innerHTML = '';
+  const files = e.target.files;
+  if (files.length > 30) alert('Bạn chọn quá 30 ảnh! Hệ thống sẽ chỉ lấy 30 ảnh đầu tiên.');
+  for (let i = 0; i < Math.min(files.length, 30); i++) {
+    const r = new FileReader();
+    r.onload = ev => { const img = document.createElement('img'); img.src = ev.target.result; pc.appendChild(img); };
+    r.readAsDataURL(files[i]);
   }
-  $('design').addEventListener('input', e => {
-    const p = e.target.dataset.p; if (!p) return;
-    sp(cfg, p, e.target.value);
-    const box = e.target.closest('.imgf'); if (box) box.querySelector('img').src = e.target.value;
-  });
-  $('design').addEventListener('change', async e => {
-    const p = e.target.dataset.up, file = e.target.files && e.target.files[0]; if (!p || !file) return;
-    const st = $('dstatus'); st.textContent = '⏳ Đang xử lý ảnh & tải lên Cloudinary...';
-    try {
-      const u = await uploadImage(file, $('wm-design').checked);
-      sp(cfg, p, u);
-      const box = e.target.closest('.imgf'); box.querySelector('input[type=text]').value = u; box.querySelector('img').src = u;
-      st.textContent = '✅ Đã tải ảnh lên Cloudinary. Nhớ bấm "Lưu giao diện".';
-    } catch (err) { st.textContent = '❌ ' + err.message; }
-    e.target.value = '';
-  });
-  $('design').addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.del) { const k = b.dataset.del.split('.'), i = +k.pop(); gp(cfg, k.join('.')).splice(i, 1); renderDesign(); }
-    if (b.dataset.add) { gp(cfg, b.dataset.add).push(Object.fromEntries(ARR[b.dataset.add].map(s => [s[0], '']))); renderDesign(); }
-  });
-  $('save-design').addEventListener('click', async () => {
-    const { error } = await supabaseClient.from('site_settings').upsert({ id: 'main', data: cfg });
-    $('dstatus').textContent = error ? '❌ ' + error.message + ' (bạn đã chạy file supabase.sql chưa?)' : '✅ Đã lưu giao diện! Tải lại trang web để xem.';
-  });
-  $('reset-design').addEventListener('click', () => {
-    if (confirm('Khôi phục toàn bộ giao diện về mặc định theo file PDF? (chưa lưu cho đến khi bấm Lưu giao diện)')) { cfg = clone(DEFAULTS); renderDesign(); }
-  });
-  async function loadDesign() {
-    const { data } = await supabaseClient.from('site_settings').select('data').eq('id', 'main').maybeSingle();
-    cfg = merge(DEFAULTS, data && data.data);
-    renderDesign();
+});
+
+/* ===================== DANH MỤC ===================== */
+async function loadCategories() {
+  const tbody = $('categories-table-body'), parentSelect = $('cat-parent'), productCatSelect = $('product-category');
+  try {
+    const { data: categories, error } = await supabaseClient.from('categories').select('*').order('id', { ascending: true });
+    if (error) return;
+    categoriesMap = {};
+    parentSelect.innerHTML = `<option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option>`;
+    productCatSelect.innerHTML = `<option value="">-- Chưa chọn danh mục --</option>`;
+    if (!categories || categories.length === 0) { tbody.innerHTML = '<tr><td colspan="5">Chưa có danh mục.</td></tr>'; return; }
+    categories.forEach(cat => {
+      categoriesMap[cat.id] = cat.name;
+      if ((cat.level || 1) < 3) parentSelect.innerHTML += `<option value="${cat.id}">${cat.level === 2 ? '--- ' : ''}${cat.name} (Cấp ${cat.level || 1})</option>`;
+      productCatSelect.innerHTML += `<option value="${cat.id}">${cat.level === 2 ? '-- ' : (cat.level === 3 ? '---- ' : '')}${cat.name}</option>`;
+    });
+    tbody.innerHTML = categories.map(cat => `
+      <tr><td><b>${cat.id}</b></td><td><b>${cat.name}</b></td><td><span class="badge">Cấp ${cat.level || 1}</span></td>
+      <td style="color:#666">${cat.parent_id ? (categoriesMap[cat.parent_id] || 'N/A') : 'Không có'}</td>
+      <td><button class="btn d" onclick="deleteCategory(${cat.id})">Xóa</button></td></tr>`).join('');
+  } catch (err) { console.error(err); }
+}
+$('add-category-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('cat-name').value.trim(), parentId = $('cat-parent').value || null;
+  let level = 1;
+  if (parentId) {
+    const { data: parentCat } = await supabaseClient.from('categories').select('level').eq('id', parentId).single();
+    if (parentCat) level = (parentCat.level || 1) + 1;
   }
+  const { error } = await supabaseClient.from('categories').insert([{ name, parent_id: parentId, level }]);
+  if (error) alert('Lỗi: ' + error.message);
+  else { $('add-category-form').reset(); await loadCategories(); loadProducts(); }
+});
+async function deleteCategory(id) {
+  if (confirm('Xóa danh mục này?')) { await supabaseClient.from('categories').delete().eq('id', id); await loadCategories(); loadProducts(); }
+}
 
-  /* ===================== SIZE CHECKBOXES (36 - 46) ===================== */
-  function renderSizeCheckboxes() {
-    const container = $('size-checkboxes-container');
-    let html = '';
-    for (let s = 36; s <= 46; s++) {
-      html += `<label><input type="checkbox" class="product-size-cb" value="${s}"> Size ${s}</label>`;
+/* ===================== SẢN PHẨM ===================== */
+async function loadProducts() {
+  const tbody = $('products-table-body');
+  const { data: products, error } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
+  if (error || !products || products.length === 0) { tbody.innerHTML = '<tr><td colspan="6">Chưa có sản phẩm nào.</td></tr>'; return; }
+  tbody.innerHTML = products.map(item => {
+    const images = item.images || [], sizes = item.sizes || [];
+    return `<tr>
+      <td>${images.slice(0, 4).map(u => `<img src="${u}" class="pimg">`).join('')}<div class="hint">${images.length} ảnh</div></td>
+      <td><b>${item.name}</b></td>
+      <td><span class="badge">${categoriesMap[item.category_id] || 'Chưa phân loại'}</span></td>
+      <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
+      <td>${sizes.length ? sizes.join(', ') : 'Không có size'}</td>
+      <td><button class="btn d" onclick="deleteProduct(${item.id})">Xóa</button></td></tr>`;
+  }).join('');
+}
+$('add-product-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const statusDiv = $('status'), btn = $('btn-submit');
+  const name = $('name').value, price = $('price').value, categoryId = $('product-category').value || null, description = $('description').value;
+  const fileInput = $('product-images');
+  const selectedSizes = Array.from(document.querySelectorAll('.product-size-cb:checked')).map(cb => cb.value);
+  if (!fileInput.files || fileInput.files.length === 0) { alert('Vui lòng chọn ít nhất 1 ảnh sản phẩm!'); return; }
+  btn.disabled = true;
+  const files = Array.from(fileInput.files).slice(0, 30);
+  try {
+    const imageUrls = [];
+    for (let i = 0; i < files.length; i++) {
+      statusDiv.innerText = `⏳ Đang gắn watermark & tải ảnh ${i + 1}/${files.length} lên Cloudinary...`;
+      imageUrls.push(await uploadImage(files[i], true));
     }
-    container.innerHTML = html;
-  }
-  renderSizeCheckboxes();
+    const payload = { name, price: Number(price), main_image: imageUrls[0], images: imageUrls, sizes: selectedSizes, description };
+    if (categoryId) payload.category_id = Number(categoryId);
+    const { error } = await supabaseClient.from('products').insert([payload]);
+    if (error) throw error;
+    statusDiv.innerText = `✅ Đăng sản phẩm thành công với ${imageUrls.length} ảnh!`;
+    $('add-product-form').reset(); $('upload-preview').innerHTML = ''; renderSizeCheckboxes(); loadProducts();
+  } catch (err) { statusDiv.innerText = '❌ Lỗi: ' + err.message; }
+  finally { btn.disabled = false; }
+});
+async function deleteProduct(id) {
+  if (confirm('Xóa sản phẩm này?')) { await supabaseClient.from('products').delete().eq('id', id); loadProducts(); }
+}
 
-  // Preview selected files
-  $('product-images').addEventListener('change', function(e) {
-    const previewContainer = $('upload-preview');
-    previewContainer.innerHTML = '';
-    const files = e.target.files;
-    if (files.length > 30) {
-      alert("Bạn chọn quá 30 ảnh! Hệ thống sẽ chỉ lấy 30 ảnh đầu tiên.");
-    }
-    const limit = Math.min(files.length, 30);
-    for (let i = 0; i < limit; i++) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const img = document.createElement('img');
-        img.src = event.target.result;
-        img.className = 'thumb-preview';
-        previewContainer.appendChild(img);
-      }
-      reader.readAsDataURL(files[i]);
-    }
-  });
+/* ===================== ĐƠN HÀNG ===================== */
+async function loadOrders() {
+  const tbody = $('orders-table-body');
+  const { data, error } = await supabaseClient.from('orders').select('*').order('id', { ascending: false });
+  if (error || !data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="6">Chưa có đơn hàng nào.</td></tr>'; return; }
+  tbody.innerHTML = data.map(o => {
+    const items = Array.isArray(o.cart_items) ? o.cart_items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: <b>${i.selectedSize}</b>)` : ''} - x${i.qty}`).join('<br>') : 'Không có';
+    return `<tr><td><b>#${o.id}</b></td><td><b>${o.customer_name}</b></td>
+      <td>${o.customer_phone}<br><small style="color:#666">${o.address}</small></td>
+      <td style="font-size:12px">${items}<br><i>Ghi chú: ${o.note || 'Không'}</i></td>
+      <td><b style="color:#c0392b">${Number(o.total_amount).toLocaleString('vi-VN')} đ</b></td>
+      <td><button class="btn d" onclick="deleteOrder(${o.id})">Xóa</button></td></tr>`;
+  }).join('');
+}
+async function deleteOrder(id) {
+  if (confirm('Xóa đơn hàng này?')) { await supabaseClient.from('orders').delete().eq('id', id); loadOrders(); }
+}
 
-  /* ===================== DANH MỤC ===================== */
-  async function loadCategories() {
-    const tbody = $('categories-table-body');
-    const parentSelect = $('cat-parent');
-    const productCatSelect = $('product-category');
-
-    try {
-      const { data: categories, error } = await supabaseClient.from('categories').select('*').order('id', { ascending: true });
-      if (error) return;
-
-      categoriesMap = {};
-      parentSelect.innerHTML = `<option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option>`;
-      productCatSelect.innerHTML = `<option value="">-- Chưa chọn danh mục --</option>`;
-
-      if (!categories || categories.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có danh mục.</td></tr>';
-        return;
-      }
-
-      categories.forEach(cat => {
-        categoriesMap[cat.id] = cat.name;
-        if ((cat.level || 1) < 3) {
-          const indent = cat.level === 2 ? '--- ' : '';
-          parentSelect.innerHTML += `<option value="${cat.id}">${indent}${cat.name} (Cấp ${cat.level || 1})</option>`;
-        }
-        const prefix = cat.level === 2 ? '-- ' : (cat.level === 3 ? '---- ' : '');
-        productCatSelect.innerHTML += `<option value="${cat.id}">${prefix}${cat.name}</option>`;
-      });
-
-      tbody.innerHTML = categories.map(cat => `
-        <tr>
-          <td><b>${cat.id}</b></td>
-          <td><b>${cat.name}</b></td>
-          <td><span class="badge badge-lvl1">Cấp ${cat.level || 1}</span></td>
-          <td style="color:#666;">${cat.parent_id ? (categoriesMap[cat.parent_id] || 'N/A') : 'Không có'}</td>
-          <td><button class="btn-delete" onclick="deleteCategory(${cat.id})">🗑️ Xóa</button></td>
-        </tr>
-      `).join('');
-    } catch (err) { console.error(err); }
-  }
-
-  $('add-category-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = $('cat-name').value.trim();
-    const parentId = $('cat-parent').value || null;
-    let level = 1;
-
-    if (parentId) {
-      const { data: parentCat } = await supabaseClient.from('categories').select('level').eq('id', parentId).single();
-      if (parentCat) level = (parentCat.level || 1) + 1;
-    }
-
-    const { error } = await supabaseClient.from('categories').insert([{ name, parent_id: parentId, level }]);
-    if (error) alert('Lỗi: ' + error.message);
-    else {
-      $('add-category-form').reset();
-      await loadCategories();
-      loadProducts();
-    }
-  });
-
-  async function deleteCategory(id) {
-    if (confirm('Xóa danh mục này?')) {
-      await supabaseClient.from('categories').delete().eq('id', id);
-      await loadCategories();
-      loadProducts();
-    }
-  }
-
-  /* ===================== SẢN PHẨM ===================== */
-  async function loadProducts() {
-    const tbody = $('products-table-body');
-    const { data: products, error } = await supabaseClient.from('products').select('*').order('id', { ascending: false });
-
-    if (error || !products || products.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Chưa có sản phẩm nào.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = products.map(item => {
-      const images = item.images || [];
-      const sizes = item.sizes || [];
-      const imgsHtml = images.slice(0, 5).map(url => `<img src="${url}" class="product-img">`).join('') + (images.length > 5 ? ` <small>+${images.length - 5} ảnh</small>` : '');
-
-      return `
-        <tr>
-          <td>
-            <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
-              ${imgsHtml}
-            </div>
-            <small style="color:#666;">Tổng: ${images.length} ảnh</small>
-          </td>
-          <td><b>${item.name}</b></td>
-          <td><span class="badge badge-lvl1">${categoriesMap[item.category_id] || 'Chưa phân loại'}</span></td>
-          <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
-          <td><b>${sizes.length > 0 ? sizes.join(', ') : 'Không có size'}</b></td>
-          <td><button class="btn-delete" onclick="deleteProduct(${item.id})">🗑 Xóa</button></td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  $('add-product-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const statusDiv = $('status');
-    const btnSubmit = $('btn-submit');
-
-    const name = $('name').value;
-    const price = $('price').value;
-    const categoryId = $('product-category').value || null;
-    const description = $('description').value;
-    const fileInput = $('product-images');
-    const selectedSizes = Array.from(document.querySelectorAll('.product-size-cb:checked')).map(cb => cb.value);
-
-    if (!fileInput.files || fileInput.files.length === 0) {
-      alert("Vui lòng chọn ít nhất 1 ảnh sản phẩm!");
-      return;
-    }
-
-    btnSubmit.disabled = true;
-    const files = Array.from(fileInput.files).slice(0, 30);
-
-    try {
-      const imageUrls = [];
-
-      for (let i = 0; i < files.length; i++) {
-        statusDiv.innerText = `⏳ Đang gắn watermark & tải ảnh ${i + 1}/${files.length} lên Cloudinary...`;
-        imageUrls.push(await uploadImage(files[i], true));   // luôn gắn watermark 247.Sneaker
-      }
-
-      const productPayload = {
-        name,
-        price: Number(price),
-        main_image: imageUrls[0],
-        images: imageUrls,
-        sizes: selectedSizes,
-        description
-      };
-      if (categoryId) productPayload.category_id = Number(categoryId);
-
-      const { error: prodErr } = await supabaseClient.from('products').insert([productPayload]);
-      if (prodErr) throw prodErr;
-
-      statusDiv.innerText = `✅ Đăng sản phẩm thành công với ${imageUrls.length} ảnh (đã lưu Cloudinary + watermark)!`;
-      $('add-product-form').reset();
-      $('upload-preview').innerHTML = '';
-      renderSizeCheckboxes();
-      loadProducts();
-    } catch (err) {
-      statusDiv.innerText = '❌ Lỗi: ' + err.message;
-    } finally {
-      btnSubmit.disabled = false;
-    }
-  });
-
-  async function deleteProduct(id) {
-    if (confirm('Xóa sản phẩm này?')) {
-      await supabaseClient.from('products').delete().eq('id', id);
-      loadProducts();
-    }
-  }
-
-  /* ===================== ĐƠN HÀNG ===================== */
-  async function loadOrders() {
-    const tbody = $('orders-table-body');
-    const { data, error } = await supabaseClient.from('orders').select('*').order('id', { ascending: false });
-
-    if (error || !data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Chưa có đơn hàng nào.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = data.map(o => {
-      const itemsList = Array.isArray(o.cart_items)
-        ? o.cart_items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: <b>${i.selectedSize}</b>)` : ''} - x${i.qty}`).join('<br>')
-        : 'Không có';
-
-      return `
-        <tr>
-          <td><b>#${o.id}</b></td>
-          <td><b>${o.customer_name}</b></td>
-          <td>${o.customer_phone}<br><small style="color:#666;">${o.address}</small></td>
-          <td style="font-size:12px;">${itemsList}<br><i>Ghi chú: ${o.note || 'Không'}</i></td>
-          <td><b style="color:red;">${Number(o.total_amount).toLocaleString('vi-VN')} đ</b></td>
-          <td><button class="btn-delete" onclick="deleteOrder(${o.id})">🗑️ Xóa</button></td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  async function deleteOrder(id) {
-    if (confirm('Xóa đơn hàng này?')) {
-      await supabaseClient.from('orders').delete().eq('id', id);
-      loadOrders();
-    }
-  }
-
-  async function init() {
-    renderDesign();
-    loadDesign();
-    await loadCategories();
-    await loadProducts();
-    await loadOrders();
-  }
-  init();
+(async function init() { await loadCategories(); await loadProducts(); await loadOrders(); })();
 </script>
-
 </body>
 </html>
