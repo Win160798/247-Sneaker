@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quản Trị - 247 Sneaker</title>
-<link rel="icon" href="img/logo.jpg">
+<link rel="icon" href="data:,">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets.js"></script>
 <script src="site-config.js"></script>
+<script src="tools.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,'Segoe UI',Arial,sans-serif}
@@ -19,8 +21,8 @@ body{background:#fff;color:var(--tx);font-size:14px}
 .sb button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:10px;border-radius:8px;font-size:14px;color:var(--tx);cursor:pointer;text-align:left}
 .sb button:hover{background:#f3f4f9}.sb button.on{background:var(--pl);color:var(--p);font-weight:600}.sb i{width:18px;text-align:center}
 .sb a{display:block;padding:10px;color:var(--p);text-decoration:none;font-size:13px}
-main{padding:22px 28px;min-width:0;max-width:1100px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px;flex-wrap:wrap}.top h1{font-size:22px}
+main{padding:22px 28px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px;flex-wrap:wrap}.top h1{font-size:22px}
 .tabs{display:flex;gap:6px;border-bottom:1px solid var(--bd);margin:12px 0 18px;flex-wrap:wrap}
 .tabs button{border:0;background:none;padding:11px 14px;font-size:14px;color:var(--tx);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs button.on{color:var(--p);border-color:var(--p);font-weight:600;background:var(--pl);border-radius:6px 6px 0 0}
@@ -38,31 +40,32 @@ input[type=file]{width:100%;padding:9px;border:1px dashed var(--p);background:#f
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}.fg{margin-bottom:14px}
 table{width:100%;border-collapse:collapse}th{text-align:left;font-size:13px;font-weight:600;padding:12px 10px;border-bottom:1px solid var(--bd)}
 td{padding:12px 10px;border-bottom:1px solid var(--bd);font-size:13px;vertical-align:middle}
-.pimg{width:44px;height:44px;object-fit:cover;border-radius:6px;margin:0 3px 3px 0}
+.tw{position:relative;display:inline-block;margin:0 4px 4px 0}.tw img{width:50px;height:50px;object-fit:cover;border-radius:6px;display:block}
+.tw b{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#c0392b;color:#fff;font-size:11px;line-height:18px;text-align:center;cursor:pointer}
 .badge{background:var(--pl);color:var(--p);border-radius:99px;padding:3px 9px;font-size:11px;font-weight:600}
 .sizes{display:flex;flex-wrap:wrap;gap:8px;background:#f8f9fc;padding:10px;border-radius:8px;border:1px solid var(--bd)}
 .sizes label{display:flex;align-items:center;gap:5px;font-weight:400;margin:0;background:#fff;padding:4px 9px;border:1px solid #cfd4e2;border-radius:6px;cursor:pointer}
 .th{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.th img{width:50px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}
 .hint{font-size:12px;color:var(--mu);line-height:1.5}
+label.wmk{display:flex;align-items:center;gap:5px;font-weight:500;margin:0;font-size:12px}
 #status,#ds{font-weight:600;font-size:13px}
-/* form giao diện */
-.imgf{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.imgf img{width:54px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--bd);background:#eee;flex:none}
-.imgf input[type=text]{flex:1;min-width:160px}
-label.up{display:inline-block;background:var(--p);color:#fff;padding:9px 12px;border-radius:7px;font-size:12px;margin:0;cursor:pointer;white-space:nowrap}
-label.wmk{display:flex;align-items:center;gap:5px;font-weight:500;margin:0;font-size:12px;white-space:nowrap}
-.row{border:1px dashed #c5cadb;border-radius:8px;padding:12px;margin:8px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;align-items:end;background:#fafbff}
-.fx{margin-bottom:14px}
-.tsr td:first-child{width:34%}.sg{display:flex;gap:4px}.sg button{border:1px solid #cfd4e2;background:#fff;border-radius:6px;padding:7px 12px;cursor:pointer;font-size:13px;min-width:46px}
-.sg button.on{background:var(--p);color:#fff;border-color:var(--p)}.sg button.off{background:#fdeaea;color:#c0392b;border-color:#e8a9a9;text-decoration:line-through}
+.seg{display:flex;background:#eef0f6;border-radius:8px;padding:3px}.seg button{border:0;background:none;padding:7px 12px;border-radius:6px;font-size:13px;cursor:pointer}.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);font-weight:600}
+.fw{background:#e9ebf2;border-radius:10px;display:flex;justify-content:center;overflow:auto;height:calc(100vh - 165px);min-height:480px}
+.fw iframe{border:0;background:#fff;width:100%;height:100%}
+.fw.m iframe{width:390px;margin:10px 0;border-radius:12px;box-shadow:0 2px 14px rgba(0,0,0,.2);height:calc(100% - 20px)}
+dialog{border:0;border-radius:14px;padding:22px;width:min(520px,94vw);box-shadow:0 10px 40px rgba(0,0,0,.3)}dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin-bottom:14px}.imgf{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.imgf img{width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}.imgf input[type=text]{flex:1;min-width:120px}
+label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;border-radius:7px;font-size:12px;margin:0;cursor:pointer}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sb{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}.sb button{width:auto}}
 </style>
 </head>
 <body>
 <datalist id="fl"></datalist>
 <div class="app">
   <aside class="sb">
-    <div class="logo"><img src="img/logo.jpg" alt=""> 247 Sneaker</div>
+    <div class="logo"><img id="lg" alt=""> 247 Sneaker</div>
     <h4>Giao diện</h4>
-    <button data-v="design" class="on"><i class="fa-solid fa-palette"></i> Giao diện website</button>
+    <button data-v="design" class="on"><i class="fa-solid fa-palette"></i> Chỉnh giao diện</button>
     <h4>Cửa hàng</h4>
     <button data-v="products"><i class="fa-solid fa-box"></i> Sản phẩm</button>
     <button data-v="cats"><i class="fa-solid fa-folder-tree"></i> Danh mục</button>
@@ -72,14 +75,18 @@ label.wmk{display:flex;align-items:center;gap:5px;font-weight:500;margin:0;font-
   </aside>
 
   <main>
-    <!-- ===== GIAO DIỆN WEBSITE ===== -->
+    <!-- ===== CHỈNH GIAO DIỆN: bấm trực tiếp vào chữ / ảnh / link / bản đồ trên trang ===== -->
     <section class="v on" id="v-design">
-      <div class="top"><h1>Giao diện website</h1>
-        <div style="display:flex;gap:8px;align-items:center"><span id="ds"></span>
-          <button class="btn g" id="reset">Mặc định</button><button class="btn" id="save"><i class="fa-solid fa-floppy-disk"></i> Lưu giao diện</button></div>
+      <div class="top">
+        <div class="seg" id="pgs"><button data-pg="home" class="on">Trang chủ</button><button data-pg="products">Sản phẩm</button><button data-pg="size">Chọn size</button><button data-pg="contact">Liên hệ</button></div>
+        <div class="seg" id="dev"><button data-d="" class="on" title="Máy tính"><i class="fa-solid fa-desktop"></i></button><button data-d="m" title="Điện thoại"><i class="fa-solid fa-mobile-screen"></i></button></div>
+        <span class="hint" style="flex:1;min-width:200px">👆 Bấm vào <b>chữ</b> để gõ &amp; chọn phông, đậm, nghiêng, viết hoa · bấm vào <b>ảnh</b> để đổi · bấm vào <b>link</b> hoặc <b>bản đồ</b> để sửa.</span>
+        <span id="ds"></span>
+        <button class="btn g" id="gen"><i class="fa-solid fa-gear"></i> Cài đặt chung</button>
+        <button class="btn g" id="reset">Mặc định</button>
+        <button class="btn" id="save"><i class="fa-solid fa-floppy-disk"></i> Lưu giao diện</button>
       </div>
-      <div class="tabs" id="dtabs"></div>
-      <div id="design" class="fm"></div>
+      <div class="fw" id="fw"><iframe id="fr" src="index.html?edit=1"></iframe></div>
     </section>
 
     <!-- ===== SẢN PHẨM ===== -->
@@ -87,6 +94,7 @@ label.wmk{display:flex;align-items:center;gap:5px;font-weight:500;margin:0;font-
       <div class="top"><h1>Sản phẩm</h1></div>
       <div class="tabs"><button class="on" data-t="pl">Danh sách</button><button data-t="pa">Thêm sản phẩm</button></div>
       <div id="t-pl">
+        <p class="hint" style="margin-bottom:8px">Bấm dấu ✕ đỏ trên ảnh để xóa vĩnh viễn ảnh đó (kể cả trên Cloudinary). Xóa sản phẩm cũng xóa luôn toàn bộ ảnh của sản phẩm.</p>
         <table>
           <thead><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá bán</th><th>Size</th><th></th></tr></thead>
           <tbody id="products-table-body"><tr><td colspan="6">Đang tải...</td></tr></tbody>
@@ -146,13 +154,30 @@ label.wmk{display:flex;align-items:center;gap:5px;font-weight:500;margin:0;font-
   </main>
 </div>
 
+<!-- Cài đặt chung (những thứ không bấm trực tiếp trên trang được) -->
+<dialog id="gdlg">
+  <h3>Cài đặt chung</h3>
+  <div class="fg"><label>Tiêu đề tab trình duyệt</label><input type="text" id="g-title"></div>
+  <div class="fg"><label>Favicon (icon trên tab trình duyệt)</label>
+    <div class="imgf"><img id="g-fav" alt=""><label class="up">Tải ảnh<input type="file" accept="image/*" hidden id="g-favf"></label><label class="wmk"><input type="checkbox" id="g-favw"> Gắn watermark</label></div></div>
+  <div class="grid">
+    <div class="fg"><label>Màu xanh chủ đạo</label><input type="color" id="g-c1"></div>
+    <div class="fg"><label>Màu nền thẻ sản phẩm</label><input type="color" id="g-c2"></div>
+    <div class="fg"><label>Màu chữ chính</label><input type="color" id="g-c3"></div>
+  </div>
+  <div class="fg"><label>Font tiêu đề mặc định</label><input type="text" list="fl" id="g-f1"></div>
+  <div class="fg"><label>Font nội dung mặc định</label><input type="text" list="fl" id="g-f2"></div>
+  <div class="fg"><label>Font menu mặc định</label><input type="text" list="fl" id="g-f3"></div>
+  <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn" id="g-ok">Xong</button></div>
+</dialog>
+
 <script>
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let categoriesMap = {};
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fam = x => String(x || '').split(':')[0];
 $('fl').innerHTML = FONTS.map(f => `<option value="${esc(f)}">`).join('');
+$('lg').src = U('def:logo');
 
 /* ---------- Điều hướng ---------- */
 document.querySelectorAll('.sb button').forEach(b => b.onclick = () => {
@@ -164,123 +189,41 @@ document.querySelectorAll('#v-products .tabs button').forEach(b => b.onclick = (
   $('t-pl').style.display = b.dataset.t === 'pl' ? '' : 'none'; $('t-pa').style.display = b.dataset.t === 'pa' ? '' : 'none';
 });
 
-/* ===================== CLOUDINARY + WATERMARK (chữ lặp chéo, không có chữ ở góc) ===================== */
-async function addWatermark(file) {
-  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
-  const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, w, h);
-  const f = Math.round(Math.max(w, h) * 0.04), sx = f * 8.5, sy = f * 5.2, d = Math.hypot(w, h);
-  x.translate(w / 2, h / 2); x.rotate(-Math.PI / 6);
-  x.font = `bold ${f}px Arial`; x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.fillStyle = 'rgba(255,255,255,.34)'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = f / 6;
-  let row = 0;
-  for (let yy = -d / 2; yy < d / 2; yy += sy, row++)
-    for (let xx = -d / 2 + (row % 2) * sx / 2; xx < d / 2; xx += sx) x.fillText(WATERMARK, xx, yy);
-  const png = file.type === 'image/png';
-  return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
-}
-async function uploadImage(file, wm = true) {
-  const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
-  const fd = new FormData();
-  fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
-  const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-  const j = await r.json();
-  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
-  return j.secure_url;
-}
-
-/* ===================== GIAO DIỆN WEBSITE (dạng form) ===================== */
-let cfg = clone(DEFAULTS), tab = 'g';
+/* ===================== CHỈNH GIAO DIỆN (bấm trực tiếp trên trang) ===================== */
+let F = null;
+const C = () => F.__cfg();
 const say = t => { $('ds').textContent = t; };
-const T = 'text', A = 'area', Cl = 'color', I = 'img', IC = 'ico';   // I = ảnh (mặc định gắn watermark), IC = icon/logo (mặc định không gắn)
-const TABS = [['g', 'Chung'], ['i', 'Ảnh'], ['t', 'Chữ & kiểu chữ'], ['s', 'Bảng size'], ['c', 'Cửa hàng'], ['l', 'Liên hệ & Zalo']];
-const SCH = {
-  g: [['title', T, 'Tiêu đề tab trình duyệt'], ['favicon', IC, 'Favicon (icon trên tab trình duyệt)'], ['c.bg', Cl, 'Màu xanh chủ đạo'], ['c.card', Cl, 'Màu nền thẻ sản phẩm'], ['c.ink', Cl, 'Màu chữ chính'],
-    ['font.h', T, 'Font tiêu đề mặc định (chọn trong gợi ý hoặc gõ tên Google Font)'], ['font.b', T, 'Font nội dung mặc định'], ['font.n', T, 'Font menu mặc định'],
-    ['nav', [['t', T, 'Tên mục'], ['u', T, 'Trang: home / products / size / contact — hoặc dán link']], 'Các mục menu']],
-  i: [['hero.0', I, 'Banner - ảnh 1'], ['hero.1', I, 'Banner - ảnh 2'], ['hero.2', I, 'Banner - ảnh 3'],
-    ['gal.0', I, 'Ảnh bo góc (trên danh sách sản phẩm) - 1'], ['gal.1', I, 'Ảnh bo góc (trên) - 2'], ['gal.2', I, 'Ảnh bo góc (trên) - 3'],
-    ['gal2.0', I, 'Ảnh bo góc (dưới danh sách sản phẩm) - 1'], ['gal2.1', I, 'Ảnh bo góc (dưới) - 2'], ['gal2.2', I, 'Ảnh bo góc (dưới) - 3']],
-  t: [['brand', T, 'Tên thương hiệu (góc trái trên cùng)'], ['big', T, 'Chữ lớn dưới banner'], ['prodTitle', T, 'Tiêu đề khối sản phẩm'], ['sizeTitle', A, 'Tiêu đề trang chọn size'], ['storeTitle', T, 'Tiêu đề hệ thống cửa hàng'], ['follow', A, 'Câu kêu gọi theo dõi mạng xã hội']],
-  s: [['sizeHead.0', T, 'Tiêu đề cột bên trái (VD: SIZE NAM)'], ['sizeHead.1', T, 'Tiêu đề cột bên phải (VD: SIZE NỮ)'], ['sizeHead.2', T, 'Tên cột kích thước'], ['sizeHead.3', T, 'Tên cột size'],
-    ['sizeM', [['k', T, 'Kích thước (VD: 22.5 cm)'], ['s', T, 'Size (VD: 39)']], 'Bảng SIZE NAM - từng dòng'], ['sizeF', [['k', T, 'Kích thước'], ['s', T, 'Size']], 'Bảng SIZE NỮ - từng dòng']],
-  c: [['homeIcon', IC, 'Icon ngôi nhà cạnh địa chỉ'],
-    ['stores', [['addr', T, 'Địa chỉ hiển thị dưới bản đồ'], ['q', T, 'Địa chỉ để hiện bản đồ Google Maps (hoặc dán link / mã nhúng Google Maps)'], ['link', T, 'Link khi bấm vào địa chỉ']], 'Các cửa hàng (mỗi cửa hàng là 1 bản đồ Google Maps)']],
-  l: [['logo', IC, 'Logo'], ['contacts', [['icon', IC, 'Icon mạng xã hội'], ['text', T, 'Chữ hiển thị'], ['link', T, 'Link khi bấm (có thể đổi sang mạng xã hội khác)']], 'Các kênh liên hệ'],
-    ['zalo.link', T, 'Link nút Zalo nổi & nút Mua ngay'], ['zalo.icon', IC, 'Icon nút Zalo nổi']]
-};
-const TS = [['brand', 'Tên thương hiệu'], ['nav', 'Menu'], ['big', 'Chữ lớn SNEAKER'], ['prodTitle', 'Tiêu đề danh sách sản phẩm'], ['prodName', 'Tên sản phẩm'], ['prodPrice', 'Giá sản phẩm'], ['prodDesc', 'Mô tả sản phẩm'],
-  ['sizeTitle', 'Tiêu đề trang chọn size'], ['sizeHead', 'Tiêu đề cột bảng size'], ['sizeCells', 'Các ô trong bảng size'], ['storeTitle', 'Tiêu đề hệ thống cửa hàng'], ['storeAddr', 'Địa chỉ cửa hàng'], ['contactText', 'Chữ liên hệ'], ['follow', 'Câu theo dõi mạng xã hội']];
-const ARR = {};
-
-function fld(f) {
-  const [p, t, lb] = f;
-  if (Array.isArray(t)) {
-    ARR[p] = t; const arr = gp(cfg, p) || [];
-    return `<div class="fx"><label>${lb}</label>${arr.map((_, i) => `<div class="row">${t.map(s => fld([`${p}.${i}.${s[0]}`, s[1], s[2]])).join('')}<div><button type="button" class="btn d" data-del="${p}.${i}">🗑 Xóa</button></div></div>`).join('')}<button type="button" class="btn g s" data-add="${p}">+ Thêm</button></div>`;
-  }
-  const v = gp(cfg, p) ?? '', lst = p.startsWith('font.') ? 'list="fl"' : '';
-  let h;
-  if (t === I || t === IC) h = `<div class="imgf"><img src="${esc(v)}" alt=""><input type="text" data-p="${p}" value="${esc(v)}" placeholder="Dán link ảnh hoặc bấm Tải ảnh lên">
-    <label class="up"><i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh lên<input type="file" accept="image/*" hidden data-up="${p}"></label>
-    <label class="wmk"><input type="checkbox" data-wm ${t === I ? 'checked' : ''}> Gắn watermark</label></div>`;
-  else if (t === A) h = `<textarea rows="2" data-p="${p}">${esc(v)}</textarea>`;
-  else if (t === Cl) h = `<input type="color" data-p="${p}" value="${esc(v)}">`;
-  else h = `<input type="text" ${lst} data-p="${p}" value="${esc(v)}">`;
-  return `<div class="fx"><label>${lb}</label>${h}</div>`;
-}
-function tsTable() {
-  const st = k => { const s = cfg.ts[k] || {}; return { tt: s.tt === 'uppercase' ? 'on' : s.tt === 'none' ? 'off' : '', fw: s.fw === 'bold' ? 'on' : s.fw === 'normal' ? 'off' : '', fi: s.fi === '1' ? 'on' : s.fi === '0' ? 'off' : '' }; };
-  return `<div class="card" style="margin-top:22px"><h3 style="margin-bottom:6px">Kiểu chữ trên web</h3>
-    <p class="hint" style="margin-bottom:10px">Mỗi dòng áp dụng cho một nhóm chữ. Nút <b>HOA</b> / <b>B</b> (đậm) / <b>I</b> (nghiêng): bấm lần 1 = bật, lần 2 = tắt hẳn, lần 3 = về mặc định.</p>
-    <table class="tsr"><thead><tr><th>Nhóm chữ</th><th>Phông chữ</th><th>Kiểu</th></tr></thead><tbody>${TS.map(([k, n]) => { const s = cfg.ts[k] || {}, c = st(k); return `<tr><td>${n}</td>
-      <td><input type="text" list="fl" value="${esc(s.ff || '')}" placeholder="Mặc định" onchange="setTs('${k}','ff',this.value)"></td>
-      <td><div class="sg"><button class="${c.tt}" onclick="cyc('${k}','tt','uppercase','none')">HOA</button><button class="${c.fw}" onclick="cyc('${k}','fw','bold','normal')"><b>B</b></button><button class="${c.fi}" onclick="cyc('${k}','fi','1','0')"><i>I</i></button></div></td></tr>`; }).join('')}</tbody></table></div>`;
-}
-function setTs(k, p, v) {
-  const s = cfg.ts[k] = cfg.ts[k] || {};
-  if (v === '' || v == null) delete s[p]; else s[p] = v;
-  if (!Object.keys(s).length) delete cfg.ts[k];
-}
-function cyc(k, p, a, b) {
-  const cur = (cfg.ts[k] || {})[p];
-  setTs(k, p, cur === undefined ? a : cur === a ? b : '');
-  render();
-}
-function render() {
-  $('dtabs').innerHTML = TABS.map(([k, n]) => `<button class="${tab === k ? 'on' : ''}" onclick="tab='${k}';render()">${n}</button>`).join('');
-  $('design').innerHTML = SCH[tab].map(fld).join('') + (tab === 't' ? tsTable() : '');
-}
-$('design').addEventListener('input', e => {
-  const p = e.target.dataset.p; if (!p) return;
-  sp(cfg, p, e.target.value);
-  const b = e.target.closest('.imgf'); if (b) b.querySelector('img').src = e.target.value;
-});
-$('design').addEventListener('change', async e => {
-  const p = e.target.dataset.up, f = e.target.files && e.target.files[0]; if (!p || !f) return;
-  const box = e.target.closest('.imgf'), wm = box.querySelector('[data-wm]').checked;
-  say(wm ? '⏳ Đang gắn watermark & tải lên Cloudinary...' : '⏳ Đang tải lên Cloudinary...');
-  try { const u = await uploadImage(f, wm); sp(cfg, p, u); box.querySelector('input[type=text]').value = u; box.querySelector('img').src = u; say('✅ Đã tải ảnh. Nhớ bấm "Lưu giao diện".'); }
-  catch (er) { say('❌ ' + er.message); }
-  e.target.value = '';
-});
-$('design').addEventListener('click', e => {
-  const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.del) { const k = b.dataset.del.split('.'), i = +k.pop(); gp(cfg, k.join('.')).splice(i, 1); render(); }
-  if (b.dataset.add) { gp(cfg, b.dataset.add).push(Object.fromEntries(ARR[b.dataset.add].map(s => [s[0], '']))); render(); }
-});
+window.onReady = () => { F = $('fr').contentWindow; };
+$('pgs').onclick = e => { const b = e.target.closest('button'); if (!b || !F) return; document.querySelectorAll('#pgs button').forEach(x => x.classList.toggle('on', x === b)); F.location.hash = '#' + b.dataset.pg; };
+$('dev').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#dev button').forEach(x => x.classList.toggle('on', x === b)); $('fw').classList.toggle('m', b.dataset.d === 'm'); };
 $('save').onclick = async () => {
-  const { error } = await supabaseClient.from('site_settings').upsert({ id: 'main', data: cfg });
-  say(error ? '❌ ' + error.message + ' (bạn đã chạy file supabase.sql chưa?)' : '✅ Đã lưu giao diện! Tải lại trang web để xem.');
+  if (!F) return;
+  say('⏳ Đang lưu...');
+  const { error } = await supabaseClient.from('site_settings').upsert({ id: 'main', data: C() });
+  if (error) return say('❌ ' + error.message + ' (bạn đã chạy file supabase.sql chưa?)');
+  say('✅ Đã lưu! Đang dọn ảnh cũ...');
+  const r = F.__flushTrash ? await F.__flushTrash() : { n: 0, f: 0 };
+  say('✅ Đã lưu giao diện.' + (r.n ? ` Đã xóa vĩnh viễn ${r.n} ảnh cũ.` : '') + (r.f ? ` ⚠ Chưa xóa được ${r.f} ảnh cũ (kiểm tra cài đặt Cloudflare / mã quản trị).` : ''));
 };
-$('reset').onclick = () => { if (confirm('Khôi phục toàn bộ giao diện về mặc định theo PDF? (chưa lưu cho đến khi bấm Lưu giao diện)')) { cfg = clone(DEFAULTS); render(); } };
-async function loadDesign() {
-  const { data } = await supabaseClient.from('site_settings').select('data').eq('id', 'main').maybeSingle();
-  cfg = merge(DEFAULTS, data && data.data); render();
-}
-render(); loadDesign();
+$('reset').onclick = () => { if (F && confirm('Khôi phục toàn bộ giao diện về mặc định theo PDF? (chưa lưu cho đến khi bấm Lưu giao diện)')) F.__set(clone(DEFAULTS)); };
+
+// Cài đặt chung
+$('gen').onclick = () => {
+  if (!F) return; const c = C();
+  $('g-title').value = c.title; $('g-fav').src = U(c.favicon);
+  $('g-c1').value = c.c.bg; $('g-c2').value = c.c.card; $('g-c3').value = c.c.ink;
+  $('g-f1').value = c.font.h; $('g-f2').value = c.font.b; $('g-f3').value = c.font.n;
+  $('gdlg').showModal();
+};
+const gset = (p, v) => { sp(C(), p, v); F.__redraw(); };
+$('g-title').oninput = e => gset('title', e.target.value);
+$('g-c1').oninput = e => gset('c.bg', e.target.value); $('g-c2').oninput = e => gset('c.card', e.target.value); $('g-c3').oninput = e => gset('c.ink', e.target.value);
+$('g-f1').onchange = e => gset('font.h', e.target.value); $('g-f2').onchange = e => gset('font.b', e.target.value); $('g-f3').onchange = e => gset('font.n', e.target.value);
+$('g-favf').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return; say('⏳ Đang tải favicon lên Cloudinary...');
+  try { const u = await uploadImage(f, $('g-favw').checked), old = C().favicon; gset('favicon', u); F.__trash.push(old); $('g-fav').src = u; say('✅ Đã đổi favicon. Nhớ bấm Lưu giao diện.'); } catch (er) { say('❌ ' + er.message); }
+};
+$('g-ok').onclick = () => $('gdlg').close();
 
 /* ===================== SIZE CHECKBOXES (36 - 46) ===================== */
 function renderSizeCheckboxes() {
@@ -345,13 +288,37 @@ async function loadProducts() {
   tbody.innerHTML = products.map(item => {
     const images = item.images || [], sizes = item.sizes || [];
     return `<tr>
-      <td>${images.slice(0, 4).map(u => `<img src="${u}" class="pimg">`).join('')}<div class="hint">${images.length} ảnh</div></td>
+      <td style="min-width:200px">${images.map((u, i) => `<span class="tw"><img src="${u}"><b title="Xóa vĩnh viễn ảnh này" onclick="delImg(${item.id},${i})">✕</b></span>`).join('')}
+        <label class="up" style="margin-top:4px">+ Thêm ảnh<input type="file" accept="image/*" multiple hidden onchange="addImgs(${item.id},this)"></label></td>
       <td><b>${item.name}</b></td>
       <td><span class="badge">${categoriesMap[item.category_id] || 'Chưa phân loại'}</span></td>
       <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
       <td>${sizes.length ? sizes.join(', ') : 'Không có size'}</td>
       <td><button class="btn d" onclick="deleteProduct(${item.id})">Xóa</button></td></tr>`;
   }).join('');
+}
+async function delImg(id, i) {
+  const { data: p } = await supabaseClient.from('products').select('images').eq('id', id).single();
+  const imgs = [...((p && p.images) || [])];
+  if (imgs.length <= 1) return alert('Sản phẩm phải còn ít nhất 1 ảnh. Muốn bỏ hết ảnh hãy xóa cả sản phẩm.');
+  if (!confirm('Xóa VĨNH VIỄN ảnh này (kể cả trên Cloudinary)?')) return;
+  const url = imgs.splice(i, 1)[0];
+  const { error } = await supabaseClient.from('products').update({ images: imgs, main_image: imgs[0], image_url: imgs[0] }).eq('id', id);
+  if (error) return alert('Lỗi: ' + error.message + ' (bạn đã chạy file supabase.sql bản mới chưa?)');
+  if (!(await deleteImage(url))) alert('Đã gỡ ảnh khỏi sản phẩm nhưng CHƯA xóa được trên Cloudinary (kiểm tra mã quản trị và biến môi trường trên Cloudflare).');
+  loadProducts();
+}
+async function addImgs(id, inp) {
+  const files = Array.from(inp.files).slice(0, 30); if (!files.length) return;
+  const wm = $('pwm').checked;
+  try {
+    const { data: p } = await supabaseClient.from('products').select('images').eq('id', id).single();
+    const imgs = [...((p && p.images) || [])];
+    for (let i = 0; i < files.length; i++) { say(`⏳ Đang tải ảnh ${i + 1}/${files.length}...`); imgs.push(await uploadImage(files[i], wm)); }
+    const { error } = await supabaseClient.from('products').update({ images: imgs }).eq('id', id);
+    if (error) throw error; say('');
+  } catch (e) { alert('Lỗi: ' + e.message); }
+  loadProducts();
 }
 $('add-product-form').addEventListener('submit', async e => {
   e.preventDefault();
@@ -379,7 +346,13 @@ $('add-product-form').addEventListener('submit', async e => {
   finally { btn.disabled = false; }
 });
 async function deleteProduct(id) {
-  if (confirm('Xóa sản phẩm này?')) { await supabaseClient.from('products').delete().eq('id', id); loadProducts(); }
+  const { data: p } = await supabaseClient.from('products').select('images,main_image').eq('id', id).single();
+  if (!confirm('Xóa sản phẩm này? Toàn bộ ảnh của sản phẩm cũng sẽ bị xóa VĨNH VIỄN trên Cloudinary.')) return;
+  await supabaseClient.from('products').delete().eq('id', id);
+  const urls = [...new Set([...((p && p.images) || []), p && p.main_image].filter(Boolean))];
+  let fail = 0; for (const u of urls) if (!(await deleteImage(u))) fail++;
+  if (fail) alert(`Đã xóa sản phẩm nhưng chưa xóa được ${fail} ảnh trên Cloudinary (kiểm tra mã quản trị và biến môi trường trên Cloudflare).`);
+  loadProducts();
 }
 
 /* ===================== ĐƠN HÀNG ===================== */
