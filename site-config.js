@@ -8,6 +8,8 @@ const UPLOAD_PRESET = '247_sneaker';
 const WATERMARK = '247.Sneaker';
 
 const clone = o => JSON.parse(JSON.stringify(o));
+const gp = (o, p) => p.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
+const sp = (o, p, v) => { const k = p.split('.'), l = k.pop(); k.reduce((a, x) => a[x], o)[l] = v; };
 function merge(a, b) {
   if (b === undefined || b === null) return clone(a);
   if (Array.isArray(a) || typeof a !== 'object' || a === null) return b;
@@ -17,6 +19,11 @@ function merge(a, b) {
   return o;
 }
 
+// Danh sách font cho bộ chọn (đều hỗ trợ tiếng Việt)
+const FONTS = ['Arial', 'Lexend:wght@300;400;600;700', 'Lexend Giga:wght@400;600', 'Arima:wght@400;700', 'Montserrat:wght@400;600;700',
+  'Be Vietnam Pro:wght@400;600;700', 'Roboto:wght@400;700', 'Inter:wght@400;600;700', 'Nunito:wght@400;700', 'Quicksand:wght@400;700',
+  'Playfair Display:wght@400;700', 'Oswald:wght@400;600', 'Dancing Script:wght@400;700', 'Pacifico', 'Archivo Black'];
+
 const G = ['img/sn1.jpg', 'img/sn2.jpg', 'img/sn3.jpg'];
 const gm = u => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(u);
 
@@ -25,7 +32,7 @@ const DEFAULTS = {
   favicon: 'img/logo.jpg',
   brand: '247 SNEAKER',
   c: { bg: '#8AA9E2', card: '#D9D5D1', ink: '#111111' },
-  font: { h: 'Lexend Giga:wght@600', b: 'Lexend:wght@300;400;600', n: 'Arima:wght@700' },
+  font: { h: 'Lexend Giga:wght@400;600', b: 'Lexend:wght@300;400;600;700', n: 'Arima:wght@400;700' },
   nav: [
     { t: 'TRANG CHỦ', u: 'home' },
     { t: 'SẢN PHẨM', u: 'products' },
@@ -55,10 +62,12 @@ const DEFAULTS = {
     { icon: 'img/facebook.png', text: '247.sneaker', link: 'https://facebook.com/247.sneaker' }
   ],
   follow: 'Theo dõi ngay MXH của 247 Sneaker để không bỏ lỡ các mẫu hot trend mới nhất nhé!',
+  zalo: { link: 'https://zalo.me/0777873464', icon: 'img/zalo.png' },
   pages: {
     home: 'hero,gal,prod,gal2,stores,contact',
     products: 'prod,gal2,stores,contact',
     size: 'hero,size,stores,contact',
     contact: 'hero,contact,stores'
-  }
+  },
+  st: {}   // kiểu riêng từng phần tử do trình dựng giao diện tạo ra
 };
