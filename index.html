@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>247 Sneaker</title>
-<link id="fav" rel="icon" href="img/logo.jpg">
+<link id="fav" rel="icon" href="data:,">
 <link id="gf" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets.js"></script>
 <script src="site-config.js"></script>
 
 <!-- CSS theo khung thiết kế PDF 1024px: "36u" = 36 đơn vị thiết kế, tự co giãn theo chiều ngang màn hình -->
@@ -52,7 +53,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .sz td,.sz th{border:1.5u solid var(--bg);height:76u;font-weight:400}
 .stores{padding:60u 0 25u}
 .st{display:grid;grid-template-columns:417u 417u;gap:77u;padding:0 57u;margin-top:-4u}
-.mp{display:block;width:417u;height:314u;border:0;background:#e8eaf0}
+.mapw{width:417u;height:314u;background:#e8eaf0}.mp{display:block;width:100%;height:100%;border:0}
 .stores .ttl{margin-bottom:47u}
 .sa{display:flex;align-items:center;gap:20u;margin-top:22u;font:400 max(12px,24u)/1.4 var(--fb),sans-serif}.sa img{width:62u;height:62u;object-fit:contain;flex:none}
 .wh{background:#fff}
@@ -73,10 +74,11 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   .grid{grid-template-columns:repeat(2,1fr);gap:26px 12px;padding:0 14px}.pi{border-radius:20px}
   .pn{font-size:13px}.pp{font-size:13px}.pd{font-size:11px}
   .sz{padding:24px 0}.sz .ttl{font-size:16px}.sz table{margin:0 14px;width:calc(100% - 28px);font-size:12px}.sz td,.sz th{height:34px}
-  .st{grid-template-columns:1fr;gap:18px;padding:0 14px;margin:0}.mp{width:100%;height:auto;aspect-ratio:1.33}
+  .st{grid-template-columns:1fr;gap:18px;padding:0 14px;margin:0}.mapw{width:100%;height:auto;aspect-ratio:1.33}
   .sa{font-size:13px;gap:8px}.sa img{width:30px;height:30px}
-  .ct{flex-direction:column;padding:30px 14px 0;gap:18px;align-items:flex-start}.lg{width:58%;height:auto;aspect-ratio:1;border-radius:22px}
-  .cl{font-size:17px;gap:14px;height:56px}.cl img{width:40px;height:40px}
+  /* Liên hệ: logo và 4 dòng liên hệ cùng 1 hàng ngang như trên máy tính */
+  .ct{flex-direction:row;align-items:center;padding:28px 14px 0;gap:14px}.lg{width:40%;height:auto;aspect-ratio:1;border-radius:20px}
+  .ct>div:last-child{flex:1;min-width:0}.cl{font-size:14px;gap:10px;height:auto;margin:11px 0}.cl img{width:34px;height:34px}
   .fol{padding:18px 14px 40px;width:100%;font-size:14px}
 }
 </style>
@@ -110,7 +112,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 /* ===== Nút nổi góc phải dưới: Zalo ở trên, Giỏ hàng ở dưới ===== */
 .zl{position:fixed;right:16px;bottom:76px;z-index:45;width:58px;height:58px;border-radius:50%;box-shadow:0 4px 18px rgba(0,0,0,.3);background:#fff;display:block}
 .zl img{width:100%;height:100%;object-fit:contain;border-radius:50%}
-.zl::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #0068ff;animation:pl 1.8s infinite}
+.zl::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #0068ff;animation:pl 1.8s infinite;pointer-events:none}
 @keyframes pl{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
 .fab{position:fixed;right:16px;bottom:16px;z-index:45;background:#fff;color:var(--bg);border:1.5px solid var(--bg);border-radius:99px;padding:12px 20px;font:700 15px var(--fb),Arial,sans-serif;text-transform:none;letter-spacing:0;box-shadow:0 4px 18px rgba(0,0,0,.22)}
 .fab:hover{background:var(--bg);color:#fff}.fab b{background:var(--bg);color:#fff;border-radius:99px;padding:1px 8px;margin-left:6px;font-weight:700}.fab:hover b{background:#fff;color:var(--bg)}
@@ -150,7 +152,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 <div class="modal" id="modal"></div>
 <button class="nv l" id="nvl" aria-label="Sản phẩm trước">‹</button>
 <button class="nv r" id="nvr" aria-label="Sản phẩm sau">›</button>
-<a class="zl" id="zl" target="_blank" rel="noopener" aria-label="Chat Zalo"><img id="zl-i" alt="Zalo"></a>
+<a class="zl" id="zl" data-lk="zalo.link" target="_blank" rel="noopener" aria-label="Chat Zalo"><img id="zl-i" data-img="zalo.icon" alt="Zalo"></a>
 <button class="fab" id="fab">Giỏ hàng <b id="fab-n">0</b></button>
 <aside class="drawer" id="cart">
   <h3>Giỏ hàng</h3>
@@ -174,6 +176,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money = n => Number(n || 0).toLocaleString('vi-VN') + ' đ';
   const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+  const EDIT = new URLSearchParams(location.search).has('edit');   // chế độ chỉnh sửa trực tiếp (mở từ trang admin)
 
   let db = null;
   try { db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { console.error(e); }
@@ -198,9 +201,24 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       if (p.error) loadErr = 'Lỗi tải sản phẩm: ' + p.error.message;
     } else loadErr = 'Không kết nối được Supabase.';
     applyCfg(); route();
+    if (window.parent !== window && window.parent.onReady) window.parent.onReady();
   }
   const SYS = ['Arial', 'Arial Black', 'Helvetica', 'Times New Roman'];
-  const fam = x => String(x || '').split(':')[0];
+  function tsCss() {   // chuyển cài đặt kiểu chữ thành CSS
+    const r = [], mob = [];
+    for (const [k, s] of Object.entries(cfg.ts || {})) {
+      const sel = k.startsWith('g:') ? `[data-g="${k.slice(2)}"]` : `[data-k="${k}"]`;
+      let d = '';
+      if (s.ff) d += `font-family:'${fam(s.ff)}',sans-serif!important;`;
+      if (s.tt) d += `text-transform:${s.tt}!important;`;
+      if (s.fw) d += `font-weight:${s.fw === 'bold' ? 700 : 400}!important;`;
+      if (s.fi) d += `font-style:${s.fi === '1' ? 'italic' : 'normal'}!important;`;
+      if (s.color) d += `color:${s.color}!important;`;
+      if (d) r.push(`${sel}{${d}}`);
+      if (s.fs) { r.push(`${sel}{font-size:calc(${s.fs}*var(--u))!important}`); mob.push(`${sel}{font-size:calc(${s.fs}*var(--u)*.65)!important}`); }
+    }
+    return r.join('') + (mob.length ? `@media(max-width:700px){${mob.join('')}}` : '');
+  }
   function applyCfg() {
     const r = document.documentElement.style, c = cfg.c, f = cfg.font;
     r.setProperty('--bg', c.bg); r.setProperty('--card', c.card); r.setProperty('--ink', c.ink);
@@ -209,22 +227,16 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     const seen = {}; all.forEach(x => { if (!seen[fam(x)] || x.includes(':')) seen[fam(x)] = x; });
     const url = 'https://fonts.googleapis.com/css2?' + Object.values(seen).map(x => { const [n, ...w] = x.split(':'); return 'family=' + encodeURIComponent(n).replace(/%20/g, '+') + (w.length ? ':' + w.join(':') : ''); }).join('&') + '&display=swap';
     if ($('gf').getAttribute('href') !== url) $('gf').href = url;
-    document.title = cfg.title; $('fav').href = cfg.favicon;
-    $('zl').href = cfg.zalo.link; $('zl-i').src = cfg.zalo.icon;
-    // Kiểu chữ theo nhóm (phông chữ / in hoa / đậm / nghiêng) do admin cài đặt
-    $('tsx').textContent = Object.entries(cfg.ts || {}).map(([k, s]) => {
-      let d = '';
-      if (s.ff) d += `font-family:'${fam(s.ff)}',sans-serif!important;`;
-      if (s.tt) d += `text-transform:${s.tt}!important;`;
-      if (s.fw) d += `font-weight:${s.fw === 'bold' ? 700 : 400}!important;`;
-      if (s.fi) d += `font-style:${s.fi === '1' ? 'italic' : 'normal'}!important;`;
-      return d ? `[data-st="${k}"]{${d}}` : '';
-    }).join('');
+    document.title = cfg.title; $('fav').href = U(cfg.favicon);
+    $('zl').href = cfg.zalo.link; $('zl-i').src = U(cfg.zalo.icon);
+    $('tsx').textContent = tsCss();
   }
 
-  /* ---------- Các khối giao diện ---------- */
+  /* ---------- Các khối giao diện (data-* để trình chỉnh sửa trực tiếp nhận ra chữ / ảnh / link / bản đồ) ---------- */
   const PG = ['home', 'products', 'size', 'contact'];
-  const gal = a => `<section class="gal"><div class="in">${a.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join('')}</div></section>`;
+  const sb = n => (cfg.sbg && cfg.sbg[n]) ? ` style="background:${esc(cfg.sbg[n])}"` : '';
+  const im = (u, p) => `<img data-img="${p}" src="${esc(U(u))}" alt="" loading="lazy">`;
+  const gal = (a, n) => `<section class="gal" data-sec="${n}"${sb(n)}><div class="in">${a.map((u, i) => im(u, `${n}.${i}`)).join('')}</div></section>`;
   // Bản đồ Google Maps nhúng: nhập địa chỉ/từ khóa, hoặc dán link/mã nhúng Google Maps
   const mapSrc = q => {
     q = String(q || ''); const m = q.match(/src=["']([^"']+)["']/);
@@ -233,42 +245,46 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     return 'https://www.google.com/maps?q=' + encodeURIComponent(q) + '&hl=vi&z=16&output=embed';
   };
   const SEC = {
-    hero: () => `<section class="blue hero"><div class="in"><div class="ph">${cfg.hero.map(u => `<img src="${esc(u)}" alt="">`).join('')}</div>
-      <svg class="big" data-st="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
-    gal: () => gal(cfg.gal),
-    gal2: () => gal(cfg.gal2),
-    prod: () => `<section class="blue sec" id="prod"><div class="in"><h2 class="ttl" data-st="prodTitle">${esc(cfg.prodTitle)}</h2>
+    hero: () => `<section class="blue hero" data-sec="hero"${sb('hero')}><div class="in"><div class="ph">${cfg.hero.map((u, i) => im(u, `hero.${i}`)).join('')}</div>
+      <svg class="big" data-k="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
+    gal: () => gal(cfg.gal, 'gal'),
+    gal2: () => gal(cfg.gal2, 'gal2'),
+    prod: () => `<section class="blue sec" id="prod" data-sec="prod"${sb('prod')}><div class="in"><h2 class="ttl" data-k="prodTitle">${esc(cfg.prodTitle)}</h2>
       <div class="bar"><div id="chips"></div><select id="sort" aria-label="Sắp xếp"><option value="">Mới nhất</option><option value="asc">Giá: thấp → cao</option><option value="desc">Giá: cao → thấp</option></select></div>
       <div class="grid" id="grid"></div></div></section>`,
     size: () => {
       const h = cfg.sizeHead, n = Math.max(cfg.sizeM.length, cfg.sizeF.length);
-      const r = a => a ? `<td data-st="sizeCells">${esc(a.k)}</td><td data-st="sizeCells">${esc(a.s)}</td>` : '<td></td><td></td>';
-      return `<section class="sz"><div class="in"><h2 class="ttl" data-st="sizeTitle">${esc(cfg.sizeTitle)}</h2><table>
-        <tr><th colspan="2" data-st="sizeHead">${esc(h[0])}</th><th colspan="2" data-st="sizeHead">${esc(h[1])}</th></tr>
-        <tr><th data-st="sizeHead">${esc(h[2])}</th><th data-st="sizeHead">${esc(h[3])}</th><th data-st="sizeHead">${esc(h[2])}</th><th data-st="sizeHead">${esc(h[3])}</th></tr>
-        ${Array.from({ length: n }, (_, i) => `<tr>${r(cfg.sizeM[i])}${r(cfg.sizeF[i])}</tr>`).join('')}</table></div></section>`;
+      const r = (a, p, i) => a[i] ? `<td data-li="${p}.${i}" data-k="${p}.${i}.k">${esc(a[i].k)}</td><td data-li="${p}.${i}" data-k="${p}.${i}.s">${esc(a[i].s)}</td>` : '<td></td><td></td>';
+      return `<section class="sz" data-sec="size"${sb('size')}><div class="in"><h2 class="ttl" data-k="sizeTitle">${esc(cfg.sizeTitle)}</h2><table>
+        <tr><th colspan="2" data-k="sizeHead.0">${esc(h[0])}</th><th colspan="2" data-k="sizeHead.1">${esc(h[1])}</th></tr>
+        <tr><th data-k="sizeHead.2">${esc(h[2])}</th><th data-k="sizeHead.3">${esc(h[3])}</th><th data-k="sizeHead.2">${esc(h[2])}</th><th data-k="sizeHead.3">${esc(h[3])}</th></tr>
+        ${Array.from({ length: n }, (_, i) => `<tr>${r(cfg.sizeM, 'sizeM', i)}${r(cfg.sizeF, 'sizeF', i)}</tr>`).join('')}</table></div></section>`;
     },
-    stores: () => `<section class="blue stores"><div class="in"><h2 class="ttl" data-st="storeTitle">${esc(cfg.storeTitle)}</h2><div class="st">${cfg.stores.map(s => `
-      <div><iframe class="mp" src="${esc(mapSrc(s.q || s.addr))}" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Bản đồ"></iframe>
-      <a class="sa" href="${esc(s.link || gm(s.q || s.addr))}" target="_blank" rel="noopener"><img src="${esc(cfg.homeIcon)}" alt=""><span data-st="storeAddr">${esc(s.addr)}</span></a></div>`).join('')}</div></div></section>`,
-    contact: () => `<section class="wh"><div class="in"><div class="ct"><img class="lg" src="${esc(cfg.logo)}" alt=""><div>${cfg.contacts.map(c => `
-      <a class="cl" ${c.link ? `href="${esc(c.link)}" target="_blank" rel="noopener"` : ''}><img src="${esc(c.icon)}" alt=""><span data-st="contactText">${esc(c.text)}</span></a>`).join('')}</div></div><p class="fol" data-st="follow">${esc(cfg.follow)}</p></div></section>`
+    stores: () => `<section class="blue stores" data-sec="stores"${sb('stores')}><div class="in"><h2 class="ttl" data-k="storeTitle">${esc(cfg.storeTitle)}</h2><div class="st">${cfg.stores.map((s, i) => `
+      <div data-li="stores.${i}"><div class="mapw" data-map="stores.${i}.q"><iframe class="mp" src="${esc(mapSrc(s.q || s.addr))}" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Bản đồ"></iframe></div>
+      <a class="sa" data-lk="stores.${i}.link" href="${esc(s.link || gm(s.q || s.addr))}" target="_blank" rel="noopener">${im(cfg.homeIcon, 'homeIcon')}<span data-k="stores.${i}.addr">${esc(s.addr)}</span></a></div>`).join('')}</div></div></section>`,
+    contact: () => `<section class="wh" data-sec="contact"${sb('contact')}><div class="in"><div class="ct">${im(cfg.logo, 'logo').replace('<img', '<img class="lg"')}<div>${cfg.contacts.map((c, i) => `
+      <a class="cl" data-li="contacts.${i}" data-lk="contacts.${i}.link" ${c.link ? `href="${esc(c.link)}" target="_blank" rel="noopener"` : ''}>${im(c.icon, `contacts.${i}.icon`)}<span data-k="contacts.${i}.text">${esc(c.text)}</span></a>`).join('')}</div></div><p class="fol" data-k="follow">${esc(cfg.follow)}</p></div></section>`
   };
   const navHref = u => PG.includes(u) ? '#' + u : esc(u);
   function hdr() {
-    return `<header class="blue"><div class="in hd"><div class="top"><a class="brand" href="#home" data-st="brand">${esc(cfg.brand)}</a>
+    return `<header class="blue" data-sec="header"${sb('header')}><div class="in hd"><div class="top"><a class="brand" href="#home" data-k="brand">${esc(cfg.brand)}</a>
       <div class="sr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" aria-label="Tìm kiếm sản phẩm">
       <button id="mic" type="button" aria-label="Tìm bằng giọng nói"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div></div>
-      <nav>${cfg.nav.map(n => `<a href="${navHref(n.u)}" data-st="nav">${esc(n.t)}</a>`).join('')}</nav></div></header>`;
+      <nav>${cfg.nav.map((n, i) => `<a href="${navHref(n.u)}" data-li="nav.${i}" data-lk="nav.${i}.u" data-k="nav.${i}.t">${esc(n.t)}</a>`).join('')}</nav></div></header>`;
   }
   function route() {
     const h = location.hash.slice(1), pg = PG.includes(h) ? h : 'home';
     const hadFocus = document.activeElement && document.activeElement.id === 'q';
     $('app').innerHTML = hdr() + (cfg.pages[pg] || '').split(',').map(s => s.trim()).filter(Boolean).map(s => SEC[s] ? SEC[s]() : '').join('');
     bind(); renderChips(); renderProducts();
-    if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else scrollTo(0, 0);
+    if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else if (!EDIT) scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
+  window.__cfg = () => cfg;
+  window.__set = c => { cfg = c; applyCfg(); route(); };
+  window.__redraw = () => { applyCfg(); route(); };
+  window.__page = () => { const h = location.hash.slice(1); return PG.includes(h) ? h : 'home'; };
 
   function bind() {
     const q = $('q'); q.value = query;
@@ -318,9 +334,9 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     g.innerHTML = list.map(p => `
       <article class="p" data-id="${p.id}">
         <div class="pi"><img loading="lazy" src="${esc(mainImg(p))}" alt="${esc(p.name)}"></div>
-        <b class="pn" data-st="prodName">${esc(p.name)}</b>
-        <i class="pp" data-st="prodPrice">${money(p.price)}${p.old_price && Number(p.old_price) > Number(p.price) ? `<s>${money(p.old_price)}</s>` : ''}</i>
-        ${p.description ? `<p class="pd" data-st="prodDesc">${esc(p.description)}</p>` : ''}
+        <b class="pn" data-g="prodName">${esc(p.name)}</b>
+        <i class="pp" data-g="prodPrice">${money(p.price)}${p.old_price && Number(p.old_price) > Number(p.price) ? `<s>${money(p.old_price)}</s>` : ''}</i>
+        ${p.description ? `<p class="pd" data-g="prodDesc">${esc(p.description)}</p>` : ''}
       </article>`).join('');
   }
 
@@ -423,7 +439,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       </div>`).join('') : '<p style="color:#666;text-align:center;padding:40px 0">Giỏ hàng đang trống.</p>';
   }
   $('ci-list').addEventListener('click', e => {
-    const b = e.target.closest('button[data-k]'); if (!b) return;
+    const b = e.target.closest('button[data-a]'); if (!b) return;
     const it = cart.find(i => i.key === b.dataset.k); if (!it) return;
     if (b.dataset.a === '+') it.qty++;
     if (b.dataset.a === '-') it.qty = Math.max(1, it.qty - 1);
@@ -558,6 +574,11 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   renderCart();
   route();   // hiện ngay giao diện mặc định, rồi nạp dữ liệu thật
   load();
+  if (EDIT) {   // chỉ khi mở từ trang admin: nạp công cụ ảnh + trình chỉnh sửa trực tiếp
+    const s = document.createElement('script'); s.src = 'tools.js';
+    s.onload = () => { const e = document.createElement('script'); e.src = 'editor.js'; document.body.appendChild(e); };
+    document.body.appendChild(s);
+  }
 </script>
 </body>
 </html>
