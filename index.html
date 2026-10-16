@@ -27,15 +27,15 @@ button,input,select,textarea{font-family:inherit}button{cursor:pointer}img{displ
 .sr svg{width:18u;height:18u;flex:none;stroke:#fff;fill:none;stroke-width:2}
 .sr input{flex:1;min-width:0;border:0;background:transparent;outline:0;color:#fff;font-size:15u}
 .sr button{border:0;background:none;display:flex;padding:0}
-nav{background:#fff;border-radius:10u;margin:14u 36u 0;height:35u;display:flex;justify-content:space-between;align-items:center;padding:0 30u;font:700 22u var(--fn),serif;color:var(--bg)}
-nav a{white-space:nowrap}nav a.on{text-decoration:underline}
+nav{background:#fff;border-radius:10u;margin:14u 36u 0;height:38u;display:flex;justify-content:space-between;align-items:center;padding:0 30u;font:700 21u/1 var(--fn),serif;color:var(--bg);overflow:hidden}
+nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decoration:none}
 .hero{padding-bottom:8u}
 .ph{display:grid;grid-template-columns:repeat(3,305u);gap:18u;padding:15u 36u 0}.ph img{width:305u;height:260u;object-fit:cover}
 .big{display:block;width:1024u;height:175u;margin-top:13u;font-family:Arial,sans-serif;font-weight:700}.big text{fill:currentColor}
 .gal{background:#fff}.gal .in{display:flex;gap:28.5u;padding:84u 0 83u 22u}
 .gal img{width:307.5u;height:410u;object-fit:cover;border-radius:37.5u}
 .sec{padding:60u 0 80u}
-.ttl{font:400 38u/1.2 var(--fh),sans-serif;text-transform:lowercase;letter-spacing:.02em;white-space:pre-line;padding:0 36u;margin-bottom:30u}
+.ttl{font:400 38u/1.2 var(--fh),sans-serif;letter-spacing:.02em;white-space:pre-line;padding:0 36u;margin-bottom:30u}
 .bar{display:flex;flex-wrap:wrap;gap:10u;justify-content:space-between;align-items:flex-start;padding:0 32u;margin-bottom:26u}
 #chips{display:flex;flex-wrap:wrap;gap:8u;flex:1}.brk{flex-basis:100%;height:0}
 .chip{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 16u;font-size:max(12px,14u);font-weight:600}.chip.on,.chip:hover{background:#fff;color:var(--bg)}
@@ -51,7 +51,8 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
 .sz table{margin:0 66u;width:891u;border-collapse:collapse;color:var(--bg);text-align:center;font:400 max(12px,26u) Arial,sans-serif}
 .sz td,.sz th{border:1.5u solid var(--bg);height:76u;font-weight:400}
 .stores{padding:60u 0 25u}
-.st{display:grid;grid-template-columns:417u 417u;gap:77u;padding:0 57u;margin-top:-4u}.st a{display:block}.st img.mp{width:417u;height:314u;object-fit:cover}
+.st{display:grid;grid-template-columns:417u 417u;gap:77u;padding:0 57u;margin-top:-4u}
+.mp{display:block;width:417u;height:314u;border:0;background:#e8eaf0}
 .stores .ttl{margin-bottom:47u}
 .sa{display:flex;align-items:center;gap:20u;margin-top:22u;font:400 max(12px,24u)/1.4 var(--fb),sans-serif}.sa img{width:62u;height:62u;object-fit:contain;flex:none}
 .wh{background:#fff}
@@ -59,14 +60,11 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
 .lg{width:409u;height:409u;object-fit:cover;border-radius:70u;flex:none}
 .cl{display:flex;align-items:center;gap:60u;color:var(--bg);font:400 max(13px,28u) var(--fb),sans-serif;height:88u}.cl img{width:62u;height:62u;object-fit:contain;flex:none}
 .fol{color:var(--bg);font:400 max(14px,31u)/1.6 var(--fb),sans-serif;padding:44u 97u 70u;width:880u}
-.edm [data-k],.edm [data-img]{cursor:pointer}
-.edm [data-k]:hover,.edm [data-img]:hover,.edm [data-sec]:hover{outline:2px dashed #3448c5;outline-offset:2px}
-.edm .sel{outline:2px solid #3448c5!important;outline-offset:2px}
 @media(max-width:700px){
   #app{--u:calc(100cqw/430)}
   .in{width:100%}
   .top{padding:0 12px}.brand{font-size:20px}.sr{width:46%;height:32px;padding:0 10px}.sr input{font-size:14px}.sr svg{width:16px;height:16px}
-  nav{margin:12px 12px 0;height:auto;padding:7px 8px;font-size:10.5px;flex-wrap:wrap;justify-content:center;gap:2px 10px}
+  nav{margin:12px 12px 0;height:auto;padding:8px;font-size:10.5px;flex-wrap:wrap;justify-content:center;gap:4px 10px}
   .ph{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 12px 0}.ph img{width:100%;height:auto;aspect-ratio:1.17}
   .big{width:100%;height:auto;aspect-ratio:1024/175}
   .gal .in{padding:30px 12px;gap:8px}.gal img{width:calc((100% - 16px)/3);height:auto;aspect-ratio:3/4;border-radius:14px}
@@ -75,8 +73,8 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
   .grid{grid-template-columns:repeat(2,1fr);gap:26px 12px;padding:0 14px}.pi{border-radius:20px}
   .pn{font-size:13px}.pp{font-size:13px}.pd{font-size:11px}
   .sz{padding:24px 0}.sz .ttl{font-size:16px}.sz table{margin:0 14px;width:calc(100% - 28px);font-size:12px}.sz td,.sz th{height:34px}
-  .st{grid-template-columns:1fr 1fr;gap:12px;padding:0 14px;margin:0}.st img.mp{width:100%;height:auto;aspect-ratio:1.33}
-  .sa{font-size:11.5px;gap:6px}.sa img{width:26px;height:26px}
+  .st{grid-template-columns:1fr;gap:18px;padding:0 14px;margin:0}.mp{width:100%;height:auto;aspect-ratio:1.33}
+  .sa{font-size:13px;gap:8px}.sa img{width:30px;height:30px}
   .ct{flex-direction:column;padding:30px 14px 0;gap:18px;align-items:flex-start}.lg{width:58%;height:auto;aspect-ratio:1;border-radius:22px}
   .cl{font-size:17px;gap:14px;height:56px}.cl img{width:40px;height:40px}
   .fol{padding:18px 14px 40px;width:100%;font-size:14px}
@@ -109,13 +107,13 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
 .nv{position:fixed;top:50%;z-index:70;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#111;box-shadow:0 2px 12px rgba(0,0,0,.35);font-size:28px;line-height:1;display:none}
 .nv.l{left:10px}.nv.r{right:10px}.modal.on~.nv{display:block}.nv:hover{background:var(--bg);color:#fff}
 
-/* ===== Nút Zalo nổi + Giỏ hàng ===== */
-.zl{position:fixed;right:16px;bottom:16px;z-index:45;width:58px;height:58px;border-radius:50%;box-shadow:0 4px 18px rgba(0,0,0,.3);background:#fff;display:block}
+/* ===== Nút nổi góc phải dưới: Zalo ở trên, Giỏ hàng ở dưới ===== */
+.zl{position:fixed;right:16px;bottom:76px;z-index:45;width:58px;height:58px;border-radius:50%;box-shadow:0 4px 18px rgba(0,0,0,.3);background:#fff;display:block}
 .zl img{width:100%;height:100%;object-fit:contain;border-radius:50%}
 .zl::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #0068ff;animation:pl 1.8s infinite}
 @keyframes pl{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
-.fab{position:fixed;right:16px;bottom:88px;z-index:45;background:#000;color:#fff;border:0;border-radius:99px;padding:12px 20px;font:700 15px var(--fb),Arial,sans-serif;text-transform:none;letter-spacing:0;box-shadow:0 6px 24px rgba(0,0,0,.25)}
-.fab:hover{background:#fff;color:var(--bg)}.fab b{background:var(--bg);color:#fff;border-radius:99px;padding:1px 8px;margin-left:6px;font-weight:700}
+.fab{position:fixed;right:16px;bottom:16px;z-index:45;background:#fff;color:var(--bg);border:1.5px solid var(--bg);border-radius:99px;padding:12px 20px;font:700 15px var(--fb),Arial,sans-serif;text-transform:none;letter-spacing:0;box-shadow:0 4px 18px rgba(0,0,0,.22)}
+.fab:hover{background:var(--bg);color:#fff}.fab b{background:var(--bg);color:#fff;border-radius:99px;padding:1px 8px;margin-left:6px;font-weight:700}.fab:hover b{background:#fff;color:var(--bg)}
 .drawer{position:fixed;z-index:60;top:0;right:0;height:100%;width:min(430px,100vw);background:#fff;color:#111;transform:translateX(105%);transition:transform .28s;display:flex;flex-direction:column;padding:22px;font-family:var(--fb),Arial,sans-serif}.drawer.on{transform:none}
 .drawer h3{font-size:24px;font-weight:700}.ci-list{flex:1;overflow:auto;margin:14px 0}
 .ci{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee}.ci img{width:64px;height:80px;object-fit:cover;border-radius:14px}
@@ -125,7 +123,7 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
 .total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;padding:10px 0}
 .drawer input,.drawer textarea{width:100%;border:1.4px solid #999;border-radius:14px;padding:11px 14px;font:inherit;font-size:14px;margin-top:8px;outline:none}.drawer input:focus,.drawer textarea:focus{border-color:#000}
 #order-msg{margin-top:10px;font-weight:700;text-align:center;font-size:14px}
-@media(max-width:700px){.modal.on{grid-template-columns:1fr;padding:16px}.nv{width:36px;height:36px;font-size:22px}.zl{width:52px;height:52px}.fab{bottom:80px}}
+@media(max-width:700px){.modal.on{grid-template-columns:1fr;padding:16px}.nv{width:36px;height:36px;font-size:22px}.zl{width:52px;height:52px;bottom:70px}.fab{bottom:14px}}
 
 /* ===== Lời cảm ơn sau khi đặt đơn (giữ y như cũ) ===== */
 #thankYouModal{position:fixed;inset:0;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;padding:1rem;line-height:1.5;color:#111}
@@ -142,6 +140,7 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
 #thankYouModal .ty-btn{width:100%;background:#0f172a;color:#fff;font-weight:900;padding:.75rem 1rem;border:0;border-radius:.75rem;font-size:.75rem;line-height:1rem;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);transition:.15s}
 #thankYouModal .ty-btn:hover{background:#f59e0b;color:#020617}
 </style>
+<style id="tsx"></style>
 </head>
 <body>
 
@@ -175,12 +174,11 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money = n => Number(n || 0).toLocaleString('vi-VN') + ' đ';
   const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
-  const EDIT = new URLSearchParams(location.search).has('edit');
 
   let db = null;
   try { db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { console.error(e); }
 
-  let cfg = clone(DEFAULTS), products = [], categories = [], activeCat = null, query = '', sortBy = '', shown = [], loadErr = '', curPg = 'home', selKey = null;
+  let cfg = clone(DEFAULTS), products = [], categories = [], activeCat = null, query = '', sortBy = '', shown = [], loadErr = '';
   let cart = [];
   try { cart = JSON.parse(localStorage.getItem('cart_v1') || '[]'); } catch (e) {}
 
@@ -200,7 +198,6 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
       if (p.error) loadErr = 'Lỗi tải sản phẩm: ' + p.error.message;
     } else loadErr = 'Không kết nối được Supabase.';
     applyCfg(); route();
-    if (window.parent !== window && window.parent.onReady) window.parent.onReady();
   }
   const SYS = ['Arial', 'Arial Black', 'Helvetica', 'Times New Roman'];
   const fam = x => String(x || '').split(':')[0];
@@ -208,69 +205,68 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
     const r = document.documentElement.style, c = cfg.c, f = cfg.font;
     r.setProperty('--bg', c.bg); r.setProperty('--card', c.card); r.setProperty('--ink', c.ink);
     r.setProperty('--fh', `'${fam(f.h)}'`); r.setProperty('--fb', `'${fam(f.b)}'`); r.setProperty('--fn', `'${fam(f.n)}'`);
-    const all = [f.h, f.b, f.n, ...Object.values(cfg.st || {}).map(s => s.ff)].filter(x => x && !SYS.includes(fam(x)));
+    const all = [f.h, f.b, f.n, ...Object.values(cfg.ts || {}).map(s => s.ff)].filter(x => x && !SYS.includes(fam(x)));
     const seen = {}; all.forEach(x => { if (!seen[fam(x)] || x.includes(':')) seen[fam(x)] = x; });
     const url = 'https://fonts.googleapis.com/css2?' + Object.values(seen).map(x => { const [n, ...w] = x.split(':'); return 'family=' + encodeURIComponent(n).replace(/%20/g, '+') + (w.length ? ':' + w.join(':') : ''); }).join('&') + '&display=swap';
     if ($('gf').getAttribute('href') !== url) $('gf').href = url;
     document.title = cfg.title; $('fav').href = cfg.favicon;
     $('zl').href = cfg.zalo.link; $('zl-i').src = cfg.zalo.icon;
+    // Kiểu chữ theo nhóm (phông chữ / in hoa / đậm / nghiêng) do admin cài đặt
+    $('tsx').textContent = Object.entries(cfg.ts || {}).map(([k, s]) => {
+      let d = '';
+      if (s.ff) d += `font-family:'${fam(s.ff)}',sans-serif!important;`;
+      if (s.tt) d += `text-transform:${s.tt}!important;`;
+      if (s.fw) d += `font-weight:${s.fw === 'bold' ? 700 : 400}!important;`;
+      if (s.fi) d += `font-style:${s.fi === '1' ? 'italic' : 'normal'}!important;`;
+      return d ? `[data-st="${k}"]{${d}}` : '';
+    }).join('');
   }
-  /* Áp kiểu riêng (font, cỡ chữ, màu, nền...) do trình dựng giao diện lưu trong cfg.st */
-  function applySt() {
-    document.querySelectorAll('[data-k],[data-sec]').forEach(el => {
-      const k = el.dataset.k || ('sec:' + el.dataset.sec), s = (cfg.st || {})[k];
-      ['color', 'fontFamily', 'fontWeight', 'fontStyle', 'textAlign', 'background', 'fontSize', 'paddingTop', 'paddingBottom'].forEach(p => el.style[p] = '');
-      if (!s) return;
-      if (s.color) el.style.color = s.color;
-      if (s.ff) el.style.fontFamily = `'${fam(s.ff)}',sans-serif`;
-      if (s.fw) el.style.fontWeight = s.fw;
-      if (s.fi) el.style.fontStyle = 'italic';
-      if (s.ta) el.style.textAlign = s.ta;
-      if (s.bg) el.style.background = s.bg;
-      if (s.pt !== undefined && s.pt !== '') el.style.paddingTop = `calc(${s.pt}*var(--u))`;
-      if (s.pb !== undefined && s.pb !== '') el.style.paddingBottom = `calc(${s.pb}*var(--u))`;
-      if (s.fs && Number(s.fs) !== 100 && !(el.namespaceURI || '').includes('svg')) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * s.fs / 100) + 'px';
-    });
-  }
-  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(applySt, 150); });
 
-  /* ---------- Các khối giao diện (data-k / data-img / data-sec để trình dựng nhận diện) ---------- */
+  /* ---------- Các khối giao diện ---------- */
   const PG = ['home', 'products', 'size', 'contact'];
-  const gal = (a, n) => `<section class="gal" data-sec="${n}"><div class="in">${a.map((u, i) => `<img data-img="${n}.${i}" src="${esc(u)}" alt="" loading="lazy">`).join('')}</div></section>`;
+  const gal = a => `<section class="gal"><div class="in">${a.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join('')}</div></section>`;
+  // Bản đồ Google Maps nhúng: nhập địa chỉ/từ khóa, hoặc dán link/mã nhúng Google Maps
+  const mapSrc = q => {
+    q = String(q || ''); const m = q.match(/src=["']([^"']+)["']/);
+    if (m) return m[1];
+    if (/^https?:\/\//.test(q)) return q;
+    return 'https://www.google.com/maps?q=' + encodeURIComponent(q) + '&hl=vi&z=16&output=embed';
+  };
   const SEC = {
-    hero: () => `<section class="blue hero" data-sec="hero"><div class="in"><div class="ph">${cfg.hero.map((u, i) => `<img data-img="hero.${i}" src="${esc(u)}" alt="">`).join('')}</div>
-      <svg class="big" data-k="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
-    gal: () => gal(cfg.gal, 'gal'),
-    gal2: () => gal(cfg.gal2, 'gal2'),
-    prod: () => `<section class="blue sec" id="prod" data-sec="prod"><div class="in"><h2 class="ttl" data-k="prodTitle">${esc(cfg.prodTitle)}</h2>
+    hero: () => `<section class="blue hero"><div class="in"><div class="ph">${cfg.hero.map(u => `<img src="${esc(u)}" alt="">`).join('')}</div>
+      <svg class="big" data-st="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
+    gal: () => gal(cfg.gal),
+    gal2: () => gal(cfg.gal2),
+    prod: () => `<section class="blue sec" id="prod"><div class="in"><h2 class="ttl" data-st="prodTitle">${esc(cfg.prodTitle)}</h2>
       <div class="bar"><div id="chips"></div><select id="sort" aria-label="Sắp xếp"><option value="">Mới nhất</option><option value="asc">Giá: thấp → cao</option><option value="desc">Giá: cao → thấp</option></select></div>
       <div class="grid" id="grid"></div></div></section>`,
     size: () => {
       const h = cfg.sizeHead, n = Math.max(cfg.sizeM.length, cfg.sizeF.length);
-      const r = (a, p, i) => a[i] ? `<td data-k="${p}.${i}.k">${esc(a[i].k)}</td><td data-k="${p}.${i}.s">${esc(a[i].s)}</td>` : '<td></td><td></td>';
-      return `<section class="sz" data-sec="size"><div class="in"><h2 class="ttl" data-k="sizeTitle">${esc(cfg.sizeTitle)}</h2><table>
-        <tr><th colspan="2" data-k="sizeHead.0">${esc(h[0])}</th><th colspan="2" data-k="sizeHead.1">${esc(h[1])}</th></tr>
-        <tr><th data-k="sizeHead.2">${esc(h[2])}</th><th data-k="sizeHead.3">${esc(h[3])}</th><th>${esc(h[2])}</th><th>${esc(h[3])}</th></tr>
-        ${Array.from({ length: n }, (_, i) => `<tr>${r(cfg.sizeM, 'sizeM', i)}${r(cfg.sizeF, 'sizeF', i)}</tr>`).join('')}</table></div></section>`;
+      const r = a => a ? `<td data-st="sizeCells">${esc(a.k)}</td><td data-st="sizeCells">${esc(a.s)}</td>` : '<td></td><td></td>';
+      return `<section class="sz"><div class="in"><h2 class="ttl" data-st="sizeTitle">${esc(cfg.sizeTitle)}</h2><table>
+        <tr><th colspan="2" data-st="sizeHead">${esc(h[0])}</th><th colspan="2" data-st="sizeHead">${esc(h[1])}</th></tr>
+        <tr><th data-st="sizeHead">${esc(h[2])}</th><th data-st="sizeHead">${esc(h[3])}</th><th data-st="sizeHead">${esc(h[2])}</th><th data-st="sizeHead">${esc(h[3])}</th></tr>
+        ${Array.from({ length: n }, (_, i) => `<tr>${r(cfg.sizeM[i])}${r(cfg.sizeF[i])}</tr>`).join('')}</table></div></section>`;
     },
-    stores: () => `<section class="blue stores" data-sec="stores"><div class="in"><h2 class="ttl" data-k="storeTitle">${esc(cfg.storeTitle)}</h2><div class="st">${cfg.stores.map((s, i) => `
-      <a href="${esc(s.link)}" target="_blank" rel="noopener"><img class="mp" data-img="stores.${i}.img" src="${esc(s.img)}" alt="" loading="lazy"><div class="sa"><img data-img="homeIcon" src="${esc(cfg.homeIcon)}" alt=""><span data-k="stores.${i}.addr">${esc(s.addr)}</span></div></a>`).join('')}</div></div></section>`,
-    contact: () => `<section class="wh" data-sec="contact"><div class="in"><div class="ct"><img class="lg" data-img="logo" src="${esc(cfg.logo)}" alt=""><div>${cfg.contacts.map((c, i) => `
-      <a class="cl" ${c.link ? `href="${esc(c.link)}" target="_blank" rel="noopener"` : ''}><img data-img="contacts.${i}.icon" src="${esc(c.icon)}" alt=""><span data-k="contacts.${i}.text">${esc(c.text)}</span></a>`).join('')}</div></div><p class="fol" data-k="follow">${esc(cfg.follow)}</p></div></section>`
+    stores: () => `<section class="blue stores"><div class="in"><h2 class="ttl" data-st="storeTitle">${esc(cfg.storeTitle)}</h2><div class="st">${cfg.stores.map(s => `
+      <div><iframe class="mp" src="${esc(mapSrc(s.q || s.addr))}" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Bản đồ"></iframe>
+      <a class="sa" href="${esc(s.link || gm(s.q || s.addr))}" target="_blank" rel="noopener"><img src="${esc(cfg.homeIcon)}" alt=""><span data-st="storeAddr">${esc(s.addr)}</span></a></div>`).join('')}</div></div></section>`,
+    contact: () => `<section class="wh"><div class="in"><div class="ct"><img class="lg" src="${esc(cfg.logo)}" alt=""><div>${cfg.contacts.map(c => `
+      <a class="cl" ${c.link ? `href="${esc(c.link)}" target="_blank" rel="noopener"` : ''}><img src="${esc(c.icon)}" alt=""><span data-st="contactText">${esc(c.text)}</span></a>`).join('')}</div></div><p class="fol" data-st="follow">${esc(cfg.follow)}</p></div></section>`
   };
   const navHref = u => PG.includes(u) ? '#' + u : esc(u);
-  function hdr(pg) {
-    return `<header class="blue" data-sec="header"><div class="in hd"><div class="top"><a class="brand" href="#home" data-k="brand">${esc(cfg.brand)}</a>
+  function hdr() {
+    return `<header class="blue"><div class="in hd"><div class="top"><a class="brand" href="#home" data-st="brand">${esc(cfg.brand)}</a>
       <div class="sr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" aria-label="Tìm kiếm sản phẩm">
       <button id="mic" type="button" aria-label="Tìm bằng giọng nói"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div></div>
-      <nav>${cfg.nav.map((n, i) => `<a href="${navHref(n.u)}" class="${n.u === pg ? 'on' : ''}" data-k="nav.${i}.t">${esc(n.t)}</a>`).join('')}</nav></div></header>`;
+      <nav>${cfg.nav.map(n => `<a href="${navHref(n.u)}" data-st="nav">${esc(n.t)}</a>`).join('')}</nav></div></header>`;
   }
   function route() {
-    const h = location.hash.slice(1), pg = PG.includes(h) ? h : 'home'; curPg = pg;
+    const h = location.hash.slice(1), pg = PG.includes(h) ? h : 'home';
     const hadFocus = document.activeElement && document.activeElement.id === 'q';
-    $('app').innerHTML = hdr(pg) + (cfg.pages[pg] || '').split(',').map(s => s.trim()).filter(Boolean).map(s => SEC[s] ? SEC[s]() : '').join('');
-    bind(); renderChips(); renderProducts(); applySt(); reselect();
-    if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else if (!EDIT) scrollTo(0, 0);
+    $('app').innerHTML = hdr() + (cfg.pages[pg] || '').split(',').map(s => s.trim()).filter(Boolean).map(s => SEC[s] ? SEC[s]() : '').join('');
+    bind(); renderChips(); renderProducts();
+    if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
 
@@ -322,9 +318,9 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
     g.innerHTML = list.map(p => `
       <article class="p" data-id="${p.id}">
         <div class="pi"><img loading="lazy" src="${esc(mainImg(p))}" alt="${esc(p.name)}"></div>
-        <b class="pn">${esc(p.name)}</b>
-        <i class="pp">${money(p.price)}${p.old_price && Number(p.old_price) > Number(p.price) ? `<s>${money(p.old_price)}</s>` : ''}</i>
-        ${p.description ? `<p class="pd">${esc(p.description)}</p>` : ''}
+        <b class="pn" data-st="prodName">${esc(p.name)}</b>
+        <i class="pp" data-st="prodPrice">${money(p.price)}${p.old_price && Number(p.old_price) > Number(p.price) ? `<s>${money(p.old_price)}</s>` : ''}</i>
+        ${p.description ? `<p class="pd" data-st="prodDesc">${esc(p.description)}</p>` : ''}
       </article>`).join('');
   }
 
@@ -558,33 +554,7 @@ nav a{white-space:nowrap}nav a.on{text-decoration:underline}
     `;
   }
 
-  /* ===== Chế độ chỉnh sửa (chỉ bật khi mở từ trang admin: index.html?edit=1) ===== */
-  window.__cfg = () => cfg;
-  window.__set = c => { cfg = c; applyCfg(); route(); };
-  window.__redraw = () => { applyCfg(); route(); };
-  window.__page = () => curPg;
-  function reselect() {
-    document.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
-    if (!EDIT || !selKey) return;
-    const el = document.querySelector(`[data-k="${selKey}"],[data-img="${selKey}"],[data-sec="${selKey}"]`);
-    if (el) el.classList.add('sel');
-  }
-  if (EDIT) {
-    document.body.classList.add('edm');
-    document.addEventListener('click', e => {
-      if (e.target.isContentEditable) return;
-      e.preventDefault(); e.stopPropagation();
-      const t = e.target.closest('[data-k],[data-img]') || e.target.closest('[data-sec]'); if (!t) return;
-      selKey = t.dataset.k || t.dataset.img || t.dataset.sec; reselect();
-      if (window.parent.onSel) window.parent.onSel(t.dataset.k ? 'text' : t.dataset.img ? 'img' : 'sec', selKey);
-    }, true);
-    document.addEventListener('dblclick', e => {
-      const el = e.target.closest('[data-k]'); if (!el || (el.namespaceURI || '').includes('svg')) return;
-      el.contentEditable = 'true'; el.focus();
-      el.onblur = () => { el.contentEditable = 'false'; sp(cfg, el.dataset.k, el.innerText.replace(/\n+$/, '')); if (window.parent.onSel) window.parent.onSel('text', el.dataset.k); };
-    }, true);
-  }
-
+  applyCfg();
   renderCart();
   route();   // hiện ngay giao diện mặc định, rồi nạp dữ liệu thật
   load();
