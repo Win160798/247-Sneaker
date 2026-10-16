@@ -9,87 +9,123 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="site-config.js"></script>
-<style>
+
+<!-- CSS theo khung thiết kế PDF 1024px: "36u" = 36 đơn vị thiết kế, tự co giãn theo chiều ngang màn hình -->
+<style type="text/u">
 :root{--bg:#8AA9E2;--card:#D9D5D1;--ink:#111;--fh:'Lexend Giga';--fb:'Lexend';--fn:'Arima'}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--fb),Arial,sans-serif;background:#fff;color:var(--ink);-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font-family:inherit}button{cursor:pointer}img{display:block;max-width:100%}a{color:inherit;text-decoration:none}
+#app{container-type:inline-size;--u:calc(min(100cqw,1600px)/1024)}
 .blue{background:var(--bg);color:#fff}
-.in{max-width:1024px;margin:0 auto;padding:0 3.5%}
-.hd{padding-top:22px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.brand{font:800 clamp(20px,3.4vw,31px) Arial,sans-serif;letter-spacing:-.01em}
-.sr{display:flex;align-items:center;gap:8px;border:2px solid #fff;border-radius:99px;padding:3px 12px;width:min(310px,48vw);height:36px}
-.sr svg{width:17px;height:17px;flex:none;stroke:#fff;fill:none;stroke-width:2}
-.sr input{flex:1;min-width:0;border:0;background:transparent;outline:0;color:#fff;font-size:14px}
+.in{width:1024u;margin:0 auto}
+.hd{padding-top:22u}
+.top{display:flex;justify-content:space-between;align-items:center;padding:0 36u;height:34u}
+.brand{font:800 28u Arial,sans-serif;letter-spacing:0}
+.sr{display:flex;align-items:center;gap:8u;border:2u solid #fff;border-radius:99px;padding:0 14u;width:262u;height:34u}
+.sr svg{width:18u;height:18u;flex:none;stroke:#fff;fill:none;stroke-width:2}
+.sr input{flex:1;min-width:0;border:0;background:transparent;outline:0;color:#fff;font-size:15u}
 .sr button{border:0;background:none;display:flex;padding:0}
-nav{background:#fff;border-radius:12px;margin:12px 0 14px;display:flex;justify-content:space-between;gap:6px;padding:5px 2.5%;font:700 clamp(11px,2.2vw,20px) var(--fn),serif;color:var(--bg)}
-nav a{padding:3px 6px;white-space:nowrap}nav a.on{text-decoration:underline}
-.ph{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8%}.ph img{width:100%;aspect-ratio:1.17;object-fit:cover}
-.big{font:900 min(20.6vw,211px)/.8 'Arial Black','Archivo Black',Arial,sans-serif;letter-spacing:-.04em;text-align:center;padding:3.5% 0 5%;margin-top:.5%}
-.gal{max-width:1024px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:3%;padding:7.5% 2%}
-.gal img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:clamp(20px,4.2vw,43px)}
-.sec{padding:clamp(36px,6vw,64px) 0 clamp(40px,8vw,80px)}
-.ttl{font:600 clamp(17px,4.1vw,40px)/1.25 var(--fh),sans-serif;text-transform:lowercase;letter-spacing:.03em;white-space:pre-line;margin-bottom:22px}
-.bar{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:flex-start;margin-bottom:26px}
-#chips{display:flex;flex-wrap:wrap;gap:8px;flex:1}.brk{flex-basis:100%;height:0}
-.chip{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:7px 15px;font-size:13px;font-weight:600}.chip.on,.chip:hover{background:#fff;color:var(--bg)}
-#sort{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:7px 12px;font-size:13px;font-weight:600;outline:0}#sort option{color:#111}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:34px 2.4%}
+nav{background:#fff;border-radius:10u;margin:14u 36u 0;height:35u;display:flex;justify-content:space-between;align-items:center;padding:0 30u;font:700 22u var(--fn),serif;color:var(--bg)}
+nav a{white-space:nowrap}nav a.on{text-decoration:underline}
+.hero{padding-bottom:8u}
+.ph{display:grid;grid-template-columns:repeat(3,305u);gap:18u;padding:15u 36u 0}.ph img{width:305u;height:260u;object-fit:cover}
+.big{display:block;width:1024u;height:175u;margin-top:13u;font-family:Arial,sans-serif;font-weight:700}.big text{fill:currentColor}
+.gal{background:#fff}.gal .in{display:flex;gap:28.5u;padding:84u 0 83u 22u}
+.gal img{width:307.5u;height:410u;object-fit:cover;border-radius:37.5u}
+.sec{padding:60u 0 80u}
+.ttl{font:400 38u/1.2 var(--fh),sans-serif;text-transform:lowercase;letter-spacing:.02em;white-space:pre-line;padding:0 36u;margin-bottom:30u}
+.bar{display:flex;flex-wrap:wrap;gap:10u;justify-content:space-between;align-items:flex-start;padding:0 32u;margin-bottom:26u}
+#chips{display:flex;flex-wrap:wrap;gap:8u;flex:1}.brk{flex-basis:100%;height:0}
+.chip{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 16u;font-size:max(12px,14u);font-weight:600}.chip.on,.chip:hover{background:#fff;color:var(--bg)}
+#sort{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 14u;font-size:max(12px,14u);font-weight:600;outline:0}#sort option{color:#111}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:70u 16u;padding:0 32u}
 .p{cursor:pointer}
-.pi{aspect-ratio:210/275;background:var(--card);border-radius:clamp(18px,4.2vw,43px);overflow:hidden}.pi img{width:100%;height:100%;object-fit:cover;transition:transform .3s}.p:hover .pi img{transform:scale(1.04)}
-.pn{display:block;font:700 clamp(12px,1.5vw,14px) Arial,sans-serif;margin-top:12px}
-.pp{display:block;font:italic 700 clamp(12px,1.5vw,14px) Arial,sans-serif;margin-top:2px}.pp s{font-weight:400;opacity:.75;margin-left:6px}
-.pd{font:400 clamp(10px,1.2vw,12px)/1.4 Arial,sans-serif;margin-top:7px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.empty{grid-column:1/-1;text-align:center;padding:50px 0}
-.sz{padding:clamp(36px,6vw,64px) 0;background:#fff}.sz .ttl{color:var(--bg)}
-table{width:100%;border-collapse:collapse;color:var(--bg);text-align:center;font:400 clamp(12px,2.2vw,21px) Arial,sans-serif}
-td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:400}
-.st{display:grid;grid-template-columns:1fr 1fr;gap:5%}.st a{display:block}.st img.mp{width:100%;aspect-ratio:1.33;object-fit:cover}
-.sa{display:flex;align-items:center;gap:14px;margin-top:10px;font-size:clamp(13px,2.4vw,21px);line-height:1.35}.sa img{width:clamp(36px,5.8vw,58px);height:auto;flex:none}
+.pi{aspect-ratio:226/292;background:var(--card);border-radius:40u;overflow:hidden}.pi img{width:100%;height:100%;object-fit:cover;transition:transform .3s}.p:hover .pi img{transform:scale(1.04)}
+.pn{display:block;font:700 max(12px,15u) Arial,sans-serif;margin-top:16u}
+.pp{display:block;font:italic 700 max(12px,15u) Arial,sans-serif;margin-top:2u}.pp s{font-weight:400;opacity:.75;margin-left:6u}
+.pd{font:400 max(10px,12.5u)/1.35 Arial,sans-serif;margin-top:8u;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.empty{grid-column:1/-1;text-align:center;padding:50u 0}
+.sz{padding:33u 0 43u;background:#fff}.sz .ttl{color:var(--bg);font-size:36u;line-height:1.85;margin-bottom:38u}
+.sz table{margin:0 66u;width:891u;border-collapse:collapse;color:var(--bg);text-align:center;font:400 max(12px,26u) Arial,sans-serif}
+.sz td,.sz th{border:1.5u solid var(--bg);height:76u;font-weight:400}
+.stores{padding:60u 0 25u}
+.st{display:grid;grid-template-columns:417u 417u;gap:77u;padding:0 57u;margin-top:-4u}.st a{display:block}.st img.mp{width:417u;height:314u;object-fit:cover}
+.stores .ttl{margin-bottom:47u}
+.sa{display:flex;align-items:center;gap:20u;margin-top:22u;font:400 max(12px,24u)/1.4 var(--fb),sans-serif}.sa img{width:62u;height:62u;object-fit:contain;flex:none}
 .wh{background:#fff}
-.ct{display:grid;grid-template-columns:1fr 1fr;gap:6%;align-items:center;padding:clamp(30px,6vw,60px) 0 20px}
-.lg{width:100%;aspect-ratio:1;object-fit:cover;border-radius:15%}
-.cl{display:flex;align-items:center;gap:6%;color:var(--bg);font-size:clamp(14px,2.7vw,27px);margin:3.5% 0}.cl img{width:clamp(36px,6vw,58px);height:clamp(36px,6vw,58px);object-fit:contain;flex:none}
-.fol{color:var(--bg);font-size:clamp(15px,2.9vw,28px);line-height:1.5;padding:0 0 clamp(30px,6vw,60px);max-width:90%}
-
+.ct{display:flex;align-items:center;gap:47u;padding:70u 0 0 97u}
+.lg{width:409u;height:409u;object-fit:cover;border-radius:70u;flex:none}
+.cl{display:flex;align-items:center;gap:60u;color:var(--bg);font:400 max(13px,28u) var(--fb),sans-serif;height:88u}.cl img{width:62u;height:62u;object-fit:contain;flex:none}
+.fol{color:var(--bg);font:400 max(14px,31u)/1.6 var(--fb),sans-serif;padding:44u 97u 70u;width:880u}
+.edm [data-k],.edm [data-img]{cursor:pointer}
+.edm [data-k]:hover,.edm [data-img]:hover,.edm [data-sec]:hover{outline:2px dashed #3448c5;outline-offset:2px}
+.edm .sel{outline:2px solid #3448c5!important;outline-offset:2px}
+@media(max-width:700px){
+  #app{--u:calc(100cqw/430)}
+  .in{width:100%}
+  .top{padding:0 12px}.brand{font-size:20px}.sr{width:46%;height:32px;padding:0 10px}.sr input{font-size:14px}.sr svg{width:16px;height:16px}
+  nav{margin:12px 12px 0;height:auto;padding:7px 8px;font-size:10.5px;flex-wrap:wrap;justify-content:center;gap:2px 10px}
+  .ph{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 12px 0}.ph img{width:100%;height:auto;aspect-ratio:1.17}
+  .big{width:100%;height:auto;aspect-ratio:1024/175}
+  .gal .in{padding:30px 12px;gap:8px}.gal img{width:calc((100% - 16px)/3);height:auto;aspect-ratio:3/4;border-radius:14px}
+  .sec{padding:30px 0 40px}.ttl{font-size:18px;padding:0 14px;margin-bottom:16px}
+  .bar{padding:0 14px}.chip,#sort{font-size:12px;padding:5px 11px}
+  .grid{grid-template-columns:repeat(2,1fr);gap:26px 12px;padding:0 14px}.pi{border-radius:20px}
+  .pn{font-size:13px}.pp{font-size:13px}.pd{font-size:11px}
+  .sz{padding:24px 0}.sz .ttl{font-size:16px}.sz table{margin:0 14px;width:calc(100% - 28px);font-size:12px}.sz td,.sz th{height:34px}
+  .st{grid-template-columns:1fr 1fr;gap:12px;padding:0 14px;margin:0}.st img.mp{width:100%;height:auto;aspect-ratio:1.33}
+  .sa{font-size:11.5px;gap:6px}.sa img{width:26px;height:26px}
+  .ct{flex-direction:column;padding:30px 14px 0;gap:18px;align-items:flex-start}.lg{width:58%;height:auto;aspect-ratio:1;border-radius:22px}
+  .cl{font-size:17px;gap:14px;height:56px}.cl img{width:40px;height:40px}
+  .fol{padding:18px 14px 40px;width:100%;font-size:14px}
+}
+</style>
+<script>
+  // đổi "36u" -> calc(36*var(--u))
+  const _s = document.querySelector('style[type="text/u"]').textContent;
+  const _e = document.createElement('style');
+  _e.textContent = _s.replace(/(?<![\w.#-])(-?\d*\.?\d+)u(?![\w-])/g, 'calc($1*var(--u))');
+  document.head.appendChild(_e);
+</script>
+<style>
 /* ===== Modal sản phẩm ===== */
 .back{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:50}.back.on{display:block}
-.modal{position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%);width:min(940px,94vw);max-height:92vh;overflow:auto;background:#fff;color:#111;border-radius:28px;display:none;padding:24px;touch-action:pan-y}
+.modal{position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%);width:min(940px,94vw);max-height:92vh;overflow:auto;background:#fff;color:#111;border-radius:28px;display:none;padding:24px;touch-action:pan-y;font-family:var(--fb),Arial,sans-serif}
 .modal.on{display:grid;grid-template-columns:1.1fr 1fr;gap:28px}
 .m-main{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:24px;background:#f1f1ec;user-select:none;-webkit-user-drag:none}
 .m-thumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.m-thumbs img{width:58px;height:58px;object-fit:cover;border-radius:12px;border:2px solid transparent;cursor:pointer}.m-thumbs img.on{border-color:#000}
-.m-info h2{font-size:26px;font-weight:800;line-height:1.15}.m-cnt{font-size:12px;color:#888;margin-bottom:6px}
+.m-info h2{font-size:26px;font-weight:700;line-height:1.15}.m-cnt{font-size:12px;color:#888;margin-bottom:6px}
 .m-price{margin-top:12px;display:flex;gap:10px;align-items:center}
-.p-price{background:var(--bg);color:#fff;border-radius:99px;padding:5px 12px;font-weight:800;font-size:15px}.p-old{color:#888;text-decoration:line-through;font-size:14px}
+.p-price{background:var(--bg);color:#fff;border-radius:99px;padding:5px 12px;font-weight:700;font-size:15px}.p-old{color:#888;text-decoration:line-through;font-size:14px}
 .m-desc{margin-top:16px;color:#444;line-height:1.55;font-size:15px;white-space:pre-line}.m-label{margin-top:20px;font-weight:700;font-size:14px}
 .sizes{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.size{border:1.4px solid #999;background:#fff;border-radius:99px;min-width:48px;padding:8px 12px;font-weight:600;font-size:14px}.size.on{background:var(--bg);color:#fff;border-color:var(--bg)}
 .qty{display:inline-flex;align-items:center;gap:14px;margin-top:8px;border:1.4px solid #999;border-radius:99px;padding:4px 8px}.qty button{border:0;background:transparent;font-size:20px;width:30px;height:30px;border-radius:50%}.qty button:hover{background:var(--bg);color:#fff}
-.btn{display:block;width:100%;border:0;border-radius:99px;background:#000;color:#fff;padding:15px 20px;font-size:16px;font-weight:800;margin-top:22px;transition:.15s}.btn:hover{background:var(--bg)}.btn:disabled{opacity:.5;cursor:default}
+.btn{display:block;width:100%;border:0;border-radius:99px;background:#000;color:#fff;padding:15px 20px;font-size:16px;font-weight:700;margin-top:22px;transition:.15s}.btn:hover{background:var(--bg)}.btn:disabled{opacity:.5;cursor:default}
+.btn.buy{background:#0068ff;margin-top:10px}.btn.buy:hover{background:#0050c8}
 .x{position:absolute;right:14px;top:12px;width:38px;height:38px;border-radius:50%;border:0;background:#f1f1ec;font-size:20px;z-index:2}.x:hover{background:var(--bg);color:#fff}
 .warn{color:#c0392b;font-size:13px;margin-top:8px;min-height:16px}
 .nv{position:fixed;top:50%;z-index:70;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#111;box-shadow:0 2px 12px rgba(0,0,0,.35);font-size:28px;line-height:1;display:none}
 .nv.l{left:10px}.nv.r{right:10px}.modal.on~.nv{display:block}.nv:hover{background:var(--bg);color:#fff}
 
-/* ===== Giỏ hàng ===== */
-.fab{position:fixed;right:18px;bottom:18px;z-index:40;background:#000;color:#fff;border:0;border-radius:99px;padding:14px 22px;font-weight:800;font-size:15px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
-.fab:hover{background:#fff;color:var(--bg)}.fab b{background:var(--bg);color:#fff;border-radius:99px;padding:1px 8px;margin-left:6px}
-.drawer{position:fixed;z-index:60;top:0;right:0;height:100%;width:min(430px,100vw);background:#fff;color:#111;transform:translateX(105%);transition:transform .28s;display:flex;flex-direction:column;padding:22px}.drawer.on{transform:none}
-.drawer h3{font-size:24px;font-weight:800}.ci-list{flex:1;overflow:auto;margin:14px 0}
+/* ===== Nút Zalo nổi + Giỏ hàng ===== */
+.zl{position:fixed;right:16px;bottom:16px;z-index:45;width:58px;height:58px;border-radius:50%;box-shadow:0 4px 18px rgba(0,0,0,.3);background:#fff;display:block}
+.zl img{width:100%;height:100%;object-fit:contain;border-radius:50%}
+.zl::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #0068ff;animation:pl 1.8s infinite}
+@keyframes pl{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.fab{position:fixed;right:16px;bottom:88px;z-index:45;background:#000;color:#fff;border:0;border-radius:99px;padding:12px 20px;font:700 15px var(--fb),Arial,sans-serif;text-transform:none;letter-spacing:0;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.fab:hover{background:#fff;color:var(--bg)}.fab b{background:var(--bg);color:#fff;border-radius:99px;padding:1px 8px;margin-left:6px;font-weight:700}
+.drawer{position:fixed;z-index:60;top:0;right:0;height:100%;width:min(430px,100vw);background:#fff;color:#111;transform:translateX(105%);transition:transform .28s;display:flex;flex-direction:column;padding:22px;font-family:var(--fb),Arial,sans-serif}.drawer.on{transform:none}
+.drawer h3{font-size:24px;font-weight:700}.ci-list{flex:1;overflow:auto;margin:14px 0}
 .ci{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee}.ci img{width:64px;height:80px;object-fit:cover;border-radius:14px}
 .ci-n{font-weight:700;font-size:14px}.ci-s{color:#666;font-size:13px;margin-top:2px}
 .ci-r{display:flex;justify-content:space-between;align-items:center;margin-top:6px}.ci-r button{border:0;background:#f1f1ec;width:26px;height:26px;border-radius:50%;font-size:15px}.ci-r span{margin:0 8px;font-weight:700}
 .ci-del{background:transparent!important;color:#c0392b;width:auto!important;font-size:12px!important}
-.total{display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding:10px 0}
+.total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;padding:10px 0}
 .drawer input,.drawer textarea{width:100%;border:1.4px solid #999;border-radius:14px;padding:11px 14px;font:inherit;font-size:14px;margin-top:8px;outline:none}.drawer input:focus,.drawer textarea:focus{border-color:#000}
 #order-msg{margin-top:10px;font-weight:700;text-align:center;font-size:14px}
-
-@media(max-width:700px){
-  .grid{grid-template-columns:repeat(2,1fr);gap:26px 4%}
-  .modal.on{grid-template-columns:1fr;padding:16px}
-  .nv{width:36px;height:36px;font-size:22px}
-}
+@media(max-width:700px){.modal.on{grid-template-columns:1fr;padding:16px}.nv{width:36px;height:36px;font-size:22px}.zl{width:52px;height:52px}.fab{bottom:80px}}
 
 /* ===== Lời cảm ơn sau khi đặt đơn (giữ y như cũ) ===== */
 #thankYouModal{position:fixed;inset:0;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;padding:1rem;line-height:1.5;color:#111}
@@ -115,6 +151,7 @@ td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:4
 <div class="modal" id="modal"></div>
 <button class="nv l" id="nvl" aria-label="Sản phẩm trước">‹</button>
 <button class="nv r" id="nvr" aria-label="Sản phẩm sau">›</button>
+<a class="zl" id="zl" target="_blank" rel="noopener" aria-label="Chat Zalo"><img id="zl-i" alt="Zalo"></a>
 <button class="fab" id="fab">Giỏ hàng <b id="fab-n">0</b></button>
 <aside class="drawer" id="cart">
   <h3>Giỏ hàng</h3>
@@ -138,11 +175,12 @@ td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:4
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money = n => Number(n || 0).toLocaleString('vi-VN') + ' đ';
   const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+  const EDIT = new URLSearchParams(location.search).has('edit');
 
   let db = null;
   try { db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { console.error(e); }
 
-  let cfg = clone(DEFAULTS), products = [], categories = [], activeCat = null, query = '', sortBy = '', shown = [], loadErr = '';
+  let cfg = clone(DEFAULTS), products = [], categories = [], activeCat = null, query = '', sortBy = '', shown = [], loadErr = '', curPg = 'home', selKey = null;
   let cart = [];
   try { cart = JSON.parse(localStorage.getItem('cart_v1') || '[]'); } catch (e) {}
 
@@ -162,50 +200,77 @@ td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:4
       if (p.error) loadErr = 'Lỗi tải sản phẩm: ' + p.error.message;
     } else loadErr = 'Không kết nối được Supabase.';
     applyCfg(); route();
+    if (window.parent !== window && window.parent.onReady) window.parent.onReady();
   }
+  const SYS = ['Arial', 'Arial Black', 'Helvetica', 'Times New Roman'];
+  const fam = x => String(x || '').split(':')[0];
   function applyCfg() {
     const r = document.documentElement.style, c = cfg.c, f = cfg.font;
     r.setProperty('--bg', c.bg); r.setProperty('--card', c.card); r.setProperty('--ink', c.ink);
-    r.setProperty('--fh', `'${f.h.split(':')[0]}'`); r.setProperty('--fb', `'${f.b.split(':')[0]}'`); r.setProperty('--fn', `'${f.n.split(':')[0]}'`);
-    $('gf').href = 'https://fonts.googleapis.com/css2?' + [...new Set([f.h, f.b, f.n].filter(Boolean))].map(x => { const [n, ...w] = x.split(':'); return 'family=' + encodeURIComponent(n).replace(/%20/g, '+') + (w.length ? ':' + w.join(':') : ''); }).join('&') + '&display=swap';
+    r.setProperty('--fh', `'${fam(f.h)}'`); r.setProperty('--fb', `'${fam(f.b)}'`); r.setProperty('--fn', `'${fam(f.n)}'`);
+    const all = [f.h, f.b, f.n, ...Object.values(cfg.st || {}).map(s => s.ff)].filter(x => x && !SYS.includes(fam(x)));
+    const seen = {}; all.forEach(x => { if (!seen[fam(x)] || x.includes(':')) seen[fam(x)] = x; });
+    const url = 'https://fonts.googleapis.com/css2?' + Object.values(seen).map(x => { const [n, ...w] = x.split(':'); return 'family=' + encodeURIComponent(n).replace(/%20/g, '+') + (w.length ? ':' + w.join(':') : ''); }).join('&') + '&display=swap';
+    if ($('gf').getAttribute('href') !== url) $('gf').href = url;
     document.title = cfg.title; $('fav').href = cfg.favicon;
+    $('zl').href = cfg.zalo.link; $('zl-i').src = cfg.zalo.icon;
   }
+  /* Áp kiểu riêng (font, cỡ chữ, màu, nền...) do trình dựng giao diện lưu trong cfg.st */
+  function applySt() {
+    document.querySelectorAll('[data-k],[data-sec]').forEach(el => {
+      const k = el.dataset.k || ('sec:' + el.dataset.sec), s = (cfg.st || {})[k];
+      ['color', 'fontFamily', 'fontWeight', 'fontStyle', 'textAlign', 'background', 'fontSize', 'paddingTop', 'paddingBottom'].forEach(p => el.style[p] = '');
+      if (!s) return;
+      if (s.color) el.style.color = s.color;
+      if (s.ff) el.style.fontFamily = `'${fam(s.ff)}',sans-serif`;
+      if (s.fw) el.style.fontWeight = s.fw;
+      if (s.fi) el.style.fontStyle = 'italic';
+      if (s.ta) el.style.textAlign = s.ta;
+      if (s.bg) el.style.background = s.bg;
+      if (s.pt !== undefined && s.pt !== '') el.style.paddingTop = `calc(${s.pt}*var(--u))`;
+      if (s.pb !== undefined && s.pb !== '') el.style.paddingBottom = `calc(${s.pb}*var(--u))`;
+      if (s.fs && Number(s.fs) !== 100 && !(el.namespaceURI || '').includes('svg')) el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * s.fs / 100) + 'px';
+    });
+  }
+  let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(applySt, 150); });
 
-  /* ---------- Các khối giao diện ---------- */
+  /* ---------- Các khối giao diện (data-k / data-img / data-sec để trình dựng nhận diện) ---------- */
   const PG = ['home', 'products', 'size', 'contact'];
-  const gal = a => `<section><div class="gal">${a.map(u => `<img src="${esc(u)}" alt="" loading="lazy">`).join('')}</div></section>`;
+  const gal = (a, n) => `<section class="gal" data-sec="${n}"><div class="in">${a.map((u, i) => `<img data-img="${n}.${i}" src="${esc(u)}" alt="" loading="lazy">`).join('')}</div></section>`;
   const SEC = {
-    hero: () => `<section class="blue"><div class="in"><div class="ph">${cfg.hero.map(u => `<img src="${esc(u)}" alt="">`).join('')}</div><div class="big">${esc(cfg.big)}</div></div></section>`,
-    gal: () => gal(cfg.gal),
-    gal2: () => gal(cfg.gal2),
-    prod: () => `<section class="blue sec" id="prod"><div class="in"><h2 class="ttl">${esc(cfg.prodTitle)}</h2>
+    hero: () => `<section class="blue hero" data-sec="hero"><div class="in"><div class="ph">${cfg.hero.map((u, i) => `<img data-img="hero.${i}" src="${esc(u)}" alt="">`).join('')}</div>
+      <svg class="big" data-k="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
+    gal: () => gal(cfg.gal, 'gal'),
+    gal2: () => gal(cfg.gal2, 'gal2'),
+    prod: () => `<section class="blue sec" id="prod" data-sec="prod"><div class="in"><h2 class="ttl" data-k="prodTitle">${esc(cfg.prodTitle)}</h2>
       <div class="bar"><div id="chips"></div><select id="sort" aria-label="Sắp xếp"><option value="">Mới nhất</option><option value="asc">Giá: thấp → cao</option><option value="desc">Giá: cao → thấp</option></select></div>
       <div class="grid" id="grid"></div></div></section>`,
     size: () => {
-      const h = cfg.sizeHead.map(esc), n = Math.max(cfg.sizeM.length, cfg.sizeF.length);
-      const r = (a, i) => a[i] ? `<td>${esc(a[i].k)}</td><td>${esc(a[i].s)}</td>` : '<td></td><td></td>';
-      return `<section class="sz"><div class="in"><h2 class="ttl">${esc(cfg.sizeTitle)}</h2><table>
-        <tr><th colspan="2">${h[0]}</th><th colspan="2">${h[1]}</th></tr><tr><th>${h[2]}</th><th>${h[3]}</th><th>${h[2]}</th><th>${h[3]}</th></tr>
-        ${Array.from({ length: n }, (_, i) => `<tr>${r(cfg.sizeM, i)}${r(cfg.sizeF, i)}</tr>`).join('')}</table></div></section>`;
+      const h = cfg.sizeHead, n = Math.max(cfg.sizeM.length, cfg.sizeF.length);
+      const r = (a, p, i) => a[i] ? `<td data-k="${p}.${i}.k">${esc(a[i].k)}</td><td data-k="${p}.${i}.s">${esc(a[i].s)}</td>` : '<td></td><td></td>';
+      return `<section class="sz" data-sec="size"><div class="in"><h2 class="ttl" data-k="sizeTitle">${esc(cfg.sizeTitle)}</h2><table>
+        <tr><th colspan="2" data-k="sizeHead.0">${esc(h[0])}</th><th colspan="2" data-k="sizeHead.1">${esc(h[1])}</th></tr>
+        <tr><th data-k="sizeHead.2">${esc(h[2])}</th><th data-k="sizeHead.3">${esc(h[3])}</th><th>${esc(h[2])}</th><th>${esc(h[3])}</th></tr>
+        ${Array.from({ length: n }, (_, i) => `<tr>${r(cfg.sizeM, 'sizeM', i)}${r(cfg.sizeF, 'sizeF', i)}</tr>`).join('')}</table></div></section>`;
     },
-    stores: () => `<section class="blue sec"><div class="in"><h2 class="ttl">${esc(cfg.storeTitle)}</h2><div class="st">${cfg.stores.map(s => `
-      <a href="${esc(s.link)}" target="_blank" rel="noopener"><img class="mp" src="${esc(s.img)}" alt="" loading="lazy"><div class="sa"><img src="${esc(cfg.homeIcon)}" alt=""><span>${esc(s.addr)}</span></div></a>`).join('')}</div></div></section>`,
-    contact: () => `<section class="wh"><div class="in"><div class="ct"><img class="lg" src="${esc(cfg.logo)}" alt=""><div>${cfg.contacts.map(c => `
-      <a class="cl" ${c.link ? `href="${esc(c.link)}" target="_blank" rel="noopener"` : ''}><img src="${esc(c.icon)}" alt=""><span>${esc(c.text)}</span></a>`).join('')}</div></div><p class="fol">${esc(cfg.follow)}</p></div></section>`
+    stores: () => `<section class="blue stores" data-sec="stores"><div class="in"><h2 class="ttl" data-k="storeTitle">${esc(cfg.storeTitle)}</h2><div class="st">${cfg.stores.map((s, i) => `
+      <a href="${esc(s.link)}" target="_blank" rel="noopener"><img class="mp" data-img="stores.${i}.img" src="${esc(s.img)}" alt="" loading="lazy"><div class="sa"><img data-img="homeIcon" src="${esc(cfg.homeIcon)}" alt=""><span data-k="stores.${i}.addr">${esc(s.addr)}</span></div></a>`).join('')}</div></div></section>`,
+    contact: () => `<section class="wh" data-sec="contact"><div class="in"><div class="ct"><img class="lg" data-img="logo" src="${esc(cfg.logo)}" alt=""><div>${cfg.contacts.map((c, i) => `
+      <a class="cl" ${c.link ? `href="${esc(c.link)}" target="_blank" rel="noopener"` : ''}><img data-img="contacts.${i}.icon" src="${esc(c.icon)}" alt=""><span data-k="contacts.${i}.text">${esc(c.text)}</span></a>`).join('')}</div></div><p class="fol" data-k="follow">${esc(cfg.follow)}</p></div></section>`
   };
   const navHref = u => PG.includes(u) ? '#' + u : esc(u);
   function hdr(pg) {
-    return `<header class="blue"><div class="in hd"><div class="top"><a class="brand" href="#home">${esc(cfg.brand)}</a>
+    return `<header class="blue" data-sec="header"><div class="in hd"><div class="top"><a class="brand" href="#home" data-k="brand">${esc(cfg.brand)}</a>
       <div class="sr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" aria-label="Tìm kiếm sản phẩm">
       <button id="mic" type="button" aria-label="Tìm bằng giọng nói"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div></div>
-      <nav>${cfg.nav.map(n => `<a href="${navHref(n.u)}" class="${n.u === pg ? 'on' : ''}">${esc(n.t)}</a>`).join('')}</nav></div></header>`;
+      <nav>${cfg.nav.map((n, i) => `<a href="${navHref(n.u)}" class="${n.u === pg ? 'on' : ''}" data-k="nav.${i}.t">${esc(n.t)}</a>`).join('')}</nav></div></header>`;
   }
   function route() {
-    const h = location.hash.slice(1), pg = PG.includes(h) ? h : 'home';
+    const h = location.hash.slice(1), pg = PG.includes(h) ? h : 'home'; curPg = pg;
     const hadFocus = document.activeElement && document.activeElement.id === 'q';
     $('app').innerHTML = hdr(pg) + (cfg.pages[pg] || '').split(',').map(s => s.trim()).filter(Boolean).map(s => SEC[s] ? SEC[s]() : '').join('');
-    bind(); renderChips(); renderProducts();
-    if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else scrollTo(0, 0);
+    bind(); renderChips(); renderProducts(); applySt(); reselect();
+    if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else if (!EDIT) scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
 
@@ -263,7 +328,7 @@ td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:4
       </article>`).join('');
   }
 
-  /* ---------- Modal sản phẩm (lướt trái/phải xem sản phẩm kế cận) ---------- */
+  /* ---------- Modal sản phẩm (lướt trái/phải + Mua ngay qua Zalo) ---------- */
   let cur = null, curSize = null, curQty = 1;
   function openProduct(id) {
     cur = products.find(p => p.id === id); if (!cur) return;
@@ -285,6 +350,7 @@ td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:4
         <div class="qty"><button id="q-" aria-label="Giảm">−</button><b id="q-n">1</b><button id="q+" aria-label="Tăng">+</button></div>
         <div class="warn" id="m-warn"></div>
         <button class="btn" id="m-add">THÊM VÀO GIỎ HÀNG</button>
+        <button class="btn buy" id="m-buy">MUA NGAY (CHAT ZALO)</button>
       </div>`;
     $('modal').scrollTop = 0;
     $('back').classList.add('on'); $('modal').classList.add('on'); document.body.style.overflow = 'hidden';
@@ -331,6 +397,13 @@ td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:4
       if (ex) ex.qty += curQty;
       else cart.push({ key, id: cur.id, name: cur.name, price: Number(cur.price), image: mainImg(cur), selectedSize: curSize, qty: curQty });
       saveCart(); closeAll(); openCart();
+    }
+    if (t.id === 'm-buy') {   // Mua ngay -> chuyển sang Zalo, tự sao chép thông tin sản phẩm để dán vào chat
+      if ((cur.sizes || []).length && !curSize) { $('m-warn').textContent = 'Vui lòng chọn size trước khi mua.'; return; }
+      const msg = `Mình muốn mua: ${cur.name}\n${curSize ? 'Size: ' + curSize + '\n' : ''}Số lượng: ${curQty}\nGiá: ${money(cur.price)}`;
+      try { navigator.clipboard.writeText(msg); } catch (err) {}
+      $('m-warn').style.color = '#0068ff'; $('m-warn').textContent = 'Đã sao chép thông tin sản phẩm — dán vào khung chat Zalo nhé!';
+      window.open(cfg.zalo.link, '_blank');
     }
   });
 
@@ -483,6 +556,33 @@ td,th{border:1px solid var(--bg);padding:clamp(8px,1.6vw,16px) 4px;font-weight:4
         </button>
       </div>
     `;
+  }
+
+  /* ===== Chế độ chỉnh sửa (chỉ bật khi mở từ trang admin: index.html?edit=1) ===== */
+  window.__cfg = () => cfg;
+  window.__set = c => { cfg = c; applyCfg(); route(); };
+  window.__redraw = () => { applyCfg(); route(); };
+  window.__page = () => curPg;
+  function reselect() {
+    document.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
+    if (!EDIT || !selKey) return;
+    const el = document.querySelector(`[data-k="${selKey}"],[data-img="${selKey}"],[data-sec="${selKey}"]`);
+    if (el) el.classList.add('sel');
+  }
+  if (EDIT) {
+    document.body.classList.add('edm');
+    document.addEventListener('click', e => {
+      if (e.target.isContentEditable) return;
+      e.preventDefault(); e.stopPropagation();
+      const t = e.target.closest('[data-k],[data-img]') || e.target.closest('[data-sec]'); if (!t) return;
+      selKey = t.dataset.k || t.dataset.img || t.dataset.sec; reselect();
+      if (window.parent.onSel) window.parent.onSel(t.dataset.k ? 'text' : t.dataset.img ? 'img' : 'sec', selKey);
+    }, true);
+    document.addEventListener('dblclick', e => {
+      const el = e.target.closest('[data-k]'); if (!el || (el.namespaceURI || '').includes('svg')) return;
+      el.contentEditable = 'true'; el.focus();
+      el.onblur = () => { el.contentEditable = 'false'; sp(cfg, el.dataset.k, el.innerText.replace(/\n+$/, '')); if (window.parent.onSel) window.parent.onSel('text', el.dataset.k); };
+    }, true);
   }
 
   renderCart();
