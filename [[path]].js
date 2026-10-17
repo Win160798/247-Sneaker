@@ -1,14 +1,10 @@
-// Cloudflare Pages Function: toàn bộ API dữ liệu của shop (thay cho Supabase), lưu trong D1.
-// Cần: (1) gắn D1 vào project Pages với tên biến "DB", (2) biến môi trường ADMIN_KEY.
-// Khách chỉ được: xem sản phẩm/danh mục/giao diện và ĐẶT HÀNG. Mọi thao tác ghi khác cần mã quản trị (header x-admin-key).
-
+// Cloudflare Pages Function
 const J = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } });
 const arr = s => { try { const a = JSON.parse(s); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
 const prod = r => ({ ...r, images: arr(r.images), sizes: arr(r.sizes) });
 const str = v => (v === undefined || v === null ? null : String(v));
 
 export async function onRequest({ request, env, params }) {
-  // Xử lý CORS Preflight để không bị lỗi 405 khi gọi API
   if (request.method === 'OPTIONS') {
     return new Response(null, { 
       headers: { 
@@ -20,16 +16,19 @@ export async function onRequest({ request, env, params }) {
   }
 
   const db = env.DB;
-  if (!db) return J({ error: 'Chưa gắn D1 vào project Pages (tên biến phải là DB)' }, 500);
+  if (!db) return J({ error: 'Chưa gắn D1' }, 500);
 
-  const parts = (params.path || []), res = parts[0], id = parts[1], m = request.method;
+  // TỰ ĐỘNG BỎ QUA CHỮ "api" Ở ĐẦU ĐƯỜNG DẪN
+  let parts = params.path || [];
+  if (parts[0] === 'api') parts = parts.slice(1);
+  
+  const res = parts[0], id = parts[1], m = request.method;
   const admin = !!env.ADMIN_KEY && request.headers.get('x-admin-key') === env.ADMIN_KEY;
   const deny = () => J({ error: 'Sai mã quản trị' }, 401);
   let body = {};
   if (m !== 'GET' && m !== 'DELETE') { try { body = await request.json(); } catch (e) {} }
 
   try {
-    /* ---------- Giao diện website ---------- */
     if (res === 'settings') {
       if (m === 'GET') {
         const r = await db.prepare("SELECT data FROM site_settings WHERE id='main'").first();
@@ -43,7 +42,6 @@ export async function onRequest({ request, env, params }) {
       }
     }
 
-    /* ---------- Danh mục ---------- */
     if (res === 'categories') {
       if (m === 'GET') return J((await db.prepare('SELECT * FROM categories ORDER BY id').all()).results);
       if (!admin) return deny();
@@ -54,7 +52,6 @@ export async function onRequest({ request, env, params }) {
       if (m === 'DELETE' && id) { await db.prepare('DELETE FROM categories WHERE id=?').bind(id).run(); return J({ ok: true }); }
     }
 
-    /* ---------- Sản phẩm ---------- */
     if (res === 'products') {
       if (m === 'GET') return J((await db.prepare('SELECT * FROM products ORDER BY id DESC').all()).results.map(prod));
       if (!admin) return deny();
@@ -77,13 +74,11 @@ export async function onRequest({ request, env, params }) {
       if (m === 'DELETE' && id) { await db.prepare('DELETE FROM products WHERE id=?').bind(id).run(); return J({ ok: true }); }
     }
 
-    /* ---------- Đơn hàng ---------- */
     if (res === 'orders') {
-      if (m === 'POST') {   // khách đặt hàng (không cần mã quản trị)
+      if (m === 'POST') {
         const name = str(body.customer_name), phone = str(body.customer_phone), addr = str(body.address);
-        if (!name || !phone || !addr || !Array.isArray(body.cart_items) || !body.cart_items.length) return J({ error: 'Thiếu thông tin đơn hàng' }, 400);
+        if (!name || !phone || !addr || !Array.isArray(body.cart_items) || !body.cart_items.length) return J({ error: 'Thiếu thông tin' }, 400);
         const items = JSON.stringify(body.cart_items);
-        if (items.length > 40000 || name.length > 200 || addr.length > 500) return J({ error: 'Dữ liệu đơn hàng quá lớn' }, 400);
         const r = await db.prepare('INSERT INTO orders(customer_name,customer_phone,address,note,total_amount,cart_items) VALUES(?,?,?,?,?,?)')
           .bind(name, phone, addr, str(body.note), Number(body.total_amount) || 0, items).run();
         return J({ id: r.meta.last_row_id });
@@ -93,7 +88,7 @@ export async function onRequest({ request, env, params }) {
       if (m === 'DELETE' && id) { await db.prepare('DELETE FROM orders WHERE id=?').bind(id).run(); return J({ ok: true }); }
     }
 
-    return J({ error: 'Không tìm thấy' }, 404);
+    return J({ error: 'Không tìm thấy API: ' + res }, 404);
   } catch (e) {
     return J({ error: 'Lỗi máy chủ: ' + e.message }, 500);
   }
