@@ -8,7 +8,6 @@
 <link id="gf" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets.js"></script>
 <script src="site-config.js"></script>
 
 <!-- CSS theo khung thiết kế PDF 1024px: "36u" = 36 đơn vị thiết kế, tự co giãn theo chiều ngang màn hình -->
@@ -570,15 +569,232 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     `;
   }
 
+  /* ===== Công cụ ảnh (Cloudinary) + trình chỉnh sửa trực tiếp: chỉ chạy khi mở từ trang admin (?edit=1) ===== */
+/* ===== Công cụ ảnh dùng cho trang admin (không nạp ở trang khách) ===== */
+
+// Gắn watermark chữ lặp chéo lên ảnh (mật độ vừa phải, không có chữ ở góc)
+async function addWatermark(file) {
+  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, w, h);
+  const f = Math.round(Math.max(w, h) * 0.04), sx = f * 8.5, sy = f * 5.2, d = Math.hypot(w, h);
+  x.translate(w / 2, h / 2); x.rotate(-Math.PI / 6);
+  x.font = `bold ${f}px Arial`; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillStyle = 'rgba(255,255,255,.34)'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = f / 6;
+  let row = 0;
+  for (let yy = -d / 2; yy < d / 2; yy += sy, row++)
+    for (let xx = -d / 2 + (row % 2) * sx / 2; xx < d / 2; xx += sx) x.fillText(WATERMARK, xx, yy);
+  const png = file.type === 'image/png';
+  return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
+}
+
+// Tải ảnh lên Cloudinary (wm = true thì gắn watermark trước khi tải)
+async function uploadImage(file, wm = true) {
+  const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
+  const fd = new FormData();
+  fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
+  const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  const j = await r.json();
+  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
+  return j.secure_url;
+}
+
+// Ảnh có nằm trên Cloudinary của shop không
+const isCloud = u => typeof u === 'string' && u.includes(`res.cloudinary.com/${CLOUD_NAME}/`);
+const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '');
+
+// Xóa vĩnh viễn ảnh trên Cloudinary (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
+async function deleteImage(u) {
+  if (!isCloud(u)) return true;
+  let key = localStorage.getItem('adminKey');
+  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên Cloudinary:'); if (!key) return false; localStorage.setItem('adminKey', key); }
+  try {
+    const r = await fetch('/api/delete-image', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': key }, body: JSON.stringify({ public_id: pubId(u) }) });
+    if (r.status === 401) localStorage.removeItem('adminKey');
+    return r.ok;
+  } catch (e) { return false; }
+}
+
+  if (EDIT) {
+/* ===== Trình chỉnh sửa trực tiếp (chỉ nạp khi mở index.html?edit=1 từ trang admin) ===== */
+(function () {
+  const st = document.createElement('style');
+  st.textContent = `
+  .edm [data-k],.edm [data-g],.edm [data-img],.edm [data-map]{cursor:pointer}
+  .edm [data-k]:hover,.edm [data-g]:hover,.edm [data-img]:hover,.edm [data-map]:hover,.edm [data-sec]:hover{outline:2px dashed #3448c5;outline-offset:2px}
+  .edm .sel{outline:2px solid #3448c5!important;outline-offset:2px}
+  .edm [contenteditable=true]{cursor:text;outline:2px solid #3448c5!important;min-width:10px}
+  .edm .mapw{position:relative}.edm .mapw::after{content:"Bấm để sửa bản đồ";display:flex;align-items:center;justify-content:center;position:absolute;inset:0;background:rgba(52,72,197,.08);color:#3448c5;font:600 14px Arial;opacity:0;transition:.15s}.edm .mapw:hover::after{opacity:1}
+  #ed{position:fixed;z-index:99999;display:none;background:#fff;color:#1f2430;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.28);padding:8px;width:min(372px,calc(100vw - 12px));font:13px Arial,sans-serif}
+  #ed .r{display:flex;gap:5px;align-items:center;margin:4px 0;flex-wrap:wrap}
+  #ed button,#ed .bt{border:1px solid #cfd4e2;background:#fff;border-radius:7px;padding:6px 9px;font-size:13px;cursor:pointer;color:#1f2430;font-family:Arial}
+  #ed button:hover,#ed .bt:hover{background:#eef0f6}#ed button.on{background:#3448c5;color:#fff;border-color:#3448c5}
+  #ed .wide{flex:1;text-align:left;min-width:120px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  #ed .n{min-width:26px;text-align:center}
+  #ed input[type=text],#ed input:not([type]){flex:1;min-width:0;border:1px solid #cfd4e2;border-radius:7px;padding:7px 9px;font-size:13px}
+  #ed input[type=color]{width:34px;height:30px;padding:1px;border:1px solid #cfd4e2;border-radius:7px;background:#fff;cursor:pointer}
+  #ed .up{display:inline-block;background:#3448c5;color:#fff;border-color:#3448c5}#ed .up:hover{background:#2a3aa3}
+  #ed .pv{width:40px;height:40px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
+  #ed label.ck{display:flex;align-items:center;gap:4px;font-size:12px}
+  #ed .lb{font-size:11px;color:#6b7385;width:100%}
+  #ed .d{color:#c0392b}
+  #fl{max-height:230px;overflow:auto;border:1px solid #e3e6ee;border-radius:8px;margin-top:6px;padding:4px}
+  #fl button{display:block;width:100%;text-align:left;border:0;font-size:16px;padding:7px 9px}
+  #e-st{font-size:12px;color:#3448c5;font-weight:600}`;
+  document.head.appendChild(st);
+  document.body.classList.add('edm');
+  const bar = document.createElement('div'); bar.id = 'ed'; document.body.appendChild(bar);
+  window.__trash = [];
+
+  let el = null, type = '', key = '', fontCss = false;
+  const hex = c => { const m = String(c).match(/\d+(\.\d+)?/g); return m ? '#' + m.slice(0, 3).map(n => (+n | 0).toString(16).padStart(2, '0')).join('') : '#000000'; };
+  const isSvg = e => (e.namespaceURI || '').includes('svg');
+  const uPx = () => { const w = $('app').clientWidth; return innerWidth <= 700 ? w / 430 * .65 : Math.min(w, 1600) / 1024; };
+
+  function hide() {
+    if (el) { el.classList.remove('sel'); if (el.isContentEditable) el.contentEditable = 'false'; }
+    el = null; bar.style.display = 'none';
+  }
+  function place() {
+    if (!el) return;
+    const r = el.getBoundingClientRect(), bw = bar.offsetWidth, bh = bar.offsetHeight;
+    let top = r.top - bh - 10; if (top < 6) top = Math.min(r.bottom + 10, innerHeight - bh - 6);
+    bar.style.top = Math.max(6, top) + 'px'; bar.style.left = Math.max(6, Math.min(r.left, innerWidth - bw - 6)) + 'px';
+  }
+  addEventListener('scroll', place, true); addEventListener('resize', place); addEventListener('hashchange', hide);
+
+  const lkRow = () => {
+    const a = el.closest('[data-lk]'); if (!a) return '';
+    const p = a.dataset.lk, nav = p.startsWith('nav.');
+    return `<div class="r"><div class="lb">🔗 ${nav ? 'Trang (home / products / size / contact) hoặc dán link' : 'Đường link khi bấm vào'}</div><input data-a="link" data-p="${p}" value="${esc(gp(cfg, p) || '')}"></div>`;
+  };
+  const liRow = () => {
+    const l = el.closest('[data-li]'); if (!l) return '';
+    const [arr, idx] = [l.dataset.li.replace(/\.\d+$/, ''), +l.dataset.li.split('.').pop()], n = (gp(cfg, arr) || []).length;
+    return `<div class="r"><button data-a="add" data-arr="${arr}" data-i="${idx}">＋ Thêm mục</button>${n > 1 ? `<button class="d" data-a="del" data-arr="${arr}" data-i="${idx}">🗑 Xóa mục</button>` : ''}</div>`;
+  };
+
+  function textBar() {
+    const s = cfg.ts[key] || {}, cs = getComputedStyle(el), svg = isSvg(el);
+    const N = s.fs || Math.round(parseFloat(cs.fontSize) / uPx());
+    const bold = parseInt(cs.fontWeight) >= 600, it = cs.fontStyle === 'italic', up = cs.textTransform === 'uppercase';
+    return `<div class="r"><button class="wide" data-a="font" style="font-family:'${fam(s.ff || 'Arial')}'">${esc(s.ff ? fam(s.ff) : 'Phông chữ mặc định')} ▾</button>
+      ${svg ? '' : `<button data-a="fs-">A−</button><b class="n">${N}</b><button data-a="fs+">A+</button>`}</div>
+      <div class="r"><button data-a="b" class="${bold ? 'on' : ''}"><b>B</b> Đậm</button><button data-a="i" class="${it ? 'on' : ''}"><i>I</i> Nghiêng</button><button data-a="u" class="${up ? 'on' : ''}">AA Hoa</button>
+      <input type="color" data-a="color" value="${hex(cs.color)}"><button data-a="rs" title="Đặt lại kiểu chữ">↺</button></div>
+      ${svg ? `<div class="r"><input data-a="svgtxt" value="${esc(gp(cfg, key))}" placeholder="Nội dung chữ"></div>` : ''}
+      ${lkRow()}${liRow()}<div id="fl" hidden></div>`;
+  }
+  function imgBar() {
+    const p = el.dataset.img, cur = gp(cfg, p) || '', ico = /icon|logo|homeIcon|zalo/i.test(p);
+    return `<div class="r"><img class="pv" src="${esc(U(cur))}" alt=""><label class="bt up">⬆ Đổi ảnh<input type="file" accept="image/*" hidden data-a="file"></label>
+      <label class="ck"><input type="checkbox" id="e-wm" ${ico ? '' : 'checked'}> Gắn watermark</label></div>
+      <div class="r"><input data-a="imgurl" placeholder="Hoặc dán link ảnh" value="${cur.startsWith('def:') ? '' : esc(cur)}"></div><div class="r" id="e-st"></div>${lkRow()}${liRow()}`;
+  }
+  const mapBar = () => `<div class="r"><div class="lb">📍 Địa chỉ để hiện bản đồ Google Maps (hoặc dán link / mã nhúng Google Maps)</div><input data-a="map" value="${esc(gp(cfg, el.dataset.map) || '')}"></div>${liRow()}`;
+  const secBar = () => `<div class="r"><div class="lb">Màu nền của khối này</div><input type="color" data-a="sbg" value="${hex(getComputedStyle(el).backgroundColor)}"><button data-a="sbgrs">Về mặc định</button></div>`;
+
+  function render() {
+    bar.innerHTML = type === 'text' ? textBar() : type === 'img' ? imgBar() : type === 'map' ? mapBar() : secBar();
+    bar.style.display = 'block'; place();
+  }
+  function pick(t, ty, k) {
+    hide(); el = t; type = ty; key = k; el.classList.add('sel');
+    if (ty === 'text' && el.dataset.k && !isSvg(el)) {
+      el.contentEditable = 'true'; el.focus();
+      const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      el.oninput = () => sp(cfg, key, el.innerText.replace(/\n+$/, ''));
+      el.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && !getComputedStyle(el).whiteSpace.startsWith('pre')) { e.preventDefault(); el.blur(); } };
+    }
+    render();
+  }
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('#ed')) return;
+    if (el && el.isContentEditable && el.contains(e.target)) return;   // đang gõ chữ: cho đặt con trỏ
+    e.preventDefault(); e.stopPropagation();
+    const t = e.target.closest('[data-k],[data-g],[data-img],[data-map]');
+    if (t) {
+      if (t.dataset.k || t.dataset.g) return pick(t, 'text', t.dataset.k || 'g:' + t.dataset.g);
+      if (t.dataset.img) return pick(t, 'img', t.dataset.img);
+      return pick(t, 'map', t.dataset.map);
+    }
+    const s = e.target.closest('[data-sec]'); if (s) return pick(s, 'sec', s.dataset.sec);
+    hide();
+  }, true);
+
+  const setS = (p, v, keep) => {
+    const s = cfg.ts[key] = cfg.ts[key] || {};
+    if (v === '' || v == null) delete s[p]; else s[p] = v;
+    if (!Object.keys(s).length) delete cfg.ts[key];
+    applyCfg(); if (!keep) render();
+  };
+  const redraw = () => { hide(); applyCfg(); route(); };
+  const say = t => { const x = $('e-st'); if (x) x.textContent = t; };
+
+  bar.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const a = b.dataset.a, cs = getComputedStyle(el);
+    if (a === 'font') {
+      const fl = $('fl'); fl.hidden = !fl.hidden; if (fl.hidden) return place();
+      if (!fontCss) { fontCss = true; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://fonts.googleapis.com/css2?' + FONTS.filter(f => fam(f) !== 'Arial').map(f => 'family=' + encodeURIComponent(fam(f)).replace(/%20/g, '+')).join('&') + '&display=swap'; document.head.appendChild(l); }
+      fl.innerHTML = `<button data-a="pick" data-f="">⟲ Phông chữ mặc định</button>` + FONTS.map(f => `<button data-a="pick" data-f="${esc(f)}" style="font-family:'${fam(f)}',sans-serif">${esc(fam(f))}</button>`).join('') + `<div class="r"><input id="e-cf" placeholder="Gõ tên Google Font khác rồi Enter"></div>`;
+      $('e-cf').onkeydown = ev => { if (ev.key === 'Enter' && ev.target.value.trim()) setS('ff', ev.target.value.trim()); };
+      place();
+    }
+    if (a === 'pick') setS('ff', b.dataset.f);
+    if (a === 'fs+' || a === 'fs-') { const cur = (cfg.ts[key] || {}).fs || Math.round(parseFloat(cs.fontSize) / uPx()); setS('fs', Math.max(6, cur + (a === 'fs+' ? 2 : -2))); }
+    if (a === 'b') setS('fw', parseInt(cs.fontWeight) >= 600 ? 'normal' : 'bold');
+    if (a === 'i') setS('fi', cs.fontStyle === 'italic' ? '0' : '1');
+    if (a === 'u') setS('tt', cs.textTransform === 'uppercase' ? 'none' : 'uppercase');
+    if (a === 'rs') { delete cfg.ts[key]; applyCfg(); render(); }
+    if (a === 'add' || a === 'del') {
+      const arr = gp(cfg, b.dataset.arr), i = +b.dataset.i;
+      if (a === 'add') arr.splice(i + 1, 0, clone(arr[i])); else arr.splice(i, 1);
+      redraw();
+    }
+    if (a === 'sbgrs') { delete cfg.sbg[key]; el.style.background = ''; render(); }
+  });
+  bar.addEventListener('input', e => {
+    const a = e.target.dataset.a;
+    if (a === 'color') setS('color', e.target.value, true);
+    if (a === 'sbg') { cfg.sbg[key] = e.target.value; el.style.background = e.target.value; }
+  });
+  bar.addEventListener('change', async e => {
+    const a = e.target.dataset.a, v = e.target.value;
+    if (a === 'svgtxt') { sp(cfg, key, v); redraw(); }
+    if (a === 'link') { sp(cfg, e.target.dataset.p, v.trim()); redraw(); }
+    if (a === 'map') { sp(cfg, el.dataset.map, v.trim()); redraw(); }
+    if (a === 'imgurl') { const old = gp(cfg, key); sp(cfg, key, v.trim()); if (old !== v.trim()) window.__trash.push(old); redraw(); }
+    if (a === 'file' && e.target.files[0]) {
+      const wm = $('e-wm').checked, old = gp(cfg, key);
+      say(wm ? '⏳ Đang gắn watermark & tải lên Cloudinary...' : '⏳ Đang tải lên Cloudinary...');
+      try {
+        const url = await uploadImage(e.target.files[0], wm);
+        sp(cfg, key, url); window.__trash.push(old);
+        document.querySelectorAll(`[data-img="${key}"]`).forEach(i => i.src = url);
+        bar.querySelector('.pv').src = url; say('✅ Đã đổi ảnh. Bấm "Lưu giao diện" để áp dụng — ảnh cũ sẽ tự xóa vĩnh viễn sau khi lưu.');
+      } catch (er) { say('❌ ' + er.message); }
+    }
+  });
+
+  // Gọi sau khi lưu: xóa vĩnh viễn các ảnh cũ không còn được dùng
+  window.__flushTrash = async () => {
+    const used = JSON.stringify(cfg) + JSON.stringify(products); let n = 0, f = 0;
+    for (const u of [...new Set(window.__trash)]) { if (!isCloud(u) || used.includes(u)) continue; (await deleteImage(u)) ? n++ : f++; }
+    window.__trash = []; return { n, f };
+  };
+  window.__redraw = redraw;
+})();
+
+  }
+
   applyCfg();
   renderCart();
   route();   // hiện ngay giao diện mặc định, rồi nạp dữ liệu thật
   load();
-  if (EDIT) {   // chỉ khi mở từ trang admin: nạp công cụ ảnh + trình chỉnh sửa trực tiếp
-    const s = document.createElement('script'); s.src = 'tools.js';
-    s.onload = () => { const e = document.createElement('script'); e.src = 'editor.js'; document.body.appendChild(e); };
-    document.body.appendChild(s);
-  }
 </script>
 </body>
 </html>
