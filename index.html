@@ -74,10 +74,13 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   .sz{padding:24px 0}.sz .ttl{font-size:16px}.sz table{margin:0 14px;width:calc(100% - 28px);font-size:12px}.sz td,.sz th{height:34px}
   .st{grid-template-columns:1fr;gap:18px;padding:0 14px;margin:0}.mapw{width:100%;height:auto;aspect-ratio:1.33}
   .sa{font-size:13px;gap:8px}.sa img{width:30px;height:30px}
-  /* Liên hệ: logo và 4 dòng liên hệ cùng 1 hàng ngang như trên máy tính */
-  .ct{flex-direction:row;align-items:center;padding:28px 14px 0;gap:14px}.lg{width:40%;height:auto;aspect-ratio:1;border-radius:20px}
-  .ct>div:last-child{flex:1;min-width:0}.cl{font-size:14px;gap:10px;height:auto;margin:11px 0}.cl img{width:34px;height:34px}
-  .fol{padding:18px 14px 40px;width:100%;font-size:14px}
+  /* Liên hệ: căn giữa cân đối trên điện thoại */
+  .ct{flex-direction:column;align-items:center;text-align:center;padding:28px 14px 0;gap:14px}
+  .lg{width:40%;height:auto;aspect-ratio:1;border-radius:20px}
+  .ct>div:last-child{width:100%;display:flex;flex-direction:column;align-items:center}
+  .cl{font-size:14px;gap:10px;height:auto;margin:11px 0;justify-content:center}
+  .cl img{width:34px;height:34px}
+  .fol{padding:18px 14px 40px;width:100%;font-size:14px;text-align:center}
 }
 </style>
 <script>
@@ -176,6 +179,13 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
   const EDIT = new URLSearchParams(location.search).has('edit');   // chế độ chỉnh sửa trực tiếp (mở từ trang admin)
 
+  // Lắng nghe sự kiện chuyển tab từ Admin (sửa lỗi đứng tab)
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.action === 'changePage') {
+      location.hash = '#' + e.data.page;
+    }
+  });
+
   let cfg = clone(DEFAULTS), products = [], categories = [], activeCat = null, query = '', sortBy = '', shown = [], loadErr = '';
   let cart = [];
   try { cart = JSON.parse(localStorage.getItem('cart_v1') || '[]'); } catch (e) {}
@@ -222,12 +232,11 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     $('tsx').textContent = tsCss();
   }
 
-  /* ---------- Các khối giao diện (data-* để trình chỉnh sửa trực tiếp nhận ra chữ / ảnh / link / bản đồ) ---------- */
+  /* ---------- Các khối giao diện ---------- */
   const PG = ['home', 'products', 'size', 'contact'];
   const sb = n => (cfg.sbg && cfg.sbg[n]) ? ` style="background:${esc(cfg.sbg[n])}"` : '';
   const im = (u, p) => `<img data-img="${p}" src="${esc(U(u))}" alt="" loading="lazy">`;
   const gal = (a, n) => `<section class="gal" data-sec="${n}"${sb(n)}><div class="in">${a.map((u, i) => im(u, `${n}.${i}`)).join('')}</div></section>`;
-  // Bản đồ Google Maps nhúng: nhập địa chỉ/từ khóa, hoặc dán link/mã nhúng Google Maps
   const mapSrc = q => {
     q = String(q || ''); const m = q.match(/src=["']([^"']+)["']/);
     if (m) return m[1];
@@ -236,7 +245,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   };
   const SEC = {
     hero: () => `<section class="blue hero" data-sec="hero"${sb('hero')}><div class="in"><div class="ph">${cfg.hero.map((u, i) => im(u, `hero.${i}`)).join('')}</div>
-      <svg class="big" data-k="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
+      <svg class="big" data-k="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" font-family="Arial, sans-serif" font-weight="bold">${esc(cfg.big)}</text></svg></div></section>`,
     gal: () => gal(cfg.gal, 'gal'),
     gal2: () => gal(cfg.gal2, 'gal2'),
     prod: () => `<section class="blue sec" id="prod" data-sec="prod"${sb('prod')}><div class="in"><h2 class="ttl" data-k="prodTitle">${esc(cfg.prodTitle)}</h2>
@@ -330,7 +339,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       </article>`).join('');
   }
 
-  /* ---------- Modal sản phẩm (lướt trái/phải + Mua ngay qua Zalo) ---------- */
+  /* ---------- Modal sản phẩm ---------- */
   let cur = null, curSize = null, curQty = 1;
   function openProduct(id) {
     cur = products.find(p => p.id === id); if (!cur) return;
@@ -400,7 +409,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       else cart.push({ key, id: cur.id, name: cur.name, price: Number(cur.price), image: mainImg(cur), selectedSize: curSize, qty: curQty });
       saveCart(); closeAll(); openCart();
     }
-    if (t.id === 'm-buy') {   // Mua ngay -> chuyển sang Zalo, tự sao chép thông tin sản phẩm để dán vào chat
+    if (t.id === 'm-buy') {
       if ((cur.sizes || []).length && !curSize) { $('m-warn').textContent = 'Vui lòng chọn size trước khi mua.'; return; }
       const msg = `Mình muốn mua: ${cur.name}\n${curSize ? 'Size: ' + curSize + '\n' : ''}Số lượng: ${curQty}\nGiá: ${money(cur.price)}`;
       try { navigator.clipboard.writeText(msg); } catch (err) {}
@@ -439,13 +448,11 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   function openCart() { $('order-msg').textContent = ''; $('back').classList.add('on'); $('cart').classList.add('on'); document.body.style.overflow = 'hidden'; }
   $('fab').addEventListener('click', openCart);
 
-  /* ===== Báo đơn về Telegram (giữ nguyên) ===== */
+  /* ===== Báo đơn về Telegram ===== */
   async function sendTelegramNotification(orderInfo) {
     if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
-
     const formattedCode = `1607${orderInfo.orderId}`;
     let itemsText = orderInfo.items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: ${i.selectedSize})` : ''} - SL: ${i.qty}`).join('\n');
-
     let message = `🛒 *CÓ ĐƠN HÀNG MỚI!* (#${formattedCode})\n\n` +
                   `👤 *Khách hàng:* ${orderInfo.name}\n` +
                   `📞 *SĐT:* ${orderInfo.phone}\n` +
@@ -453,32 +460,23 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
                   `📝 *Ghi chú:* ${orderInfo.note || 'Không có'}\n\n` +
                   `📦 *Sản phẩm:*\n${itemsText}\n\n` +
                   `💰 *Tổng tiền:* ${Number(orderInfo.total).toLocaleString('vi-VN')} đ`;
-
     try {
       await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: message,
-          parse_mode: 'Markdown'
-        })
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: message, parse_mode: 'Markdown' })
       });
-    } catch (err) {
-      console.error("Lỗi gửi Telegram:", err);
-    }
+    } catch (err) { console.error("Lỗi gửi Telegram:", err); }
   }
 
-  /* ===== Đặt hàng: lưu D1 -> báo Telegram -> hiện lời cảm ơn (giữ nguyên) ===== */
+  /* ===== Đặt hàng ===== */
   $('checkout').addEventListener('submit', submitOrder);
   async function submitOrder(e) {
     e.preventDefault();
     if (cart.length === 0) return alert('Giỏ hàng trống!');
-
     const btn = document.getElementById('f-btn');
     btn.disabled = true;
     btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XỬ LÝ...`;
-
     const name = document.getElementById('f-name').value.trim();
     const phone = document.getElementById('f-phone').value.trim();
     const address = document.getElementById('f-addr').value.trim();
@@ -497,28 +495,12 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     if (!error) {
       const rawId = data && data[0] ? data[0].id : 'NEW';
       const formattedOrderId = `1607${rawId}`;
-
-      await sendTelegramNotification({
-        orderId: rawId,
-        name: name,
-        phone: phone,
-        address: address,
-        note: note,
-        items: cartSnapshot,
-        total: total
-      });
-
+      await sendTelegramNotification({ orderId: rawId, name: name, phone: phone, address: address, note: note, items: cartSnapshot, total: total });
       closeAll();
       document.getElementById('checkout').reset();
       cart = [];
       saveCart();
-
-      showThankYouModal({
-        name: name,
-        phone: phone,
-        orderId: formattedOrderId,
-        total: total
-      });
+      showThankYouModal({ name: name, phone: phone, orderId: formattedOrderId, total: total });
     } else {
       alert("Lỗi đặt hàng: " + error.message);
     }
@@ -533,15 +515,11 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       modal.id = 'thankYouModal';
       document.body.appendChild(modal);
     }
-
     modal.innerHTML = `
       <div>
-        <div class="ty-ico">
-          <i class="fa-solid fa-circle-check"></i>
-        </div>
+        <div class="ty-ico"><i class="fa-solid fa-circle-check"></i></div>
         <h2>ĐẶT HÀNG THÀNH CÔNG!</h2>
         <p class="ty-code">Mã đơn hàng của bạn: <b>#${info.orderId}</b></p>
-
         <div class="ty-box">
           <p><b>Khách hàng:</b> ${info.name}</p>
           <p><b>Số điện thoại:</b> ${info.phone}</p>
@@ -551,7 +529,6 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
             "Cảm ơn Quý khách <b>${info.name}</b> đã tin tưởng. Nhân viên CSKH sẽ kết bạn và nhắn tin qua Zalo <b>${info.phone}</b> để kiểm tra lại thông tin giao hàng và tư vấn chi tiết cho anh/chị nhé. Chúc anh/chị một ngày tốt lành!"
           </p>
         </div>
-
         <button class="ty-btn" onclick="document.getElementById('thankYouModal').remove()">
           HOÀN TẤT & TIẾP TỤC MUA SẮM
         </button>
@@ -559,56 +536,8 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     `;
   }
 
-  /* ===== Công cụ ảnh (Cloudinary) + trình chỉnh sửa trực tiếp: chỉ chạy khi mở từ trang admin (?edit=1) ===== */
-/* ===== Công cụ ảnh dùng cho trang admin (không nạp ở trang khách) ===== */
-
-// Gắn watermark chữ lặp chéo lên ảnh (mật độ vừa phải, không có chữ ở góc)
-async function addWatermark(file) {
-  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
-  const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
-  const c = document.createElement('canvas'); c.width = w; c.height = h;
-  const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, w, h);
-  const f = Math.round(Math.max(w, h) * 0.04), sx = f * 8.5, sy = f * 5.2, d = Math.hypot(w, h);
-  x.translate(w / 2, h / 2); x.rotate(-Math.PI / 6);
-  x.font = `bold ${f}px Arial`; x.textAlign = 'center'; x.textBaseline = 'middle';
-  x.fillStyle = 'rgba(255,255,255,.34)'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = f / 6;
-  let row = 0;
-  for (let yy = -d / 2; yy < d / 2; yy += sy, row++)
-    for (let xx = -d / 2 + (row % 2) * sx / 2; xx < d / 2; xx += sx) x.fillText(WATERMARK, xx, yy);
-  const png = file.type === 'image/png';
-  return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
-}
-
-// Tải ảnh lên Cloudinary (wm = true thì gắn watermark trước khi tải)
-async function uploadImage(file, wm = true) {
-  const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
-  const fd = new FormData();
-  fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
-  const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
-  const j = await r.json();
-  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
-  return j.secure_url;
-}
-
-// Ảnh có nằm trên Cloudinary của shop không
-const isCloud = u => typeof u === 'string' && u.includes(`res.cloudinary.com/${CLOUD_NAME}/`);
-const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '');
-
-// Xóa vĩnh viễn ảnh trên Cloudinary (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
-async function deleteImage(u) {
-  if (!isCloud(u)) return true;
-  let key = localStorage.getItem('adminKey');
-  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên Cloudinary:'); if (!key) return false; localStorage.setItem('adminKey', key); }
-  try {
-    const r = await fetch('/api/delete-image', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': key }, body: JSON.stringify({ public_id: pubId(u) }) });
-    if (r.status === 401) localStorage.removeItem('adminKey');
-    return r.ok;
-  } catch (e) { return false; }
-}
-
-  if (EDIT) {
 /* ===== Trình chỉnh sửa trực tiếp (chỉ nạp khi mở index.html?edit=1 từ trang admin) ===== */
+if (EDIT) {
 (function () {
   const st = document.createElement('style');
   st.textContent = `
@@ -778,8 +707,7 @@ async function deleteImage(u) {
   };
   window.__redraw = redraw;
 })();
-
-  }
+}
 
   applyCfg();
   renderCart();
