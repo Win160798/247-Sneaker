@@ -3,8 +3,6 @@ const D_IMG={"hero1":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAw
 const U=u=>(typeof u==="string"&&u.startsWith("def:"))?(D_IMG[u.slice(4)]||""):u;
 
 /* ===== Cấu hình dùng chung cho index.html và admin.html (cần nạp assets.js trước file này) ===== */
-const SUPABASE_URL = 'https://uleckabliwereivgxryo.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o';
 
 // Cloudinary: tải ảnh bằng "Unsigned upload preset" (KHÔNG để API secret trong code web)
 const CLOUD_NAME = 'yxjghz1b';
