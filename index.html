@@ -7,7 +7,6 @@
 <link id="fav" rel="icon" href="data:,">
 <link id="gf" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="site-config.js"></script>
 
 <!-- CSS theo khung thiết kế PDF 1024px: "36u" = 36 đơn vị thiết kế, tự co giãn theo chiều ngang màn hình -->
@@ -177,9 +176,6 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
   const EDIT = new URLSearchParams(location.search).has('edit');   // chế độ chỉnh sửa trực tiếp (mở từ trang admin)
 
-  let db = null;
-  try { db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { console.error(e); }
-
   let cfg = clone(DEFAULTS), products = [], categories = [], activeCat = null, query = '', sortBy = '', shown = [], loadErr = '';
   let cart = [];
   try { cart = JSON.parse(localStorage.getItem('cart_v1') || '[]'); } catch (e) {}
@@ -188,17 +184,12 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   const allImgs = p => (p.images && p.images.length ? p.images : [mainImg(p)]).filter(Boolean);
 
   /* ---------- Tải dữ liệu + áp giao diện ---------- */
+  const jget = async p => { const r = await fetch('/api/' + p); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || ('Lỗi ' + r.status)); return j; };
   async function load() {
-    if (db) {
-      const [s, c, p] = await Promise.all([
-        db.from('site_settings').select('data').eq('id', 'main').maybeSingle(),
-        db.from('categories').select('*').order('id', { ascending: true }),
-        db.from('products').select('*').order('id', { ascending: false })
-      ]);
-      cfg = merge(DEFAULTS, s.data && s.data.data);
-      categories = c.data || []; products = p.data || [];
-      if (p.error) loadErr = 'Lỗi tải sản phẩm: ' + p.error.message;
-    } else loadErr = 'Không kết nối được Supabase.';
+    try {
+      const [s, c, p] = await Promise.all([jget('settings'), jget('categories'), jget('products')]);
+      cfg = merge(DEFAULTS, s.data); categories = c; products = p;
+    } catch (e) { loadErr = 'Không tải được dữ liệu: ' + e.message; }
     applyCfg(); route();
     if (window.parent !== window && window.parent.onReady) window.parent.onReady();
   }
@@ -478,7 +469,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     }
   }
 
-  /* ===== Đặt hàng: lưu Supabase -> báo Telegram -> hiện lời cảm ơn (giữ nguyên) ===== */
+  /* ===== Đặt hàng: lưu D1 -> báo Telegram -> hiện lời cảm ơn (giữ nguyên) ===== */
   $('checkout').addEventListener('submit', submitOrder);
   async function submitOrder(e) {
     e.preventDefault();
@@ -495,14 +486,13 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
     const cartSnapshot = [...cart];
 
-    const { data, error } = await db.from('orders').insert([{
-      customer_name: name,
-      customer_phone: phone,
-      address: address,
-      note: note,
-      total_amount: total,
-      cart_items: cartSnapshot
-    }]).select();
+    let data = null, error = null;
+    try {
+      const r = await fetch('/api/orders', { method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ customer_name: name, customer_phone: phone, address, note, total_amount: total, cart_items: cartSnapshot }) });
+      const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'Lỗi máy chủ');
+      data = [{ id: j.id }];
+    } catch (e) { error = e; }
 
     if (!error) {
       const rawId = data && data[0] ? data[0].id : 'NEW';
