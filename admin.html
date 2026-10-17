@@ -67,14 +67,12 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
     <button data-v="products"><i class="fa-solid fa-box"></i> Sản phẩm</button>
     <button data-v="cats"><i class="fa-solid fa-folder-tree"></i> Danh mục</button>
     <button data-v="orders"><i class="fa-solid fa-cart-shopping"></i> Đơn hàng</button>
-    <h4>Hệ thống</h4>
-    <button data-v="migrate"><i class="fa-solid fa-database"></i> Chuyển dữ liệu (1 lần)</button>
     <h4>Liên kết</h4>
     <a href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem website</a>
   </aside>
 
   <main>
-    <!-- ===== CHỈNH GIAO DIỆN: bấm trực tiếp vào chữ / ảnh / link / bản đồ trên trang ===== -->
+    <!-- ===== CHỈNH GIAO DIỆN ===== -->
     <section class="v on" id="v-design">
       <div class="top">
         <div class="seg" id="pgs"><button data-pg="home" class="on">Trang chủ</button><button data-pg="products">Sản phẩm</button><button data-pg="size">Chọn size</button><button data-pg="contact">Liên hệ</button></div>
@@ -150,19 +148,10 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
         <tbody id="orders-table-body"><tr><td colspan="6">Đang tải...</td></tr></tbody>
       </table>
     </section>
-    <!-- ===== CHUYỂN DỮ LIỆU TỪ SUPABASE ===== -->
-    <section class="v" id="v-migrate">
-      <div class="top"><h1>Chuyển dữ liệu từ Supabase sang D1</h1></div>
-      <div class="card">
-        <p class="hint" style="margin-bottom:12px">Bấm nút bên dưới để copy toàn bộ danh mục, sản phẩm, đơn hàng và cấu hình giao diện từ Supabase sang D1. Chỉ cần làm <b>một lần</b> (làm lại cũng không bị trùng, dữ liệu cũ sẽ được ghi đè theo ID). Dữ liệu trong Supabase không bị xóa.</p>
-        <button class="btn" id="mg-run"><i class="fa-solid fa-database"></i> Chuyển dữ liệu ngay</button>
-        <div id="mg-log" style="margin-top:12px;font-weight:600"></div>
-      </div>
-    </section>
   </main>
 </div>
 
-<!-- Cài đặt chung (những thứ không bấm trực tiếp trên trang được) -->
+<!-- Cài đặt chung -->
 <dialog id="gdlg">
   <h3>Cài đặt chung</h3>
   <div class="fg"><label>Tiêu đề tab trình duyệt</label><input type="text" id="g-title"></div>
@@ -180,9 +169,8 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
 </dialog>
 
 <script>
-/* ===== Công cụ ảnh dùng cho trang admin (không nạp ở trang khách) ===== */
+/* ===== Công cụ ảnh dùng cho trang admin ===== */
 
-// Gắn watermark chữ lặp chéo lên ảnh (mật độ vừa phải, không có chữ ở góc)
 async function addWatermark(file) {
   const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
   const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
@@ -200,7 +188,6 @@ async function addWatermark(file) {
   return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
 }
 
-// Tải ảnh lên Cloudinary (wm = true thì gắn watermark trước khi tải)
 async function uploadImage(file, wm = true) {
   const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
   const fd = new FormData();
@@ -211,11 +198,9 @@ async function uploadImage(file, wm = true) {
   return j.secure_url;
 }
 
-// Ảnh có nằm trên Cloudinary của shop không
 const isCloud = u => typeof u === 'string' && u.includes(`res.cloudinary.com/${CLOUD_NAME}/`);
 const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '');
 
-// Xóa vĩnh viễn ảnh trên Cloudinary (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
 async function deleteImage(u) {
   if (!isCloud(u)) return true;
   let key = localStorage.getItem('adminKey');
@@ -233,7 +218,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 $('fl').innerHTML = FONTS.map(f => `<option value="${esc(f)}">`).join('');
 $('lg').src = U('def:logo');
 
-/* ===================== KẾT NỐI D1 QUA API (cần mã quản trị để ghi / xem đơn hàng) ===================== */
+/* ===================== KẾT NỐI D1 QUA API ===================== */
 let KEY = localStorage.getItem('adminKey') || '';
 async function api(path, opt = {}) {
   for (let t = 0; t < 2; t++) {
@@ -262,13 +247,28 @@ document.querySelectorAll('#v-products .tabs button').forEach(b => b.onclick = (
   $('t-pl').style.display = b.dataset.t === 'pl' ? '' : 'none'; $('t-pa').style.display = b.dataset.t === 'pa' ? '' : 'none';
 });
 
-/* ===================== CHỈNH GIAO DIỆN (bấm trực tiếp trên trang) ===================== */
+/* ===================== CHỈNH GIAO DIỆN ===================== */
 let F = null;
 const C = () => F.__cfg();
 const say = t => { $('ds').textContent = t; };
 window.onReady = () => { F = $('fr').contentWindow; };
-$('pgs').onclick = e => { const b = e.target.closest('button'); if (!b || !F) return; document.querySelectorAll('#pgs button').forEach(x => x.classList.toggle('on', x === b)); F.location.hash = '#' + b.dataset.pg; };
+
+$('pgs').onclick = e => { 
+  const b = e.target.closest('button'); 
+  if (!b) return; 
+  document.querySelectorAll('#pgs button').forEach(x => x.classList.toggle('on', x === b)); 
+  if (F) {
+    try {
+      F.location.hash = '#' + b.dataset.pg;
+      F.scrollTo(0, 0);
+    } catch(err) {
+      F.postMessage({ action: 'changePage', page: b.dataset.pg }, '*');
+    }
+  }
+};
+
 $('dev').onclick = e => { const b = e.target.closest('button'); if (!b) return; document.querySelectorAll('#dev button').forEach(x => x.classList.toggle('on', x === b)); $('fw').classList.toggle('m', b.dataset.d === 'm'); };
+
 $('save').onclick = async () => {
   if (!F) return;
   say('⏳ Đang lưu...');
@@ -277,6 +277,7 @@ $('save').onclick = async () => {
   const r = F.__flushTrash ? await F.__flushTrash() : { n: 0, f: 0 };
   say('✅ Đã lưu giao diện.' + (r.n ? ` Đã xóa vĩnh viễn ${r.n} ảnh cũ.` : '') + (r.f ? ` ⚠ Chưa xóa được ${r.f} ảnh cũ (kiểm tra cài đặt Cloudflare / mã quản trị).` : ''));
 };
+
 $('reset').onclick = () => { if (F && confirm('Khôi phục toàn bộ giao diện về mặc định theo PDF? (chưa lưu cho đến khi bấm Lưu giao diện)')) F.__set(clone(DEFAULTS)); };
 
 // Cài đặt chung
@@ -297,7 +298,7 @@ $('g-favf').onchange = async e => {
 };
 $('g-ok').onclick = () => $('gdlg').close();
 
-/* ===================== SIZE CHECKBOXES (36 - 46) ===================== */
+/* ===================== SIZE CHECKBOXES ===================== */
 function renderSizeCheckboxes() {
   let html = '';
   for (let s = 36; s <= 46; s++) html += `<label><input type="checkbox" class="product-size-cb" value="${s}"> Size ${s}</label>`;
@@ -383,7 +384,7 @@ async function addImgs(id, inp) {
   try {
     const imgs = [...((p && p.images) || [])];
     for (let i = 0; i < files.length; i++) { say(`⏳ Đang tải ảnh ${i + 1}/${files.length}...`); imgs.push(await uploadImage(files[i], wm)); }
-    await api('products/' + id, { method: 'PATCH', body: { images: imgs } }); say('');
+    await api('products/' + id, { method: 'PATCH', body: { images: imgs, main_image: imgs[0], image_url: imgs[0] } }); say('');
   } catch (e) { alert('Lỗi: ' + e.message); }
   loadProducts();
 }
@@ -440,22 +441,6 @@ async function deleteOrder(id) {
   if (!confirm('Xóa đơn hàng này?')) return;
   try { await api('orders/' + id, { method: 'DELETE' }); loadOrders(); } catch (er) { alert('Lỗi: ' + er.message); }
 }
-
-/* ===================== CHUYỂN DỮ LIỆU TỪ SUPABASE (chạy 1 lần) ===================== */
-const OLD_URL = 'https://uleckabliwereivgxryo.supabase.co';
-const OLD_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsZWNrYWJsaXdlcmVpdmd4cnlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MzI1NTUsImV4cCI6MjEwNjMwODU1NX0.Sa5fY_OceWa7TI9yqBSMLM24ZTEN6g10j4RrXvENs3o';
-$('mg-run').onclick = async () => {
-  const log = $('mg-log'), H = { apikey: OLD_KEY, Authorization: 'Bearer ' + OLD_KEY };
-  const g = async t => { const r = await fetch(`${OLD_URL}/rest/v1/${t}`, { headers: H }); if (!r.ok) throw new Error(t.split('?')[0] + ': ' + (await r.text())); return r.json(); };
-  $('mg-run').disabled = true; log.textContent = '⏳ Đang đọc dữ liệu từ Supabase...';
-  try {
-    const [categories, products, orders, st] = await Promise.all([g('categories?select=*&order=id'), g('products?select=*&order=id'), g('orders?select=*&order=id'), g('site_settings?select=*&id=eq.main').catch(() => [])]);
-    log.textContent = `⏳ Đang ghi vào D1 (${categories.length} danh mục, ${products.length} sản phẩm, ${orders.length} đơn hàng)...`;
-    const o = await api('import', { method: 'POST', body: { categories, products, orders, settings: st[0] ? st[0].data : null } });
-    log.textContent = `✅ Đã chuyển xong: ${o.categories} danh mục, ${o.products} sản phẩm, ${o.orders} đơn hàng${o.settings ? ', cấu hình giao diện' : ''}. Tải lại trang để kiểm tra.`;
-  } catch (e) { log.textContent = '❌ ' + e.message; }
-  $('mg-run').disabled = false;
-};
 
 (async function init() { await loadCategories(); await loadProducts(); await loadOrders(); })();
 </script>
