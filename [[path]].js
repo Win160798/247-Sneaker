@@ -8,6 +8,17 @@ const prod = r => ({ ...r, images: arr(r.images), sizes: arr(r.sizes) });
 const str = v => (v === undefined || v === null ? null : String(v));
 
 export async function onRequest({ request, env, params }) {
+  // Xử lý CORS Preflight để không bị lỗi 405 khi gọi API
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { 
+      headers: { 
+        'Access-Control-Allow-Origin': '*', 
+        'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS', 
+        'Access-Control-Allow-Headers': 'content-type, x-admin-key' 
+      } 
+    });
+  }
+
   const db = env.DB;
   if (!db) return J({ error: 'Chưa gắn D1 vào project Pages (tên biến phải là DB)' }, 500);
 
@@ -80,23 +91,6 @@ export async function onRequest({ request, env, params }) {
       if (!admin) return deny();
       if (m === 'GET') return J((await db.prepare('SELECT * FROM orders ORDER BY id DESC').all()).results.map(o => ({ ...o, cart_items: arr(o.cart_items) })));
       if (m === 'DELETE' && id) { await db.prepare('DELETE FROM orders WHERE id=?').bind(id).run(); return J({ ok: true }); }
-    }
-
-    /* ---------- Chuyển dữ liệu từ Supabase sang D1 (chạy 1 lần từ trang admin) ---------- */
-    if (res === 'import' && m === 'POST') {
-      if (!admin) return deny();
-      const cats = (body.categories || []).slice().sort((a, b) => (a.level || 1) - (b.level || 1)), st = [];
-      cats.forEach(c => st.push(db.prepare('INSERT OR REPLACE INTO categories(id,name,parent_id,level,created_at) VALUES(?,?,?,?,COALESCE(?,CURRENT_TIMESTAMP))').bind(c.id, c.name, c.parent_id ?? null, c.level || 1, c.created_at ?? null)));
-      (body.products || []).forEach(p => {
-        const imgs = p.images && p.images.length ? p.images : [p.main_image || p.image_url].filter(Boolean), main = p.main_image || p.image_url || imgs[0] || null;
-        st.push(db.prepare('INSERT OR REPLACE INTO products(id,name,price,old_price,category_id,image_url,main_image,images,sizes,description,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,COALESCE(?,CURRENT_TIMESTAMP))')
-          .bind(p.id, p.name, Number(p.price) || 0, p.old_price ?? null, p.category_id ?? null, main, main, JSON.stringify(imgs), JSON.stringify(p.sizes || []), p.description ?? null, p.created_at ?? null));
-      });
-      (body.orders || []).forEach(o => st.push(db.prepare('INSERT OR REPLACE INTO orders(id,customer_name,customer_phone,address,note,total_amount,cart_items,created_at) VALUES(?,?,?,?,?,?,?,COALESCE(?,CURRENT_TIMESTAMP))')
-        .bind(o.id, o.customer_name, o.customer_phone, o.address, o.note ?? null, Number(o.total_amount) || 0, JSON.stringify(o.cart_items || []), o.created_at ?? null)));
-      if (body.settings) st.push(db.prepare("INSERT OR REPLACE INTO site_settings(id,data) VALUES('main',?)").bind(JSON.stringify(body.settings)));
-      for (let i = 0; i < st.length; i += 40) await db.batch(st.slice(i, i + 40));
-      return J({ categories: cats.length, products: (body.products || []).length, orders: (body.orders || []).length, settings: !!body.settings });
     }
 
     return J({ error: 'Không tìm thấy' }, 404);
