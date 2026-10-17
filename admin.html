@@ -6,9 +6,7 @@
 <title>Quản Trị - 247 Sneaker</title>
 <link rel="icon" href="data:,">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets.js"></script>
 <script src="site-config.js"></script>
-<script src="tools.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,'Segoe UI',Arial,sans-serif}
@@ -172,6 +170,53 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
 </dialog>
 
 <script>
+/* ===== Công cụ ảnh dùng cho trang admin (không nạp ở trang khách) ===== */
+
+// Gắn watermark chữ lặp chéo lên ảnh (mật độ vừa phải, không có chữ ở góc)
+async function addWatermark(file) {
+  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const k = Math.min(1, 1800 / Math.max(bmp.width, bmp.height));
+  const w = Math.round(bmp.width * k), h = Math.round(bmp.height * k);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const x = c.getContext('2d'); x.drawImage(bmp, 0, 0, w, h);
+  const f = Math.round(Math.max(w, h) * 0.04), sx = f * 8.5, sy = f * 5.2, d = Math.hypot(w, h);
+  x.translate(w / 2, h / 2); x.rotate(-Math.PI / 6);
+  x.font = `bold ${f}px Arial`; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillStyle = 'rgba(255,255,255,.34)'; x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = f / 6;
+  let row = 0;
+  for (let yy = -d / 2; yy < d / 2; yy += sy, row++)
+    for (let xx = -d / 2 + (row % 2) * sx / 2; xx < d / 2; xx += sx) x.fillText(WATERMARK, xx, yy);
+  const png = file.type === 'image/png';
+  return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
+}
+
+// Tải ảnh lên Cloudinary (wm = true thì gắn watermark trước khi tải)
+async function uploadImage(file, wm = true) {
+  const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
+  const fd = new FormData();
+  fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
+  const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+  const j = await r.json();
+  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
+  return j.secure_url;
+}
+
+// Ảnh có nằm trên Cloudinary của shop không
+const isCloud = u => typeof u === 'string' && u.includes(`res.cloudinary.com/${CLOUD_NAME}/`);
+const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '');
+
+// Xóa vĩnh viễn ảnh trên Cloudinary (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
+async function deleteImage(u) {
+  if (!isCloud(u)) return true;
+  let key = localStorage.getItem('adminKey');
+  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên Cloudinary:'); if (!key) return false; localStorage.setItem('adminKey', key); }
+  try {
+    const r = await fetch('/api/delete-image', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': key }, body: JSON.stringify({ public_id: pubId(u) }) });
+    if (r.status === 401) localStorage.removeItem('adminKey');
+    return r.ok;
+  } catch (e) { return false; }
+}
+
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let categoriesMap = {};
 const $ = id => document.getElementById(id);
