@@ -13,8 +13,7 @@ export async function onRequestPost({ request, env }) {
   let body = {};
   try { body = await request.json(); } catch (e) {}
   const pid = body.public_id || '';
-  if (!pid.startsWith('247sneaker/') || pid.includes('..'))   // chỉ cho xóa ảnh trong thư mục của shop
-    return out({ error: 'public_id không hợp lệ' }, 400);
+  if (!pid || pid.includes('..')) return out({ error: 'public_id không hợp lệ' }, 400);
 
   const ts = Math.floor(Date.now() / 1000);
   const toSign = `invalidate=true&public_id=${pid}&timestamp=${ts}${env.CLOUDINARY_API_SECRET}`;
