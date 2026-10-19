@@ -31,7 +31,7 @@ const FONTS = ['Arial', 'Lexend:wght@300;400;600;700', 'Lexend Giga:wght@400;600
 
 const gm = u => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(u);
 
-// Ảnh mặc định ghi dạng "def:tên" (ảnh thật nằm trong assets.js) để dữ liệu lưu lên Supabase gọn nhẹ
+// Ảnh mặc định ghi dạng "def:tên" (ảnh thật nằm trong assets.js) để dữ liệu lưu trong D1 gọn nhẹ
 const DEFAULTS = {
   title: '247 Sneaker',
   favicon: 'def:logo',
