@@ -30,7 +30,7 @@ nav{background:#fff;border-radius:10u;margin:14u 36u 0;height:38u;display:flex;j
 nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decoration:none}
 .hero{padding-bottom:8u}
 .ph{display:grid;grid-template-columns:repeat(3,305u);gap:18u;padding:15u 36u 0}.ph img{width:305u;height:260u;object-fit:cover}
-.big{display:block;width:1024u;height:175u;margin-top:13u;font-family:Arial,sans-serif;font-weight:700}.big text{fill:currentColor}
+.big{display:block;overflow:visible;width:1024u;height:190u;margin-top:3u;font-family:Arial,sans-serif;font-weight:700}.big text{fill:currentColor}
 .gal{background:#fff}.gal .in{display:flex;gap:28.5u;padding:84u 0 83u 22u}
 .gal img{width:307.5u;height:410u;object-fit:cover;border-radius:37.5u}
 .sec{padding:60u 0 80u}
@@ -38,7 +38,9 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .bar{display:flex;flex-wrap:wrap;gap:10u;justify-content:space-between;align-items:flex-start;padding:0 32u;margin-bottom:26u}
 #chips{display:flex;flex-wrap:wrap;gap:8u;flex:1}.brk{flex-basis:100%;height:0}
 .chip{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 16u;font-size:max(12px,14u);font-weight:600}.chip.on,.chip:hover{background:#fff;color:var(--bg)}
-#sort{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 14u;font-size:max(12px,14u);font-weight:600;outline:0}#sort option{color:#111}
+.dd{position:relative}.dd-b{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 16u;font-size:max(12px,14u);font-weight:600;font-family:inherit}.dd-b:hover{background:rgba(255,255,255,.18)}
+.dd-l{position:absolute;right:0;top:calc(100% + 6px);min-width:100%;background:#fff;border-radius:14px;box-shadow:0 8px 26px rgba(0,0,0,.22);list-style:none;padding:6px;z-index:5}.dd-l[hidden]{display:none}
+.dd-l li{padding:8px 16px;border-radius:10px;color:var(--bg);font-size:max(12px,14u);font-weight:600;cursor:pointer;white-space:nowrap}.dd-l li:hover,.dd-l li.on{background:var(--bg);color:#fff}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:70u 16u;padding:0 32u}
 .p{cursor:pointer}
 .pi{aspect-ratio:226/292;background:var(--card);border-radius:40u;overflow:hidden}.pi img{width:100%;height:100%;object-fit:cover;transition:transform .3s}.p:hover .pi img{transform:scale(1.04)}
@@ -65,19 +67,19 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   .top{padding:0 12px}.brand{font-size:20px}.sr{width:46%;height:32px;padding:0 10px}.sr input{font-size:14px}.sr svg{width:16px;height:16px}
   nav{margin:12px 12px 0;height:auto;padding:8px;font-size:10.5px;flex-wrap:wrap;justify-content:center;gap:4px 10px}
   .ph{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 12px 0}.ph img{width:100%;height:auto;aspect-ratio:1.17}
-  .big{width:100%;height:auto;aspect-ratio:1024/175}
+  .big{width:100%;height:auto;aspect-ratio:1024/190}
   .gal .in{padding:30px 12px;gap:8px}.gal img{width:calc((100% - 16px)/3);height:auto;aspect-ratio:3/4;border-radius:14px}
   .sec{padding:30px 0 40px}.ttl{font-size:18px;padding:0 14px;margin-bottom:16px}
-  .bar{padding:0 14px}.chip,#sort{font-size:12px;padding:5px 11px}
+  .bar{padding:0 14px}.chip,.dd-b{font-size:12px;padding:5px 11px}.dd-l li{font-size:12px}
   .grid{grid-template-columns:repeat(2,1fr);gap:26px 12px;padding:0 14px}.pi{border-radius:20px}
   .pn{font-size:13px}.pp{font-size:13px}.pd{font-size:11px}
   .sz{padding:24px 0}.sz .ttl{font-size:16px}.sz table{margin:0 14px;width:calc(100% - 28px);font-size:12px}.sz td,.sz th{height:34px}
   .st{grid-template-columns:1fr;gap:18px;padding:0 14px;margin:0}.mapw{width:100%;height:auto;aspect-ratio:1.33}
   .sa{font-size:13px;gap:8px}.sa img{width:30px;height:30px}
   /* Liên hệ: logo và 4 dòng liên hệ cùng 1 hàng ngang như trên máy tính */
-  .ct{flex-direction:row;align-items:center;padding:28px 14px 0;gap:14px}.lg{width:40%;height:auto;aspect-ratio:1;border-radius:20px}
-  .ct>div:last-child{flex:1;min-width:0}.cl{font-size:14px;gap:10px;height:auto;margin:11px 0}.cl img{width:34px;height:34px}
-  .fol{padding:18px 14px 40px;width:100%;font-size:14px}
+  .ct{flex-direction:row;align-items:center;justify-content:center;padding:28px 14px 0;gap:18px}.lg{width:38%;height:auto;aspect-ratio:1;border-radius:20px}
+  .ct>div:last-child{flex:none;min-width:0}.cl{font-size:14px;gap:10px;height:auto;margin:11px 0}.cl img{width:34px;height:34px}
+  .fol{padding:18px 14px 40px;width:100%;font-size:14px;text-align:center}
 }
 </style>
 <script>
@@ -176,7 +178,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
   const EDIT = new URLSearchParams(location.search).has('edit');   // chế độ chỉnh sửa trực tiếp (mở từ trang admin)
 
-  let cfg = clone(DEFAULTS), products = [], categories = [], activeCat = null, query = '', sortBy = '', shown = [], loadErr = '';
+  let cfg = clone(DEFAULTS), products = [], categories = [], activeCats = new Set(), query = '', sortBy = '', shown = [], loadErr = '';
   let cart = [];
   try { cart = JSON.parse(localStorage.getItem('cart_v1') || '[]'); } catch (e) {}
 
@@ -189,6 +191,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     try {
       const [s, c, p] = await Promise.all([jget('settings'), jget('categories'), jget('products')]);
       cfg = merge(DEFAULTS, s.data); categories = c; products = p;
+      window.__loaded = true;
     } catch (e) { loadErr = 'Không tải được dữ liệu: ' + e.message; }
     applyCfg(); route();
     if (window.parent !== window && window.parent.onReady) window.parent.onReady();
@@ -236,11 +239,11 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   };
   const SEC = {
     hero: () => `<section class="blue hero" data-sec="hero"${sb('hero')}><div class="in"><div class="ph">${cfg.hero.map((u, i) => im(u, `hero.${i}`)).join('')}</div>
-      <svg class="big" data-k="big" viewBox="0 0 1024 175"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
+      <svg class="big" data-k="big" viewBox="0 -15 1024 190"><text x="45" y="160" font-size="223" textLength="${Math.min(939, Math.max(1, cfg.big.length) * 134)}" lengthAdjust="spacingAndGlyphs">${esc(cfg.big)}</text></svg></div></section>`,
     gal: () => gal(cfg.gal, 'gal'),
     gal2: () => gal(cfg.gal2, 'gal2'),
     prod: () => `<section class="blue sec" id="prod" data-sec="prod"${sb('prod')}><div class="in"><h2 class="ttl" data-k="prodTitle">${esc(cfg.prodTitle)}</h2>
-      <div class="bar"><div id="chips"></div><select id="sort" aria-label="Sắp xếp"><option value="">Mới nhất</option><option value="asc">Giá: thấp → cao</option><option value="desc">Giá: cao → thấp</option></select></div>
+      <div class="bar"><div id="chips"></div><div class="dd" id="sortdd"><button type="button" class="dd-b" id="sort-b" aria-haspopup="listbox"></button><ul class="dd-l" id="sort-l" hidden><li data-v="">Mới nhất</li><li data-v="asc">Giá: thấp → cao</li><li data-v="desc">Giá: cao → thấp</li></ul></div></div>
       <div class="grid" id="grid"></div></div></section>`,
     size: () => {
       const h = cfg.sizeHead, n = Math.max(cfg.sizeM.length, cfg.sizeF.length);
@@ -271,6 +274,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else if (!EDIT) scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
+  document.addEventListener('click', () => { const u = $('sort-l'); if (u) u.hidden = true; });
   window.__cfg = () => cfg;
   window.__set = c => { cfg = c; applyCfg(); route(); };
   window.__redraw = () => { applyCfg(); route(); };
@@ -287,10 +291,17 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       r.onresult = ev => { query = ev.results[0][0].transcript; q.value = query; if (!$('grid')) location.hash = '#products'; else { renderProducts(); $('prod').scrollIntoView(); } };
       r.start();
     };
-    if ($('sort')) { $('sort').value = sortBy; $('sort').onchange = e => { sortBy = e.target.value; renderProducts(); }; }
+    if ($('sortdd')) {
+      const L = { '': 'Mới nhất', asc: 'Giá: thấp → cao', desc: 'Giá: cao → thấp' }, bt = $('sort-b'), ul = $('sort-l');
+      const paint = () => { bt.textContent = L[sortBy] + ' ▾'; ul.querySelectorAll('li').forEach(li => li.classList.toggle('on', li.dataset.v === sortBy)); };
+      paint();
+      bt.onclick = e => { e.stopPropagation(); ul.hidden = !ul.hidden; };
+      ul.onclick = e => { const li = e.target.closest('li'); if (!li) return; sortBy = li.dataset.v; ul.hidden = true; paint(); renderProducts(); };
+    }
     if ($('chips')) $('chips').onclick = e => {
       const b = e.target.closest('.chip'); if (!b) return;
-      activeCat = b.dataset.c ? Number(b.dataset.c) : null; renderChips(); renderProducts();
+      const v = b.dataset.c; if (!v) activeCats.clear(); else { const id = Number(v); activeCats.has(id) ? activeCats.delete(id) : activeCats.add(id); }
+      renderChips(); renderProducts();
     };
     if ($('grid')) $('grid').onclick = e => { const a = e.target.closest('.p'); if (a) openProduct(Number(a.dataset.id)); };
   }
@@ -310,13 +321,13 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     const el = $('chips'); if (!el) return;
     const roots = categories.filter(c => !c.parent_id);
     if (!roots.length) { el.innerHTML = ''; return; }
-    const rid = activeCat ? rootOf(activeCat) : null, kids = rid ? categories.filter(c => c.parent_id === rid) : [];
-    const b = (id, t) => `<button type="button" class="chip ${activeCat === id ? 'on' : ''}" data-c="${id ?? ''}">${esc(t)}</button>`;
-    el.innerHTML = b(null, 'Tất cả') + roots.map(c => b(c.id, c.name)).join('') + (kids.length ? '<span class="brk"></span>' + kids.map(c => b(c.id, '↳ ' + c.name)).join('') : '');
+    const rids = new Set([...activeCats].map(rootOf).filter(Boolean)), kids = categories.filter(c => rids.has(c.parent_id));
+    const b = (id, t, on) => `<button type="button" class="chip ${on ? 'on' : ''}" data-c="${id ?? ''}">${esc(t)}</button>`;
+    el.innerHTML = b(null, 'Tất cả', !activeCats.size) + roots.map(c => b(c.id, c.name, activeCats.has(c.id))).join('') + (kids.length ? '<span class="brk"></span>' + kids.map(c => b(c.id, '↳ ' + c.name, activeCats.has(c.id))).join('') : '');
   }
   function renderProducts() {
     const g = $('grid'); if (!g) return;
-    const ids = activeCat ? descendantIds(activeCat) : null, q = norm(query.trim());
+    const ids = activeCats.size ? new Set([...activeCats].flatMap(id => [...descendantIds(id)])) : null, q = norm(query.trim());
     let list = products.filter(p => (!ids || ids.has(p.category_id)) && (!q || norm(p.name).includes(q)));
     if (sortBy) list = [...list].sort((a, b) => sortBy === 'asc' ? Number(a.price) - Number(b.price) : Number(b.price) - Number(a.price));
     shown = list.map(p => p.id);
@@ -488,7 +499,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 
     let data = null, error = null;
     try {
-      const r = await fetch('/api/orders', { method: 'POST', headers: { 'content-type': 'application/json' },
+      const r = await fetch('/api/order', { method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ customer_name: name, customer_phone: phone, address, note, total_amount: total, cart_items: cartSnapshot }) });
       const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'Lỗi máy chủ');
       data = [{ id: j.id }];
