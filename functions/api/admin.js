@@ -43,6 +43,24 @@ export async function onRequest({ request, env }) {
         return J((await db.prepare('SELECT * FROM orders ORDER BY id DESC').all()).results.map(o => ({ ...o, cart_items: arr(o.cart_items) })));
       case 'order.del':
         await db.prepare('DELETE FROM orders WHERE id=?').bind(b.id).run(); return J({ ok: true });
+      case 'media.list': {   // thư viện ảnh: liệt kê toàn bộ ảnh trên Cloudinary
+        if (!env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET) return J({ error: 'Chưa cài CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET trên Cloudflare (rồi deploy lại)' }, 500);
+        const q = new URLSearchParams({ max_results: '60' }); if (b.cursor) q.set('next_cursor', b.cursor);
+        const r = await fetch(`https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD || 'yxjghz1b'}/resources/image?${q}`, { headers: { Authorization: 'Basic ' + btoa(env.CLOUDINARY_API_KEY + ':' + env.CLOUDINARY_API_SECRET) } });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) return J({ error: (j.error && j.error.message) || ('Cloudinary báo lỗi ' + r.status) }, 502);
+        return J({ resources: (j.resources || []).map(x => ({ public_id: x.public_id, secure_url: x.secure_url, bytes: x.bytes, width: x.width, height: x.height, created_at: x.created_at })), next_cursor: j.next_cursor || null });
+      }
+      case 'media.del': {   // xóa vĩnh viễn nhiều ảnh trên Cloudinary
+        if (!env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET) return J({ error: 'Chưa cài CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET trên Cloudflare (rồi deploy lại)' }, 500);
+        const ids = (Array.isArray(b.ids) ? b.ids : []).filter(x => typeof x === 'string' && x && !x.includes('..')).slice(0, 100);
+        if (!ids.length) return J({ deleted: 0 });
+        const q = new URLSearchParams(); ids.forEach(i => q.append('public_ids[]', i)); q.set('invalidate', 'true');
+        const r = await fetch(`https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD || 'yxjghz1b'}/resources/image/upload?${q}`, { method: 'DELETE', headers: { Authorization: 'Basic ' + btoa(env.CLOUDINARY_API_KEY + ':' + env.CLOUDINARY_API_SECRET) } });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) return J({ error: (j.error && j.error.message) || ('Cloudinary báo lỗi ' + r.status) }, 502);
+        return J({ deleted: Object.values(j.deleted || {}).filter(v => v === 'deleted').length });
+      }
       default: return J({ error: 'Thao tác không hợp lệ' }, 400);
     }
   } catch (e) { return J({ error: 'Lỗi máy chủ: ' + e.message }, 500); }
