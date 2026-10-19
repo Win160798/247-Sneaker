@@ -53,6 +53,14 @@ label.wmk{display:flex;align-items:center;gap:5px;font-weight:500;margin:0;font-
 dialog{border:0;border-radius:14px;padding:22px;width:min(520px,94vw);box-shadow:0 10px 40px rgba(0,0,0,.3)}dialog::backdrop{background:rgba(0,0,0,.45)}
 dialog h3{margin-bottom:14px}.imgf{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.imgf img{width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}.imgf input[type=text]{flex:1;min-width:120px}
 label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;border-radius:7px;font-size:12px;margin:0;cursor:pointer}
+/* thư viện ảnh */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mc{position:relative;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:#fff}
+.mc img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:zoom-in}
+.mc .bd{position:absolute;top:6px;left:6px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px}
+.mc .used{background:#dff5e3;color:#1b7a34}.mc .unused{background:#fdeaea;color:#c0392b}
+.mc input{position:absolute;top:6px;right:6px;width:20px;height:20px;cursor:pointer}
+.mc .mi{padding:6px 8px;font-size:11px;color:var(--mu);line-height:1.4}
 @media(max-width:900px){.app{grid-template-columns:1fr}.sb{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}.sb button{width:auto}}
 </style>
 </head>
@@ -67,6 +75,7 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
     <button data-v="products"><i class="fa-solid fa-box"></i> Sản phẩm</button>
     <button data-v="cats"><i class="fa-solid fa-folder-tree"></i> Danh mục</button>
     <button data-v="orders"><i class="fa-solid fa-cart-shopping"></i> Đơn hàng</button>
+    <button data-v="media"><i class="fa-solid fa-images"></i> Thư viện ảnh</button>
     <h4>Liên kết</h4>
     <a href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem website</a>
   </aside>
@@ -79,6 +88,8 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
         <div class="seg" id="pgs"><button data-pg="home" class="on">Trang chủ</button><button data-pg="products">Sản phẩm</button><button data-pg="size">Chọn size</button><button data-pg="contact">Liên hệ</button></div>
         <div class="seg" id="dev"><button data-d="" class="on" title="Máy tính"><i class="fa-solid fa-desktop"></i></button><button data-d="m" title="Điện thoại"><i class="fa-solid fa-mobile-screen"></i></button></div>
         <span class="hint" style="flex:1;min-width:200px">👆 Bấm vào <b>chữ</b> để gõ &amp; chọn phông, đậm, nghiêng, viết hoa · bấm vào <b>ảnh</b> để đổi · bấm vào <b>link</b> hoặc <b>bản đồ</b> để sửa.</span>
+        <button class="btn g" id="undo" title="Hoàn tác (Ctrl+Z)">↶ Hoàn tác</button>
+        <button class="btn g" id="redo" title="Làm lại (Ctrl+Y)">↷ Làm lại</button>
         <span id="ds"></span>
         <button class="btn g" id="gen"><i class="fa-solid fa-gear"></i> Cài đặt chung</button>
         <button class="btn g" id="reset">Mặc định</button>
@@ -148,6 +159,20 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
         <thead><tr><th>ID</th><th>Khách hàng</th><th>SĐT / Địa chỉ</th><th>Sản phẩm đặt</th><th>Tổng tiền</th><th></th></tr></thead>
         <tbody id="orders-table-body"><tr><td colspan="6">Đang tải...</td></tr></tbody>
       </table>
+    </section>
+    <!-- ===== THƯ VIỆN ẢNH CLOUDINARY ===== -->
+    <section class="v" id="v-media">
+      <div class="top"><h1>Thư viện ảnh Cloudinary</h1>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn g" id="md-reload">↻ Tải lại</button>
+          <button class="btn g" id="md-unused">☑ Chọn tất cả ảnh không dùng</button>
+          <button class="btn d" id="md-del" style="padding:10px 16px;font-size:13px">🗑 Xóa đã chọn (<span id="md-n">0</span>)</button>
+        </div>
+      </div>
+      <p class="hint" style="margin-bottom:8px">Hiển thị toàn bộ ảnh đang lưu trên Cloudinary. Nhãn <b style="color:#1b7a34">Đang dùng</b>: ảnh đang xuất hiện trên web (sản phẩm hoặc giao diện), xóa sẽ làm web mất ảnh. Nhãn <b style="color:#c0392b">Không dùng</b>: an toàn để xóa. Xóa là <b>vĩnh viễn</b>, không lấy lại được.</p>
+      <div id="md-info" class="hint" style="margin-bottom:10px"></div>
+      <div id="md-grid" class="mgrid"></div>
+      <div style="text-align:center;margin-top:14px"><button class="btn g" id="md-more" style="display:none">Tải thêm ảnh</button></div>
     </section>
   </main>
 </div>
@@ -432,6 +457,55 @@ async function deleteOrder(id) {
   if (!confirm('Xóa đơn hàng này?')) return;
   try { await adm('order.del', { id }); loadOrders(); } catch (er) { alert('Lỗi: ' + er.message); }
 }
+
+
+/* ===================== HOÀN TÁC / LÀM LẠI KHI CHỈNH GIAO DIỆN ===================== */
+$('undo').onclick = () => { if (needF()) F.__undo(); };
+$('redo').onclick = () => { if (needF()) F.__redo(); };
+document.addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || !$('v-design').classList.contains('on')) return;
+  const ae = document.activeElement; if (ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) return;
+  const k = e.key.toLowerCase();
+  if (k === 'z' && !e.shiftKey) { e.preventDefault(); if (needF()) F.__undo(); }
+  else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); if (needF()) F.__redo(); }
+});
+
+/* ===================== THƯ VIỆN ẢNH CLOUDINARY ===================== */
+let mdList = [], mdCursor = null, mdUsed = '';
+const mdSel = new Set(), mdThumb = u => u.replace('/upload/', '/upload/c_fill,w_300,h_300,q_auto/');
+const mdIsUsed = r => mdUsed.includes(r.public_id);
+function mdRender() {
+  $('md-grid').innerHTML = mdList.map(r => { const u = mdIsUsed(r); return `<div class="mc"><a href="${esc(r.secure_url)}" target="_blank"><img loading="lazy" src="${esc(mdThumb(r.secure_url))}" alt=""></a>
+    <span class="bd ${u ? 'used' : 'unused'}">${u ? 'Đang dùng' : 'Không dùng'}</span><input type="checkbox" data-id="${esc(r.public_id)}" ${mdSel.has(r.public_id) ? 'checked' : ''}>
+    <div class="mi">${Math.round(r.bytes / 1024)} KB · ${r.width}×${r.height}<br>${new Date(r.created_at).toLocaleDateString('vi-VN')}</div></div>`; }).join('');
+  $('md-info').textContent = `Đã tải ${mdList.length} ảnh${mdCursor ? ' (còn nữa, bấm "Tải thêm ảnh")' : ''} · không dùng: ${mdList.filter(r => !mdIsUsed(r)).length} · đang dùng: ${mdList.filter(mdIsUsed).length}`;
+  $('md-more').style.display = mdCursor ? '' : 'none'; $('md-n').textContent = mdSel.size;
+}
+async function mdLoad(more) {
+  if (!more) { mdList = []; mdCursor = null; mdSel.clear(); $('md-grid').innerHTML = ''; $('md-info').textContent = '⏳ Đang tải danh sách ảnh từ Cloudinary...'; }
+  try {
+    if (!more) { const [pr, st] = await Promise.all([pub('data?t=products'), pub('data?t=settings')]); mdUsed = JSON.stringify(pr) + JSON.stringify(st); }
+    const r = await adm('media.list', { cursor: mdCursor });
+    mdList.push(...r.resources); mdCursor = r.next_cursor || null; mdRender();
+  } catch (e) { $('md-info').textContent = '❌ ' + e.message; }
+}
+$('md-reload').onclick = () => mdLoad(false);
+$('md-more').onclick = () => mdLoad(true);
+$('md-unused').onclick = () => { mdList.filter(r => !mdIsUsed(r)).forEach(r => mdSel.add(r.public_id)); mdRender(); };
+$('md-grid').addEventListener('change', e => { const id = e.target.dataset.id; if (!id) return; e.target.checked ? mdSel.add(id) : mdSel.delete(id); $('md-n').textContent = mdSel.size; });
+$('md-del').onclick = async () => {
+  if (!mdSel.size) return alert('Bạn chưa chọn ảnh nào.');
+  const inUse = mdList.filter(r => mdSel.has(r.public_id) && mdIsUsed(r)).length;
+  if (!confirm(`Xóa VĨNH VIỄN ${mdSel.size} ảnh trên Cloudinary?` + (inUse ? `\n\n⚠ Có ${inUse} ảnh ĐANG DÙNG trên web, xóa sẽ làm web mất ảnh.` : '') + '\n\nKhông thể khôi phục.')) return;
+  $('md-del').disabled = true; let n = 0;
+  try {
+    const ids = [...mdSel];
+    for (let i = 0; i < ids.length; i += 100) { $('md-info').textContent = `⏳ Đang xóa ${Math.min(i + 100, ids.length)}/${ids.length}...`; n += (await adm('media.del', { ids: ids.slice(i, i + 100) })).deleted; }
+    await mdLoad(false); $('md-info').textContent = `✅ Đã xóa vĩnh viễn ${n} ảnh. ` + $('md-info').textContent;
+  } catch (e) { $('md-info').textContent = '❌ ' + e.message; }
+  $('md-del').disabled = false;
+};
+document.querySelector('.sb button[data-v="media"]').addEventListener('click', () => { if (!mdList.length) mdLoad(false); });
 
 (async function checkApi() {
   const w = $('apiwarn');
