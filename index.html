@@ -65,7 +65,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   #app{--u:calc(100cqw/430)}
   .in{width:100%}
   .top{padding:0 12px}.brand{font-size:20px}.sr{width:46%;height:32px;padding:0 10px}.sr input{font-size:14px}.sr svg{width:16px;height:16px}
-  nav{margin:12px 12px 0;height:auto;padding:8px;font-size:10.5px;flex-wrap:wrap;justify-content:center;gap:4px 10px}
+  nav{margin:12px 12px 0;height:38px;padding:0 14px;font-size:clamp(9px,2.8vw,12px);flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:0}nav a{padding:2px 0}
   .ph{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 12px 0}.ph img{width:100%;height:auto;aspect-ratio:1.17}
   .big{width:100%;height:auto;aspect-ratio:1024/190}
   .gal .in{padding:30px 12px;gap:8px}.gal img{width:calc((100% - 16px)/3);height:auto;aspect-ratio:3/4;border-radius:14px}
@@ -141,6 +141,24 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 #thankYouModal .ty-quote{color:#4b5563;font-style:italic;line-height:1.625}#thankYouModal .ty-quote b{color:#111827}
 #thankYouModal .ty-btn{width:100%;background:#0f172a;color:#fff;font-weight:900;padding:.75rem 1rem;border:0;border-radius:.75rem;font-size:.75rem;line-height:1rem;text-transform:uppercase;letter-spacing:.05em;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);transition:.15s}
 #thankYouModal .ty-btn:hover{background:#f59e0b;color:#020617}
+/* ===== Đồng bộ màu trang sản phẩm & giỏ hàng với màu web ===== */
+.m-info h2,.m-label{color:var(--bg)}
+.size{border-color:var(--bg);color:var(--bg)}.size.on{background:var(--bg);color:#fff}
+.qty{border-color:var(--bg);color:var(--bg)}.qty button{color:var(--bg)}.qty b{color:var(--bg)}
+.m-thumbs img.on{border-color:var(--bg)}.m-price .p-price{background:var(--bg)}
+.btn{background:var(--bg);color:#fff}.btn:hover{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}
+.btn.buy{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}.btn.buy:hover{background:var(--bg);color:#fff}
+.x{background:var(--bg);color:#fff}.x:hover{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}
+.dh{margin:-22px -22px 6px;padding:14px 22px;background:var(--bg);color:#fff;display:flex;align-items:center;gap:12px}
+.dh h3{color:#fff;font-size:20px;margin:0}
+.cart-back{background:rgba(255,255,255,.18);color:#fff;border:1.5px solid #fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:13px;white-space:nowrap}.cart-back:hover{background:#fff;color:var(--bg)}
+.total{color:var(--bg)}.drawer input,.drawer textarea{border-color:var(--bg)}.drawer input:focus,.drawer textarea:focus{border-color:var(--bg);box-shadow:0 0 0 2px rgba(138,169,226,.35)}
+.ci-n{color:var(--bg)}.ci-r button{background:var(--bg);color:#fff}.ci-del{color:#c0392b!important;background:transparent!important}
+#thankYouModal .ty-btn{background:var(--bg)}#thankYouModal .ty-btn:hover{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}
+.ty-rcw{margin-bottom:1rem;text-align:center}.ty-load{font-size:.75rem;color:#6b7280;padding:.5rem}
+.ty-rc{width:100%;border-radius:.75rem;border:1px solid #e5e7eb;margin-bottom:.6rem}
+.ty-save{display:block;background:var(--bg);color:#fff;font-weight:800;padding:.7rem 1rem;border-radius:.75rem;font-size:.8rem;text-decoration:none}
+.ty-tip{font-size:.7rem;color:#6b7280;margin-top:.4rem}
 </style>
 <style id="tsx"></style>
 </head>
@@ -155,7 +173,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 <a class="zl" id="zl" data-lk="zalo.link" target="_blank" rel="noopener" aria-label="Chat Zalo"><img id="zl-i" data-img="zalo.icon" alt="Zalo"></a>
 <button class="fab" id="fab">Giỏ hàng <b id="fab-n">0</b></button>
 <aside class="drawer" id="cart">
-  <h3>Giỏ hàng</h3>
+  <div class="dh"><button type="button" class="cart-back" id="cart-back">← Về trang chủ</button><h3>Giỏ hàng</h3></div>
   <div class="ci-list" id="ci-list"></div>
   <div class="total"><span>Tổng cộng</span><span id="ci-total">0 đ</span></div>
   <form id="checkout" autocomplete="on">
@@ -247,7 +265,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       <div class="grid" id="grid"></div></div></section>`,
     size: () => {
       const h = cfg.sizeHead, n = Math.max(cfg.sizeM.length, cfg.sizeF.length);
-      const r = (a, p, i) => a[i] ? `<td data-li="${p}.${i}" data-k="${p}.${i}.k">${esc(a[i].k)}</td><td data-li="${p}.${i}" data-k="${p}.${i}.s">${esc(a[i].s)}</td>` : '<td></td><td></td>';
+      const r = (a, p, i) => a[i] ? `<td data-li="${p}.${i}" data-k="${p}.${i}.k">${esc(a[i].k)}</td><td data-li="${p}.${i}" data-k="${p}.${i}.s">${esc(a[i].s)}</td>` : `<td data-k="${p}.${i}.k"></td><td data-k="${p}.${i}.s"></td>`;
       return `<section class="sz" data-sec="size"${sb('size')}><div class="in"><h2 class="ttl" data-k="sizeTitle">${esc(cfg.sizeTitle)}</h2><table>
         <tr><th colspan="2" data-k="sizeHead.0">${esc(h[0])}</th><th colspan="2" data-k="sizeHead.1">${esc(h[1])}</th></tr>
         <tr><th data-k="sizeHead.2">${esc(h[2])}</th><th data-k="sizeHead.3">${esc(h[3])}</th><th data-k="sizeHead.2">${esc(h[2])}</th><th data-k="sizeHead.3">${esc(h[3])}</th></tr>
@@ -366,7 +384,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
         <button class="btn buy" id="m-buy">MUA NGAY (CHAT ZALO)</button>
       </div>`;
     $('modal').scrollTop = 0;
-    $('back').classList.add('on'); $('modal').classList.add('on'); document.body.style.overflow = 'hidden';
+    pushOv(); $('back').classList.add('on'); $('modal').classList.add('on'); document.body.style.overflow = 'hidden';
   }
   function go(d) {
     if (!cur) return;
@@ -385,10 +403,14 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     const dx = e.clientX - sx, dy = e.clientY - sy;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) go(dx < 0 ? 1 : -1);
   });
-  function closeAll() {
+  let ovOpen = false;   // đang mở giỏ hàng / chi tiết sản phẩm: nút Back của điện thoại chỉ đóng lớp này, không thoát web
+  function pushOv() { if (!ovOpen && !EDIT) { history.pushState({ ov: 1 }, ''); ovOpen = true; } }
+  function closeAll(keep) {
     $('modal').classList.remove('on'); $('cart').classList.remove('on'); $('back').classList.remove('on'); document.body.style.overflow = '';
+    if (!keep && ovOpen) { ovOpen = false; history.back(); }
   }
-  $('back').addEventListener('click', closeAll);
+  window.addEventListener('popstate', () => { if (ovOpen) { ovOpen = false; closeAll(true); } });
+  $('back').addEventListener('click', () => closeAll());
   $('modal').addEventListener('click', e => {
     const t = e.target;
     if (t.id === 'm-x') return closeAll();
@@ -409,7 +431,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       const ex = cart.find(i => i.key === key);
       if (ex) ex.qty += curQty;
       else cart.push({ key, id: cur.id, name: cur.name, price: Number(cur.price), image: mainImg(cur), selectedSize: curSize, qty: curQty });
-      saveCart(); closeAll(); openCart();
+      saveCart(); closeAll(true); openCart();
     }
     if (t.id === 'm-buy') {   // Mua ngay -> chuyển sang Zalo, tự sao chép thông tin sản phẩm để dán vào chat
       if ((cur.sizes || []).length && !curSize) { $('m-warn').textContent = 'Vui lòng chọn size trước khi mua.'; return; }
@@ -447,8 +469,12 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     if (b.dataset.a === 'x') cart = cart.filter(i => i !== it);
     saveCart();
   });
-  function openCart() { $('order-msg').textContent = ''; $('back').classList.add('on'); $('cart').classList.add('on'); document.body.style.overflow = 'hidden'; }
+  function openCart() { pushOv(); $('order-msg').textContent = ''; $('back').classList.add('on'); $('cart').classList.add('on'); document.body.style.overflow = 'hidden'; }
   $('fab').addEventListener('click', openCart);
+  $('cart-back').addEventListener('click', () => {   // về trang chủ
+    ovOpen = false; closeAll(true); try { history.replaceState(null, ''); } catch (e) {}
+    if (location.hash !== '#home') location.hash = '#home'; else scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   /* ===== Báo đơn về Telegram (giữ nguyên) ===== */
   async function sendTelegramNotification(orderInfo) {
@@ -528,7 +554,10 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
         name: name,
         phone: phone,
         orderId: formattedOrderId,
-        total: total
+        total: total,
+        address: address,
+        note: note,
+        items: cartSnapshot
       });
     } else {
       alert("Lỗi đặt hàng: " + error.message);
@@ -563,11 +592,61 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
           </p>
         </div>
 
+        <div id="ty-rc" class="ty-rcw"><div class="ty-load">Đang tạo ảnh đơn hàng để bạn lưu...</div></div>
+
         <button class="ty-btn" onclick="document.getElementById('thankYouModal').remove()">
           HOÀN TẤT & TIẾP TỤC MUA SẮM
         </button>
       </div>
     `;
+    makeReceipt(info);
+  }
+
+  /* ===== Tự tạo ảnh đơn hàng (thông tin khách + toàn bộ sản phẩm) để khách lưu lại ===== */
+  const loadImg = u => new Promise(res => { if (!u) return res(null); const i = new Image(); i.crossOrigin = 'anonymous'; const t = setTimeout(() => res(null), 5000); i.onload = () => { clearTimeout(t); res(i); }; i.onerror = () => { clearTimeout(t); res(null); }; i.src = u; });
+  const wrapT = (x, t, mw) => { const out = []; String(t || '').split('\n').forEach(p => { let l = ''; p.split(' ').forEach(w => { const s = l ? l + ' ' + w : w; if (x.measureText(s).width > mw && l) { out.push(l); l = w; } else l = s; }); out.push(l); }); return out; };
+  async function makeReceipt(info) {
+    const box = $('ty-rc'); if (!box) return;
+    try {
+      const items = info.items || [], W = 720, pad = 36, blue = cfg.c.bg, rowH = 112, LW = 190;
+      const mx = document.createElement('canvas').getContext('2d'); mx.font = '400 18px Arial';
+      const rows = [['Khách hàng', info.name], ['Số điện thoại', info.phone], ['Địa chỉ', info.address], ['Ghi chú', info.note || 'Không có']].map(([l, v]) => [l, wrapT(mx, v, W - pad - LW - pad)]);
+      const infoH = rows.reduce((s, r) => s + r[1].length * 24 + 8, 0);
+      const H = 96 + 30 + infoH + 24 + 44 + items.length * rowH + 150;
+      const imgs = await Promise.all(items.map(i => loadImg(i.image)));
+      const c = document.createElement('canvas'); c.width = W * 2; c.height = H * 2;
+      const x = c.getContext('2d'); x.scale(2, 2); x.textBaseline = 'alphabetic';
+      x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+      x.fillStyle = blue; x.fillRect(0, 0, W, 96);
+      x.fillStyle = '#fff'; x.font = '800 30px Arial'; x.fillText(cfg.brand, pad, 44);
+      x.font = '600 17px Arial'; x.fillText('XÁC NHẬN ĐƠN HÀNG #' + info.orderId + '  ·  ' + new Date().toLocaleString('vi-VN'), pad, 74);
+      let y = 136;
+      rows.forEach(([l, ls]) => {
+        x.font = '700 18px Arial'; x.fillStyle = blue; x.fillText(l, pad, y);
+        x.font = '400 18px Arial'; x.fillStyle = '#111'; ls.forEach((t, k) => x.fillText(t, pad + LW, y + k * 24));
+        y += ls.length * 24 + 8;
+      });
+      y += 12; x.fillStyle = blue; x.fillRect(pad, y, W - pad * 2, 2); y += 30;
+      x.font = '700 16px Arial'; x.fillStyle = blue; x.fillText('SẢN PHẨM ĐÃ CHỌN', pad, y); y += 14;
+      items.forEach((it, k) => {
+        const top = y + 8;
+        x.fillStyle = '#eee'; x.fillRect(pad, top, 80, 96);
+        if (imgs[k]) { const im = imgs[k], r = Math.max(80 / im.width, 96 / im.height), w = im.width * r, h = im.height * r; x.save(); x.beginPath(); x.rect(pad, top, 80, 96); x.clip(); x.drawImage(im, pad + (80 - w) / 2, top + (96 - h) / 2, w, h); x.restore(); }
+        x.font = '700 18px Arial'; x.fillStyle = '#111';
+        wrapT(x, it.name, W - pad * 2 - 96 - 150).slice(0, 2).forEach((t, q) => x.fillText(t, pad + 96, top + 24 + q * 24));
+        x.font = '400 16px Arial'; x.fillStyle = '#555'; x.fillText((it.selectedSize ? 'Size ' + it.selectedSize + '  ·  ' : '') + 'SL: ' + it.qty + '  ·  ' + money(it.price), pad + 96, top + 82);
+        x.font = '700 18px Arial'; x.fillStyle = blue; x.textAlign = 'right'; x.fillText(money(it.price * it.qty), W - pad, top + 24); x.textAlign = 'left';
+        y += rowH;
+      });
+      y += 8; x.fillStyle = blue; x.fillRect(pad, y, W - pad * 2, 2); y += 38;
+      x.font = '800 22px Arial'; x.fillStyle = '#111'; x.fillText('TỔNG THANH TOÁN', pad, y);
+      x.fillStyle = '#c0392b'; x.textAlign = 'right'; x.fillText(Number(info.total).toLocaleString('vi-VN') + ' ₫', W - pad, y); x.textAlign = 'left';
+      y += 36; x.font = 'italic 15px Arial'; x.fillStyle = '#555';
+      x.fillText('Cảm ơn quý khách! Nhân viên sẽ nhắn tin qua Zalo ' + info.phone + ' để xác nhận đơn.', pad, y);
+      const url = c.toDataURL('image/png'), fn = 'don-hang-' + info.orderId + '.png';
+      box.innerHTML = `<img class="ty-rc" src="${url}" alt="Ảnh đơn hàng"><a class="ty-save" href="${url}" download="${fn}">⬇ Lưu ảnh đơn hàng</a><p class="ty-tip">Ảnh đã được tạo sẵn. Trên điện thoại: bấm giữ vào ảnh rồi chọn Lưu ảnh.</p>`;
+      const a = document.createElement('a'); a.href = url; a.download = fn; document.body.appendChild(a); a.click(); a.remove();   // tự động tải về
+    } catch (e) { box.innerHTML = ''; console.error(e); }
   }
 
   /* ===== Công cụ ảnh (Cloudinary) + trình chỉnh sửa trực tiếp: chỉ chạy khi mở từ trang admin (?edit=1) ===== */
@@ -626,6 +705,7 @@ async function deleteImage(u) {
   .edm [data-k],.edm [data-g],.edm [data-img],.edm [data-map]{cursor:pointer}
   .edm [data-k]:hover,.edm [data-g]:hover,.edm [data-img]:hover,.edm [data-map]:hover,.edm [data-sec]:hover{outline:2px dashed #3448c5;outline-offset:2px}
   .edm .sel{outline:2px solid #3448c5!important;outline-offset:2px}
+  .edm td[data-k]:empty::after{content:"✎";color:#c5cbe6;font-size:14px}
   .edm [contenteditable=true]{cursor:text;outline:2px solid #3448c5!important;min-width:10px}
   .edm .mapw{position:relative}.edm .mapw::after{content:"Bấm để sửa bản đồ";display:flex;align-items:center;justify-content:center;position:absolute;inset:0;background:rgba(52,72,197,.08);color:#3448c5;font:600 14px Arial;opacity:0;transition:.15s}.edm .mapw:hover::after{opacity:1}
   #ed{position:fixed;z-index:99999;display:none;background:#fff;color:#1f2430;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.28);padding:8px;width:min(372px,calc(100vw - 12px));font:13px Arial,sans-serif}
@@ -652,6 +732,8 @@ async function deleteImage(u) {
   let el = null, type = '', key = '', fontCss = false;
   const hex = c => { const m = String(c).match(/\d+(\.\d+)?/g); return m ? '#' + m.slice(0, 3).map(n => (+n | 0).toString(16).padStart(2, '0')).join('') : '#000000'; };
   const isSvg = e => (e.namespaceURI || '').includes('svg');
+  // gán giá trị theo đường dẫn, tự tạo mục còn thiếu (dùng cho ô trống trong bảng size)
+  const spx = (o, p, v) => { const k = p.split('.'); let a = o; for (let i = 0; i < k.length - 1; i++) { if (a[k[i]] == null) a[k[i]] = /^\d+$/.test(k[i + 1]) ? [] : {}; a = a[k[i]]; } a[k[k.length - 1]] = v; };
   const uPx = () => { const w = $('app').clientWidth; return innerWidth <= 700 ? w / 430 * .65 : Math.min(w, 1600) / 1024; };
 
   function hide() {
@@ -706,7 +788,7 @@ async function deleteImage(u) {
     if (ty === 'text' && el.dataset.k && !isSvg(el)) {
       el.contentEditable = 'true'; el.focus();
       const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
-      el.oninput = () => sp(cfg, key, el.innerText.replace(/\n+$/, ''));
+      el.oninput = () => spx(cfg, key, el.innerText.replace(/\n+$/, ''));
       el.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && !getComputedStyle(el).whiteSpace.startsWith('pre')) { e.preventDefault(); el.blur(); } };
     }
     render();
@@ -752,8 +834,9 @@ async function deleteImage(u) {
     if (a === 'u') setS('tt', cs.textTransform === 'uppercase' ? 'none' : 'uppercase');
     if (a === 'rs') { delete cfg.ts[key]; applyCfg(); render(); }
     if (a === 'add' || a === 'del') {
-      const arr = gp(cfg, b.dataset.arr), i = +b.dataset.i;
-      if (a === 'add') arr.splice(i + 1, 0, clone(arr[i])); else arr.splice(i, 1);
+      const name = b.dataset.arr, arr = gp(cfg, name), i = +b.dataset.i, isSize = name === 'sizeM' || name === 'sizeF';
+      if (a === 'add') arr.splice(i + 1, 0, isSize ? { k: '', s: '' } : clone(arr[i])); else arr.splice(i, 1);
+      if (isSize) { const n = Math.max(cfg.sizeM.length, cfg.sizeF.length); [cfg.sizeM, cfg.sizeF].forEach(l => { for (let j = 0; j < l.length; j++) if (!l[j]) l[j] = { k: '', s: '' }; while (l.length < n) l.push({ k: '', s: '' }); }); }
       redraw();
     }
     if (a === 'sbgrs') { delete cfg.sbg[key]; el.style.background = ''; render(); }
@@ -790,6 +873,28 @@ async function deleteImage(u) {
   window.__redraw = redraw;
 })();
 
+  // Hoàn tác / làm lại (Ctrl+Z / Ctrl+Y): tự chụp lại trạng thái giao diện mỗi khi có thay đổi
+  (function () {
+    let last = null; const hist = [], redo = [];
+    const snap = () => JSON.stringify(cfg);
+    const tick = () => {
+      if (!window.__loaded) return;
+      const now = snap();
+      if (last === null) { last = now; return; }
+      if (now !== last) { hist.push(last); if (hist.length > 100) hist.shift(); redo.length = 0; last = now; }
+    };
+    setInterval(tick, 250);
+    const apply = s => { cfg = JSON.parse(s); last = s; window.__redraw(); };
+    window.__undo = () => { tick(); if (!hist.length) return false; redo.push(snap()); apply(hist.pop()); return true; };
+    window.__redo = () => { tick(); if (!redo.length) return false; hist.push(snap()); apply(redo.pop()); return true; };
+    document.addEventListener('keydown', e => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      const k = e.key.toLowerCase(), ae = document.activeElement;
+      if (ae && ae.isContentEditable) return;   // đang gõ chữ: để trình duyệt hoàn tác trong ô chữ
+      if (k === 'z' && !e.shiftKey) { e.preventDefault(); window.__undo(); }
+      else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); window.__redo(); }
+    });
+  })();
   }
 
   applyCfg();
