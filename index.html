@@ -28,6 +28,26 @@ button,input,select,textarea{font-family:inherit}button{cursor:pointer}img{displ
 .sr button{border:0;background:none;display:flex;padding:0}
 nav{background:#fff;border-radius:10u;margin:14u 36u 0;height:38u;display:flex;justify-content:space-between;align-items:center;padding:0 30u;font:700 21u/1 var(--fn),serif;color:var(--bg);overflow:hidden}
 nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decoration:none}
+.ncart{position:relative;display:flex;align-items:center;border:0;background:none;padding:0;color:var(--bg);cursor:pointer}
+.ncart svg,.stk-b svg{width:24u;height:24u;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cn{position:absolute;top:-7u;right:-10u;min-width:17u;height:17u;border-radius:99px;background:var(--bg);color:#fff;font:700 10u/17u Arial,sans-serif;text-align:center;padding:0 3u;box-shadow:0 0 0 1.5px #fff}
+/* thanh trắng dính đầu trang khi cuộn: MENU | tìm kiếm | giỏ hàng (cùng kích thước thanh menu) */
+.stk{--u:calc(min(100vw,1600px)/1024);position:fixed;top:8px;left:50%;transform:translate(-50%,-170%);width:min(952u,calc(100vw - 16px));height:38u;min-height:34px;display:flex;align-items:center;gap:10u;padding:0 8u;background:#fff;border-radius:10u;box-shadow:0 6px 22px rgba(0,0,0,.2);z-index:40;transition:transform .25s ease;font-family:var(--fb),Arial,sans-serif}
+.stk.on{transform:translate(-50%,0)}
+.stk-b{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1u;height:calc(100% - 8u);min-width:54u;border:0;border-radius:8u;background:color-mix(in srgb,var(--bg) 16%,#fff);color:var(--bg);cursor:pointer;position:relative;padding:0 8u}
+.stk-b svg{width:20u;height:20u}.stk-b span{font:700 9u/1 Arial,sans-serif}.stk-b .cn{top:2u;right:4u}
+.stk-s{flex:1;display:flex;align-items:center;gap:8u;min-width:0;height:100%;margin:0}
+.stk-s svg{width:20u;height:20u;stroke:var(--bg);fill:none;stroke-width:2;flex:none}
+.stk-s input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--bg);font:600 15u var(--fb),Arial,sans-serif}.stk-s input::placeholder{color:color-mix(in srgb,var(--bg) 60%,#fff)}
+.stk-dd{position:absolute;top:calc(100% + 6px);left:0;min-width:230u;background:#fff;border-radius:10u;box-shadow:0 8px 26px rgba(0,0,0,.22);padding:6px;display:none}.stk-dd.on{display:block}
+.stk-dd a{display:block;padding:10u 14u;border-radius:8u;color:var(--bg);font:700 16u var(--fn),serif;white-space:nowrap}.stk-dd a:hover{background:color-mix(in srgb,var(--bg) 16%,#fff)}
+[data-img^="hero"],[data-img^="gal"],[data-img="logo"]{cursor:zoom-in}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:90;display:none;align-items:center;justify-content:center;touch-action:pan-y}.lb.on{display:flex}
+.lb img{max-width:94vw;max-height:88vh;object-fit:contain;border-radius:8px;user-select:none;-webkit-user-drag:none}
+.lb-x{position:absolute;top:14px;right:14px;width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:var(--bg);font-size:20px;font-weight:700}
+.lb-n{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--bg);font-size:28px;line-height:1}
+.lb-n.l{left:12px}.lb-n.r{right:12px}.lb.one .lb-n{display:none}
+.lb-c{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
 .hero{padding-bottom:8u}
 .ph{display:grid;grid-template-columns:repeat(3,305u);gap:18u;padding:15u 36u 0}.ph img{width:305u;height:260u;object-fit:cover}
 .big{display:block;overflow:visible;width:1024u;height:190u;margin-top:3u;font-family:Arial,sans-serif;font-weight:700}.big text{fill:currentColor}
@@ -37,7 +57,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .ttl{font:400 38u/1.2 var(--fh),sans-serif;letter-spacing:.02em;white-space:pre-line;padding:0 36u;margin-bottom:30u}
 .bar{display:flex;flex-wrap:wrap;gap:10u;justify-content:space-between;align-items:flex-start;padding:0 32u;margin-bottom:26u}
 #chips{display:flex;flex-wrap:wrap;gap:8u;flex:1}.brk{flex-basis:100%;height:0}
-.chip{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 16u;font-size:max(12px,14u);font-weight:600}.chip.on,.chip:hover{background:#fff;color:var(--bg)}
+.chip{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 16u;font-size:max(12px,14u);font-weight:600}.chip.on{background:#fff;color:var(--bg)}@media(hover:hover){.chip:not(.on):hover{background:rgba(255,255,255,.22)}}
 .dd{position:relative}.dd-b{border:1.5px solid #fff;background:transparent;color:#fff;border-radius:99px;padding:6u 16u;font-size:max(12px,14u);font-weight:600;font-family:inherit}.dd-b:hover{background:rgba(255,255,255,.18)}
 .dd-l{position:absolute;right:0;top:calc(100% + 6px);min-width:100%;background:#fff;border-radius:14px;box-shadow:0 8px 26px rgba(0,0,0,.22);list-style:none;padding:6px;z-index:5}.dd-l[hidden]{display:none}
 .dd-l li{padding:8px 16px;border-radius:10px;color:var(--bg);font-size:max(12px,14u);font-weight:600;cursor:pointer;white-space:nowrap}.dd-l li:hover,.dd-l li.on{background:var(--bg);color:#fff}
@@ -65,7 +85,9 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   #app{--u:calc(100cqw/430)}
   .in{width:100%}
   .top{padding:0 12px}.brand{font-size:20px}.sr{width:46%;height:32px;padding:0 10px}.sr input{font-size:14px}.sr svg{width:16px;height:16px}
-  nav{margin:12px 12px 0;height:38px;padding:0 14px;font-size:clamp(9px,2.8vw,12px);flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:0}nav a{padding:2px 0}
+  nav{margin:12px 12px 0;height:38px;padding:0 12px;font-size:clamp(8.5px,2.6vw,12px);flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:0}nav a{padding:2px 0}
+  .ncart svg,.stk-b svg{width:20px;height:20px}.cn{min-width:15px;height:15px;font-size:9px;line-height:15px;top:-6px;right:-8px}.stk-b .cn{top:1px;right:2px}
+  .stk{--u:calc(100vw/430);width:calc(100vw - 24px);height:38px;gap:8px;padding:0 6px}.stk-b{min-width:46px;border-radius:7px;height:calc(100% - 6px)}.stk-b span{font-size:8.5px}.stk-s{gap:6px}.stk-s input{font-size:14px}.stk-s svg{width:18px;height:18px}.stk-dd{min-width:200px}.stk-dd a{font-size:15px;padding:10px 12px}
   .ph{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 12px 0}.ph img{width:100%;height:auto;aspect-ratio:1.17}
   .big{width:100%;height:auto;aspect-ratio:1024/190}
   .gal .in{padding:30px 12px;gap:8px}.gal img{width:calc((100% - 16px)/3);height:auto;aspect-ratio:3/4;border-radius:14px}
@@ -94,7 +116,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .back{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:50}.back.on{display:block}
 .modal{position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%);width:min(940px,94vw);max-height:92vh;overflow:auto;background:#fff;color:#111;border-radius:28px;display:none;padding:24px;touch-action:pan-y;font-family:var(--fb),Arial,sans-serif}
 .modal.on{display:grid;grid-template-columns:1.1fr 1fr;gap:28px}
-.m-main{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:24px;background:#f1f1ec;user-select:none;-webkit-user-drag:none}
+.m-main{cursor:zoom-in;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:24px;background:#f1f1ec;user-select:none;-webkit-user-drag:none}
 .m-thumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.m-thumbs img{width:58px;height:58px;object-fit:cover;border-radius:12px;border:2px solid transparent;cursor:pointer}.m-thumbs img.on{border-color:#000}
 .m-info h2{font-size:26px;font-weight:700;line-height:1.15}.m-cnt{font-size:12px;color:#888;margin-bottom:6px}
 .m-price{margin-top:12px;display:flex;gap:10px;align-items:center}
@@ -110,7 +132,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .nv.l{left:10px}.nv.r{right:10px}.modal.on~.nv{display:block}.nv:hover{background:var(--bg);color:#fff}
 
 /* ===== Nút nổi góc phải dưới: Zalo ở trên, Giỏ hàng ở dưới ===== */
-.zl{position:fixed;right:16px;bottom:76px;z-index:45;width:58px;height:58px;border-radius:50%;box-shadow:0 4px 18px rgba(0,0,0,.3);background:#fff;display:block}
+.zl{position:fixed;right:16px;bottom:16px;z-index:45;width:58px;height:58px;border-radius:50%;box-shadow:0 4px 18px rgba(0,0,0,.3);background:#fff;display:block}
 .zl img{width:100%;height:100%;object-fit:contain;border-radius:50%}
 .zl::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #0068ff;animation:pl 1.8s infinite;pointer-events:none}
 @keyframes pl{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
@@ -125,7 +147,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;padding:10px 0}
 .drawer input,.drawer textarea{width:100%;border:1.4px solid #999;border-radius:14px;padding:11px 14px;font:inherit;font-size:14px;margin-top:8px;outline:none}.drawer input:focus,.drawer textarea:focus{border-color:#000}
 #order-msg{margin-top:10px;font-weight:700;text-align:center;font-size:14px}
-@media(max-width:700px){.modal.on{grid-template-columns:1fr;padding:16px}.nv{width:36px;height:36px;font-size:22px}.zl{width:52px;height:52px;bottom:70px}.fab{bottom:14px}}
+@media(max-width:700px){.modal.on{grid-template-columns:1fr;padding:16px}.nv{width:36px;height:36px;font-size:22px}.zl{width:52px;height:52px;bottom:14px}}
 
 /* ===== Lời cảm ơn sau khi đặt đơn (giữ y như cũ) ===== */
 #thankYouModal{position:fixed;inset:0;background:rgba(0,0,0,.7);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;padding:1rem;line-height:1.5;color:#111}
@@ -171,7 +193,8 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 <button class="nv l" id="nvl" aria-label="Sản phẩm trước">‹</button>
 <button class="nv r" id="nvr" aria-label="Sản phẩm sau">›</button>
 <a class="zl" id="zl" data-lk="zalo.link" target="_blank" rel="noopener" aria-label="Chat Zalo"><img id="zl-i" data-img="zalo.icon" alt="Zalo"></a>
-<button class="fab" id="fab">Giỏ hàng <b id="fab-n">0</b></button>
+<div class="stk" id="stk"></div>
+<div class="lb" id="lb"><button class="lb-x" id="lb-x" aria-label="Đóng">✕</button><button class="lb-n l" id="lb-p" aria-label="Ảnh trước">‹</button><img id="lb-i" alt=""><button class="lb-n r" id="lb-nx" aria-label="Ảnh sau">›</button><div class="lb-c" id="lb-c"></div></div>
 <aside class="drawer" id="cart">
   <div class="dh"><button type="button" class="cart-back" id="cart-back">← Về trang chủ</button><h3>Giỏ hàng</h3></div>
   <div class="ci-list" id="ci-list"></div>
@@ -282,14 +305,41 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     return `<header class="blue" data-sec="header"${sb('header')}><div class="in hd"><div class="top"><a class="brand" href="#home" data-k="brand">${esc(cfg.brand)}</a>
       <div class="sr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" aria-label="Tìm kiếm sản phẩm">
       <button id="mic" type="button" aria-label="Tìm bằng giọng nói"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div></div>
-      <nav>${cfg.nav.map((n, i) => `<a href="${navHref(n.u)}" data-li="nav.${i}" data-lk="nav.${i}.u" data-k="nav.${i}.t">${esc(n.t)}</a>`).join('')}</nav></div></header>`;
+      <nav id="mainnav">${cfg.nav.map((n, i) => `<a href="${navHref(n.u)}" data-li="nav.${i}" data-lk="nav.${i}.u" data-k="nav.${i}.t">${esc(n.t)}</a>`).join('')}<button type="button" class="ncart" id="fab" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24"><path d="M2 3h3l2.4 11.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21 7H6"/><circle cx="9.5" cy="20" r="1.6"/><circle cx="17.5" cy="20" r="1.6"/></svg><b class="cn">0</b></button></nav></div></header>`;
   }
   function route() {
     const h = location.hash.slice(1), pg = PG.includes(h) ? h : 'home';
-    const hadFocus = document.activeElement && document.activeElement.id === 'q';
+    const ae = document.activeElement, fid = ae && (ae.id === 'q' || ae.id === 'q2') ? ae.id : null;
     $('app').innerHTML = hdr() + (cfg.pages[pg] || '').split(',').map(s => s.trim()).filter(Boolean).map(s => SEC[s] ? SEC[s]() : '').join('');
-    bind(); renderChips(); renderProducts();
-    if (hadFocus) { const q = $('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else if (!EDIT) scrollTo(0, 0);
+    bind(); renderChips(); renderProducts(); renderStk(); renderCart();
+    if (fid) { const q = $(fid); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else if (!EDIT) scrollTo(0, 0);
+  }
+  // Thanh dính đầu trang khi cuộn: MENU | tìm kiếm | giỏ hàng
+  function renderStk() {
+    const s = $('stk'); if (!s) return;
+    s.innerHTML = `<button type="button" class="stk-b" id="stk-menu" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>MENU</span></button>
+      <label class="stk-s"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q2" type="search" autocomplete="off" placeholder="Tìm sản phẩm..." aria-label="Tìm kiếm sản phẩm"></label>
+      <button type="button" class="stk-b" id="stk-cart" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24"><path d="M2 3h3l2.4 11.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21 7H6"/><circle cx="9.5" cy="20" r="1.6"/><circle cx="17.5" cy="20" r="1.6"/></svg><b class="cn">0</b></button>
+      <div class="stk-dd" id="stk-dd">${cfg.nav.map(n => `<a href="${navHref(n.u)}">${esc(n.t)}</a>`).join('')}</div>`;
+    const q2 = $('q2'); q2.value = query; q2.oninput = e => onSearch(e.target.value);
+    q2.onkeydown = e => { if (e.key === 'Enter' && $('prod')) $('prod').scrollIntoView(); };
+    $('stk-menu').onclick = e => { e.stopPropagation(); $('stk-dd').classList.toggle('on'); };
+    $('stk-dd').onclick = () => $('stk-dd').classList.remove('on');
+    $('stk-cart').onclick = () => openCart();
+    onScrollStk();
+  }
+  function onScrollStk() {
+    const nav = $('mainnav'), s = $('stk'); if (!s) return;
+    const show = !EDIT && nav && nav.getBoundingClientRect().bottom < 0;
+    s.classList.toggle('on', !!show); if (!show) { const d = $('stk-dd'); if (d) d.classList.remove('on'); }
+  }
+  window.addEventListener('scroll', onScrollStk, { passive: true });
+  document.addEventListener('click', () => { const d = $('stk-dd'); if (d) d.classList.remove('on'); });
+  function onSearch(v) {
+    query = v; const a = $('q'), b = $('q2');
+    if (a && a.value !== v) a.value = v; if (b && b.value !== v) b.value = v;
+    if (!$('grid')) { location.hash = '#products'; return; }
+    renderProducts();
   }
   window.addEventListener('hashchange', route);
   document.addEventListener('click', () => { const u = $('sort-l'); if (u) u.hidden = true; });
@@ -300,13 +350,13 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 
   function bind() {
     const q = $('q'); q.value = query;
-    q.oninput = e => { query = e.target.value; if (!$('grid')) { location.hash = '#products'; return; } renderProducts(); };
+    q.oninput = e => onSearch(e.target.value);
     q.onkeydown = e => { if (e.key === 'Enter' && $('prod')) $('prod').scrollIntoView(); };
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     $('mic').onclick = () => {
       if (!SR) { alert('Trình duyệt này chưa hỗ trợ tìm kiếm bằng giọng nói (hãy dùng Chrome).'); return; }
       const r = new SR(); r.lang = 'vi-VN';
-      r.onresult = ev => { query = ev.results[0][0].transcript; q.value = query; if (!$('grid')) location.hash = '#products'; else { renderProducts(); $('prod').scrollIntoView(); } };
+      r.onresult = ev => { query = ev.results[0][0].transcript; q.value = query; if ($('q2')) $('q2').value = query; if (!$('grid')) location.hash = '#products'; else { renderProducts(); $('prod').scrollIntoView(); } };
       r.start();
     };
     if ($('sortdd')) {
@@ -322,6 +372,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       renderChips(); renderProducts();
     };
     if ($('grid')) $('grid').onclick = e => { const a = e.target.closest('.p'); if (a) openProduct(Number(a.dataset.id)); };
+    $('fab').onclick = () => openCart();
   }
 
   /* ---------- Bộ lọc danh mục + sắp xếp giá ---------- */
@@ -360,10 +411,10 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   }
 
   /* ---------- Modal sản phẩm (lướt trái/phải + Mua ngay qua Zalo) ---------- */
-  let cur = null, curSize = null, curQty = 1;
+  let cur = null, curSize = null, curQty = 1, curImgI = 0;
   function openProduct(id) {
     cur = products.find(p => p.id === id); if (!cur) return;
-    curSize = null; curQty = 1;
+    curSize = null; curQty = 1; curImgI = 0;
     const imgs = allImgs(cur), sizes = cur.sizes || [], i = shown.indexOf(id);
     $('modal').innerHTML = `
       <button class="x" id="m-x" aria-label="Đóng">✕</button>
@@ -393,7 +444,8 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   }
   $('nvl').onclick = () => go(-1); $('nvr').onclick = () => go(1);
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeAll();
+    if (e.key === 'Escape') { if ($('lb').classList.contains('on')) closeLb(); else closeAll(); }
+    if ($('lb').classList.contains('on')) { if (e.key === 'ArrowLeft') lbGo(-1); if (e.key === 'ArrowRight') lbGo(1); return; }
     if ($('modal').classList.contains('on') && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); }
   });
   let sx = 0, sy = 0, sw = false;
@@ -403,19 +455,38 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     const dx = e.clientX - sx, dy = e.clientY - sy;
     if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) go(dx < 0 ? 1 : -1);
   });
-  let ovOpen = false;   // đang mở giỏ hàng / chi tiết sản phẩm: nút Back của điện thoại chỉ đóng lớp này, không thoát web
+  let ovOpen = false, lbOwn = false, lbList = [], lbIdx = 0;   // đang mở giỏ hàng / chi tiết sản phẩm: nút Back của điện thoại chỉ đóng lớp này, không thoát web
   function pushOv() { if (!ovOpen && !EDIT) { history.pushState({ ov: 1 }, ''); ovOpen = true; } }
   function closeAll(keep) {
+    lbOwn = false; $('lb').classList.remove('on');
     $('modal').classList.remove('on'); $('cart').classList.remove('on'); $('back').classList.remove('on'); document.body.style.overflow = '';
     if (!keep && ovOpen) { ovOpen = false; history.back(); }
   }
   window.addEventListener('popstate', () => { if (ovOpen) { ovOpen = false; closeAll(true); } });
   $('back').addEventListener('click', () => closeAll());
+  /* ---------- Xem ảnh phóng to (bấm vào ảnh bất kỳ trên web) ---------- */
+  function showLb() { $('lb-i').src = lbList[lbIdx]; $('lb-c').textContent = lbList.length > 1 ? (lbIdx + 1) + ' / ' + lbList.length : ''; $('lb').classList.toggle('one', lbList.length < 2); }
+  function openLb(list, idx) { if (!list.length) return; lbList = list; lbIdx = idx; if (!ovOpen) { pushOv(); lbOwn = true; } $('lb').classList.add('on'); showLb(); }
+  function closeLb() { $('lb').classList.remove('on'); if (lbOwn) { lbOwn = false; closeAll(); } }
+  const lbGo = d => { if (lbList.length < 2) return; lbIdx = (lbIdx + d + lbList.length) % lbList.length; showLb(); };
+  $('lb-x').onclick = closeLb; $('lb-p').onclick = e => { e.stopPropagation(); lbGo(-1); }; $('lb-nx').onclick = e => { e.stopPropagation(); lbGo(1); };
+  $('lb').addEventListener('click', e => { if (e.target === $('lb')) closeLb(); });
+  let lx = 0, ly = 0, lsw = false;
+  $('lb').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; lx = e.clientX; ly = e.clientY; lsw = true; });
+  $('lb').addEventListener('pointerup', e => { if (!lsw) return; lsw = false; const dx = e.clientX - lx, dy = e.clientY - ly; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) lbGo(dx < 0 ? 1 : -1); });
+  $('app').addEventListener('click', e => {
+    const im = e.target.closest('img[data-img]'); if (!im || EDIT) return;
+    const p = im.dataset.img; if (!/^(hero|gal2?)\.|^logo$/.test(p)) return;
+    const grp = /^(hero|gal2?)\./.test(p) ? p.split('.')[0] : null;
+    const els = grp ? [...document.querySelectorAll(`img[data-img^="${grp}."]`)] : [im];
+    openLb(els.map(i => i.currentSrc || i.src), els.indexOf(im));
+  });
   $('modal').addEventListener('click', e => {
     const t = e.target;
     if (t.id === 'm-x') return closeAll();
+    if (t.id === 'm-main') { const l = allImgs(cur); openLb(l, Math.min(curImgI, l.length - 1)); return; }
     if (t.matches('.m-thumbs img')) {
-      $('m-main').src = t.src;
+      $('m-main').src = t.src; curImgI = Number(t.dataset.i) || 0;
       document.querySelectorAll('.m-thumbs img').forEach(i => i.classList.toggle('on', i === t));
     }
     if (t.matches('.size')) {
@@ -446,7 +517,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   const saveCart = () => { try { localStorage.setItem('cart_v1', JSON.stringify(cart)); } catch (e) {} renderCart(); };
   const cartTotal = () => cart.reduce((s, i) => s + i.price * i.qty, 0);
   function renderCart() {
-    $('fab-n').textContent = cart.reduce((s, i) => s + i.qty, 0);
+    const cn = cart.reduce((s, i) => s + i.qty, 0); document.querySelectorAll('.cn').forEach(e => { e.textContent = cn; e.style.display = cn ? '' : 'none'; });
     $('ci-total').textContent = money(cartTotal());
     $('ci-list').innerHTML = cart.length ? cart.map(i => `
       <div class="ci">
@@ -470,7 +541,6 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     saveCart();
   });
   function openCart() { pushOv(); $('order-msg').textContent = ''; $('back').classList.add('on'); $('cart').classList.add('on'); document.body.style.overflow = 'hidden'; }
-  $('fab').addEventListener('click', openCart);
   $('cart-back').addEventListener('click', () => {   // về trang chủ
     ovOpen = false; closeAll(true); try { history.replaceState(null, ''); } catch (e) {}
     if (location.hash !== '#home') location.hash = '#home'; else scrollTo({ top: 0, behavior: 'smooth' });
