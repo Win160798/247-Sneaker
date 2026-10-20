@@ -20,6 +20,12 @@ export async function onRequest({ request, env }) {
         const r = await db.prepare('INSERT INTO categories(name,parent_id,level) VALUES(?,?,?)').bind(str(b.name), b.parent_id || null, b.level || 1).run();
         return J({ id: r.meta.last_row_id });
       }
+      case 'category.update': {
+        const f = b.fields || {}, set = [], val = [];
+        for (const k of ['name', 'parent_id', 'level']) if (k in f) { set.push(k + '=?'); val.push(f[k] === '' ? null : f[k]); }
+        if (set.length) await db.prepare(`UPDATE categories SET ${set.join(',')} WHERE id=?`).bind(...val, b.id).run();
+        return J({ ok: true });
+      }
       case 'category.del':
         await db.prepare('DELETE FROM categories WHERE id=?').bind(b.id).run(); return J({ ok: true });
       case 'product.add': {
