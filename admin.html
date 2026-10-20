@@ -177,6 +177,26 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
   </main>
 </div>
 
+<!-- Sửa sản phẩm -->
+<dialog id="pdlg">
+  <h3>Sửa sản phẩm</h3>
+  <div class="fg"><label>Tên sản phẩm</label><input type="text" id="pe-name"></div>
+  <div class="grid"><div class="fg"><label>Giá bán (VNĐ)</label><input type="number" id="pe-price"></div><div class="fg"><label>Danh mục</label><select id="pe-cat"></select></div></div>
+  <div class="fg"><label>Size (36 - 46)</label><div class="sizes" id="pe-sizes"></div></div>
+  <div class="fg"><label>Size khác (cách nhau bằng dấu phẩy)</label><input type="text" id="pe-extra" placeholder="VD: 35, 47, S, M"></div>
+  <div class="fg"><label>Mô tả</label><textarea id="pe-desc" rows="3"></textarea></div>
+  <div id="pe-msg" style="font-weight:600;margin-bottom:8px"></div>
+  <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn g" id="pe-cancel">Hủy</button><button class="btn" id="pe-ok">Lưu thay đổi</button></div>
+</dialog>
+<!-- Sửa danh mục -->
+<dialog id="cdlg">
+  <h3>Sửa danh mục</h3>
+  <div class="fg"><label>Tên danh mục</label><input type="text" id="ce-name"></div>
+  <div class="fg"><label>Thuộc danh mục cha</label><select id="ce-parent"></select></div>
+  <div id="ce-msg" style="font-weight:600;margin-bottom:8px"></div>
+  <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn g" id="ce-cancel">Hủy</button><button class="btn" id="ce-ok">Lưu thay đổi</button></div>
+</dialog>
+
 <!-- Cài đặt chung (những thứ không bấm trực tiếp trên trang được) -->
 <dialog id="gdlg">
   <h3>Cài đặt chung</h3>
@@ -349,7 +369,7 @@ async function loadCategories() {
     tbody.innerHTML = categories.map(cat => `
       <tr><td><b>${cat.id}</b></td><td><b>${esc(cat.name)}</b></td><td><span class="badge">Cấp ${cat.level || 1}</span></td>
       <td style="color:#666">${cat.parent_id ? esc(categoriesMap[cat.parent_id] || 'N/A') : 'Không có'}</td>
-      <td><button class="btn d" onclick="deleteCategory(${cat.id})">Xóa</button></td></tr>`).join('');
+      <td style="white-space:nowrap"><button class="btn g s" onclick="editCategory(${cat.id})">✎ Sửa</button> <button class="btn d" onclick="deleteCategory(${cat.id})">Xóa</button></td></tr>`).join('');
   } catch (err) { tbody.innerHTML = `<tr><td colspan="5">❌ ${esc(err.message)}</td></tr>`; }
 }
 $('add-category-form').addEventListener('submit', async e => {
@@ -382,7 +402,7 @@ async function loadProducts() {
       <td><span class="badge">${esc(categoriesMap[item.category_id] || 'Chưa phân loại')}</span></td>
       <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
       <td>${sizes.length ? esc(sizes.join(', ')) : 'Không có size'}</td>
-      <td><button class="btn d" onclick="deleteProduct(${item.id})">Xóa</button></td></tr>`;
+      <td style="white-space:nowrap"><button class="btn g s" onclick="editProduct(${item.id})">✎ Sửa</button> <button class="btn d" onclick="deleteProduct(${item.id})">Xóa</button></td></tr>`;
   }).join('');
 }
 async function delImg(id, i) {
@@ -458,6 +478,57 @@ async function deleteOrder(id) {
   try { await adm('order.del', { id }); loadOrders(); } catch (er) { alert('Lỗi: ' + er.message); }
 }
 
+
+/* ===================== SỬA SẢN PHẨM / DANH MỤC ===================== */
+const catOpts = sel => '<option value="">-- Chưa chọn danh mục --</option>' + catList.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${'-- '.repeat((c.level || 1) - 1)}${esc(c.name)}</option>`).join('');
+let peId = null;
+function editProduct(id) {
+  const p = prodList.find(x => x.id === id); if (!p) return; peId = id;
+  const sizes = (p.sizes || []).map(String);
+  $('pe-name').value = p.name; $('pe-price').value = p.price; $('pe-desc').value = p.description || '';
+  $('pe-cat').innerHTML = catOpts(p.category_id);
+  $('pe-sizes').innerHTML = Array.from({ length: 11 }, (_, i) => { const s = String(36 + i); return `<label><input type="checkbox" class="pe-cb" value="${s}" ${sizes.includes(s) ? 'checked' : ''}> Size ${s}</label>`; }).join('');
+  $('pe-extra').value = sizes.filter(s => !(/^\d+$/.test(s) && +s >= 36 && +s <= 46)).join(', ');
+  $('pe-msg').textContent = ''; $('pdlg').showModal();
+}
+$('pe-cancel').onclick = () => $('pdlg').close();
+$('pe-ok').onclick = async () => {
+  const name = $('pe-name').value.trim(); if (!name) { $('pe-msg').textContent = '❌ Tên sản phẩm không được để trống'; return; }
+  const extra = $('pe-extra').value.split(',').map(s => s.trim()).filter(Boolean);
+  const sizes = [...new Set([...Array.from(document.querySelectorAll('.pe-cb:checked')).map(c => c.value), ...extra])];
+  const cat = $('pe-cat').value;
+  $('pe-ok').disabled = true; $('pe-msg').textContent = '⏳ Đang lưu...';
+  try {
+    await adm('product.update', { id: peId, fields: { name, price: Number($('pe-price').value) || 0, category_id: cat ? Number(cat) : null, sizes, description: $('pe-desc').value } });
+    $('pdlg').close(); loadProducts();
+  } catch (e) { $('pe-msg').textContent = '❌ ' + e.message; }
+  $('pe-ok').disabled = false;
+};
+let ceId = null;
+const catDesc = id => { const s = new Set([id]); let g = true; while (g) { g = false; catList.forEach(c => { if (c.parent_id && s.has(c.parent_id) && !s.has(c.id)) { s.add(c.id); g = true; } }); } return s; };
+const catDepth = id => 1 + Math.max(0, ...catList.filter(c => c.parent_id === id).map(k => catDepth(k.id)));
+function editCategory(id) {
+  const c = catList.find(x => x.id === id); if (!c) return; ceId = id;
+  const bad = catDesc(id);
+  $('ce-name').value = c.name;
+  $('ce-parent').innerHTML = '<option value="">-- Là Danh Mục Cấp 1 (Gốc) --</option>' + catList.filter(x => !bad.has(x.id) && (x.level || 1) < 3).map(x => `<option value="${x.id}" ${x.id === c.parent_id ? 'selected' : ''}>${'--- '.repeat((x.level || 1) - 1)}${esc(x.name)} (Cấp ${x.level || 1})</option>`).join('');
+  $('ce-msg').textContent = ''; $('cdlg').showModal();
+}
+$('ce-cancel').onclick = () => $('cdlg').close();
+$('ce-ok').onclick = async () => {
+  const name = $('ce-name').value.trim(); if (!name) { $('ce-msg').textContent = '❌ Tên danh mục không được để trống'; return; }
+  const pid = $('ce-parent').value ? Number($('ce-parent').value) : null, par = catList.find(c => c.id === pid);
+  const level = par ? (par.level || 1) + 1 : 1;
+  if (level + catDepth(ceId) - 1 > 3) { $('ce-msg').textContent = '❌ Danh mục chỉ được tối đa 3 cấp'; return; }
+  $('ce-ok').disabled = true; $('ce-msg').textContent = '⏳ Đang lưu...';
+  try {
+    await adm('category.update', { id: ceId, fields: { name, parent_id: pid, level } });
+    const fix = async (id, lv) => { for (const k of catList.filter(c => c.parent_id === id)) { await adm('category.update', { id: k.id, fields: { level: lv + 1 } }); await fix(k.id, lv + 1); } };
+    await fix(ceId, level);
+    $('cdlg').close(); await loadCategories(); loadProducts();
+  } catch (e) { $('ce-msg').textContent = '❌ ' + e.message; }
+  $('ce-ok').disabled = false;
+};
 
 /* ===================== HOÀN TÁC / LÀM LẠI KHI CHỈNH GIAO DIỆN ===================== */
 $('undo').onclick = () => { if (needF()) F.__undo(); };
