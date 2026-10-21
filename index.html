@@ -27,9 +27,10 @@ button,input,select,textarea{font-family:inherit}button{cursor:pointer}img{displ
 .sr input{flex:1;min-width:0;border:0;background:transparent;outline:0;color:#fff;font-size:15u}
 .sr button{border:0;background:none;display:flex;padding:0}
 nav{background:#fff;border-radius:10u;margin:14u 36u 0;height:38u;display:flex;justify-content:space-between;align-items:center;padding:0 30u;font:700 21u/1 var(--fn),serif;color:var(--bg);overflow:hidden}
-nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decoration:none}
+nav a{display:block;white-space:nowrap;line-height:1;padding:0;text-decoration:none;transform:translateY(calc(var(--off,.02)*-1em))}
 .ncart{position:relative;display:flex;align-items:center;border:0;background:none;padding:0;color:var(--bg);cursor:pointer}
-.ncart svg,.stk-b svg{width:24u;height:24u;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ncart svg,.stk-b svg{stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ncart{font-size:inherit}.ncart svg{height:calc(var(--cap,.7)*1em);width:calc(var(--cap,.7)*1em*1.01)}
 .cn{position:absolute;top:-7u;right:-10u;min-width:17u;height:17u;border-radius:99px;background:var(--bg);color:#fff;font:700 10u/17u Arial,sans-serif;text-align:center;padding:0 3u;box-shadow:0 0 0 1.5px #fff}
 /* thanh trắng dính đầu trang khi cuộn: MENU | tìm kiếm | giỏ hàng (cùng kích thước thanh menu) */
 .stk{--u:calc(min(100vw,1600px)/1024);position:fixed;top:8px;left:50%;transform:translate(-50%,-170%);width:min(952u,calc(100vw - 16px));height:38u;min-height:34px;display:flex;align-items:center;gap:10u;padding:0 8u;background:#fff;border-radius:10u;box-shadow:0 6px 22px rgba(0,0,0,.2);z-index:40;transition:transform .25s ease;font-family:var(--fb),Arial,sans-serif}
@@ -85,8 +86,8 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   #app{--u:calc(100cqw/430)}
   .in{width:100%}
   .top{padding:0 12px}.brand{font-size:20px}.sr{width:46%;height:32px;padding:0 10px}.sr input{font-size:14px}.sr svg{width:16px;height:16px}
-  nav{margin:12px 12px 0;height:38px;padding:0 12px;font-size:clamp(8.5px,2.6vw,12px);flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:0}nav a{padding:2px 0}
-  .ncart svg,.stk-b svg{width:20px;height:20px}.cn{min-width:15px;height:15px;font-size:9px;line-height:15px;top:-6px;right:-8px}.stk-b .cn{top:1px;right:2px}
+  nav{margin:12px 12px 0;height:38px;padding:0 12px;font-size:clamp(8.5px,2.6vw,12px);flex-wrap:nowrap;justify-content:space-between;align-items:center;gap:0}
+  .stk-b svg{width:20px;height:20px}.cn{min-width:15px;height:15px;font-size:9px;line-height:15px;top:-6px;right:-8px}.stk-b .cn{top:1px;right:2px}
   .stk{--u:calc(100vw/430);width:calc(100vw - 24px);height:38px;gap:8px;padding:0 6px}.stk-b{min-width:46px;border-radius:7px;height:calc(100% - 6px)}.stk-b span{font-size:8.5px}.stk-s{gap:6px}.stk-s input{font-size:14px}.stk-s svg{width:18px;height:18px}.stk-dd{min-width:200px}.stk-dd a{font-size:15px;padding:10px 12px}
   .ph{grid-template-columns:repeat(3,1fr);gap:6px;padding:12px 12px 0}.ph img{width:100%;height:auto;aspect-ratio:1.17}
   .big{width:100%;height:auto;aspect-ratio:1024/190}
@@ -172,8 +173,8 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .btn.buy{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}.btn.buy:hover{background:var(--bg);color:#fff}
 .x{background:var(--bg);color:#fff}.x:hover{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}
 .dh{margin:-22px -22px 6px;padding:14px 22px;background:var(--bg);color:#fff;display:flex;align-items:center;gap:12px}
-.dh h3{color:#fff;font-size:20px;margin:0}
-.cart-back{background:rgba(255,255,255,.18);color:#fff;border:1.5px solid #fff;border-radius:99px;padding:8px 14px;font-weight:700;font-size:13px;white-space:nowrap}.cart-back:hover{background:#fff;color:var(--bg)}
+.dh h3{color:#fff;font-size:20px;margin:0;text-transform:uppercase;letter-spacing:.02em}
+.crow{display:flex;gap:10px;margin-top:22px;align-items:stretch}.crow .btn{flex:2;width:auto;margin-top:0;padding:15px 10px;font-size:15px}.cart-back{flex:1;background:#fff;color:var(--bg);border:2px solid var(--bg);border-radius:99px;padding:10px 6px;font-weight:700;font-size:13px;line-height:1.2}.cart-back:hover{background:var(--bg);color:#fff}
 .total{color:var(--bg)}.drawer input,.drawer textarea{border-color:var(--bg)}.drawer input:focus,.drawer textarea:focus{border-color:var(--bg);box-shadow:0 0 0 2px rgba(138,169,226,.35)}
 .ci-n{color:var(--bg)}.ci-r button{background:var(--bg);color:#fff}.ci-del{color:#c0392b!important;background:transparent!important}
 #thankYouModal .ty-btn{background:var(--bg)}#thankYouModal .ty-btn:hover{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}
@@ -181,6 +182,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 .ty-rc{width:100%;border-radius:.75rem;border:1px solid #e5e7eb;margin-bottom:.6rem}
 .ty-save{display:block;background:var(--bg);color:#fff;font-weight:800;padding:.7rem 1rem;border-radius:.75rem;font-size:.8rem;text-decoration:none}
 .ty-tip{font-size:.7rem;color:#6b7280;margin-top:.4rem}
+.sw{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid #bbb;margin-right:6px;vertical-align:-2px}.csz.on .sw{border-color:#fff}.csz{padding:8px 14px}
 </style>
 <style id="tsx"></style>
 </head>
@@ -196,7 +198,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
 <div class="stk" id="stk"></div>
 <div class="lb" id="lb"><button class="lb-x" id="lb-x" aria-label="Đóng">✕</button><button class="lb-n l" id="lb-p" aria-label="Ảnh trước">‹</button><img id="lb-i" alt=""><button class="lb-n r" id="lb-nx" aria-label="Ảnh sau">›</button><div class="lb-c" id="lb-c"></div></div>
 <aside class="drawer" id="cart">
-  <div class="dh"><button type="button" class="cart-back" id="cart-back">← Về trang chủ</button><h3>Giỏ hàng</h3></div>
+  <div class="dh"><h3>GIỎ HÀNG</h3></div>
   <div class="ci-list" id="ci-list"></div>
   <div class="total"><span>Tổng cộng</span><span id="ci-total">0 đ</span></div>
   <form id="checkout" autocomplete="on">
@@ -204,7 +206,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     <input id="f-phone" placeholder="Số điện thoại *" inputmode="tel" required>
     <input id="f-addr" placeholder="Địa chỉ nhận hàng *" required>
     <textarea id="f-note" rows="2" placeholder="Ghi chú (không bắt buộc)"></textarea>
-    <button class="btn" id="f-btn" type="submit"><i class="fa-solid fa-check-circle"></i> XÁC NHẬN ĐẶT HÀNG</button>
+    <div class="crow"><button type="button" class="cart-back" id="cart-back">← Về trang chủ</button><button class="btn" id="f-btn" type="submit"><i class="fa-solid fa-check-circle"></i> XÁC NHẬN ĐẶT HÀNG</button></div>
   </form>
   <div id="order-msg"></div>
 </aside>
@@ -305,14 +307,27 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     return `<header class="blue" data-sec="header"${sb('header')}><div class="in hd"><div class="top"><a class="brand" href="#home" data-k="brand">${esc(cfg.brand)}</a>
       <div class="sr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" aria-label="Tìm kiếm sản phẩm">
       <button id="mic" type="button" aria-label="Tìm bằng giọng nói"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></div></div>
-      <nav id="mainnav">${cfg.nav.map((n, i) => `<a href="${navHref(n.u)}" data-li="nav.${i}" data-lk="nav.${i}.u" data-k="nav.${i}.t">${esc(n.t)}</a>`).join('')}<button type="button" class="ncart" id="fab" aria-label="Giỏ hàng"><svg viewBox="0 0 24 24"><path d="M2 3h3l2.4 11.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21 7H6"/><circle cx="9.5" cy="20" r="1.6"/><circle cx="17.5" cy="20" r="1.6"/></svg><b class="cn">0</b></button></nav></div></header>`;
+      <nav id="mainnav">${cfg.nav.map((n, i) => `<a href="${navHref(n.u)}" data-li="nav.${i}" data-lk="nav.${i}.u" data-k="nav.${i}.t">${esc(n.t)}</a>`).join('')}<button type="button" class="ncart" id="fab" aria-label="Giỏ hàng"><svg viewBox="0.9 1.9 21.2 21"><path d="M2 3h3l2.4 11.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L21 7H6"/><circle cx="9.5" cy="20" r="1.6"/><circle cx="17.5" cy="20" r="1.6"/></svg><b class="cn">0</b></button></nav></div></header>`;
   }
   function route() {
     const h = location.hash.slice(1), pg = PG.includes(h) ? h : 'home';
     const ae = document.activeElement, fid = ae && (ae.id === 'q' || ae.id === 'q2') ? ae.id : null;
     $('app').innerHTML = hdr() + (cfg.pages[pg] || '').split(',').map(s => s.trim()).filter(Boolean).map(s => SEC[s] ? SEC[s]() : '').join('');
-    bind(); renderChips(); renderProducts(); renderStk(); renderCart();
+    bind(); renderChips(); renderProducts(); renderStk(); renderCart(); calibrateNav();
     if (fid) { const q = $(fid); q.focus(); q.setSelectionRange(q.value.length, q.value.length); } else if (!EDIT) scrollTo(0, 0);
+  }
+  // Đo chiều cao chữ hoa của font menu để: (1) đặt chữ (không tính dấu) cân giữa thanh trắng, (2) giỏ hàng cao bằng chữ
+  function calibrateNav() {
+    const a = document.querySelector('#mainnav a'); if (!a) return;
+    const cs = getComputedStyle(a), font = `${cs.fontWeight} 100px ${cs.fontFamily}`;
+    const go = () => {
+      const m = document.createElement('canvas').getContext('2d'); m.font = font;
+      const t = m.measureText('H'), A = t.fontBoundingBoxAscent, D = t.fontBoundingBoxDescent, cap = t.actualBoundingBoxAscent;
+      if (!(A >= 0) || !(D >= 0) || !cap) return;
+      const r = document.documentElement.style;
+      r.setProperty('--cap', (cap / 100).toFixed(4)); r.setProperty('--off', (((A - D) / 2 - cap / 2) / 100).toFixed(4));
+    };
+    go(); if (document.fonts && document.fonts.load) document.fonts.load(font).then(go).catch(() => {});
   }
   // Thanh dính đầu trang khi cuộn: MENU | tìm kiếm | giỏ hàng
   function renderStk() {
@@ -411,11 +426,13 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
   }
 
   /* ---------- Modal sản phẩm (lướt trái/phải + Mua ngay qua Zalo) ---------- */
-  let cur = null, curSize = null, curQty = 1, curImgI = 0;
+  const CMAP = { 'den': '#111', 'trang': '#fff', 'do': '#d32f2f', 'xanh duong': '#1e5fd6', 'xanh la': '#2e9e5b', 'xanh': '#1e88e5', 'vang': '#f2c230', 'hong': '#f48fb1', 'xam': '#8a8a8a', 'nau': '#7b4b2a', 'cam': '#f08a24', 'tim': '#7a4bd1', 'be': '#e6d8bd', 'kem': '#f1e7cf', 'bac': '#c0c0c0', 'navy': '#1b2a5e' };
+  const swatch = c => { const k = norm(c), hit = CMAP[k] || (Object.entries(CMAP).find(([n]) => n.length >= 3 && k.includes(n)) || [])[1]; return hit ? `<i class="sw" style="background:${hit}"></i>` : ''; };
+  let cur = null, curSize = null, curColor = null, curQty = 1, curImgI = 0;
   function openProduct(id) {
     cur = products.find(p => p.id === id); if (!cur) return;
-    curSize = null; curQty = 1; curImgI = 0;
-    const imgs = allImgs(cur), sizes = cur.sizes || [], i = shown.indexOf(id);
+    curSize = null; curColor = null; curQty = 1; curImgI = 0;
+    const imgs = allImgs(cur), sizes = cur.sizes || [], colors = cur.colors || [], i = shown.indexOf(id);
     $('modal').innerHTML = `
       <button class="x" id="m-x" aria-label="Đóng">✕</button>
       <div>
@@ -427,6 +444,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
         <h2>${esc(cur.name)}</h2>
         <div class="m-price"><span class="p-price">${money(cur.price)}</span>${cur.old_price && Number(cur.old_price) > Number(cur.price) ? `<span class="p-old">${money(cur.old_price)}</span>` : ''}</div>
         ${cur.description ? `<p class="m-desc">${esc(cur.description)}</p>` : ''}
+        ${colors.length ? `<div class="m-label">Chọn màu</div><div class="sizes">${colors.map(c => `<button class="size csz" data-c="${esc(c)}">${swatch(c)}${esc(c)}</button>`).join('')}</div>` : ''}
         ${sizes.length ? `<div class="m-label">Chọn size</div><div class="sizes">${sizes.map(s => `<button class="size" data-s="${esc(s)}">${esc(s)}</button>`).join('')}</div>` : ''}
         <div class="m-label">Số lượng</div>
         <div class="qty"><button id="q-" aria-label="Giảm">−</button><b id="q-n">1</b><button id="q+" aria-label="Tăng">+</button></div>
@@ -489,24 +507,35 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
       $('m-main').src = t.src; curImgI = Number(t.dataset.i) || 0;
       document.querySelectorAll('.m-thumbs img').forEach(i => i.classList.toggle('on', i === t));
     }
+    const cb = t.closest('.csz');
+    if (cb) {
+      curColor = cb.dataset.c;
+      document.querySelectorAll('.csz').forEach(i => i.classList.toggle('on', i === cb));
+      $('m-warn').textContent = ''; return;
+    }
     if (t.matches('.size')) {
       curSize = t.dataset.s;
-      document.querySelectorAll('.size').forEach(i => i.classList.toggle('on', i === t));
+      document.querySelectorAll('.size:not(.csz)').forEach(i => i.classList.toggle('on', i === t));
       $('m-warn').textContent = '';
     }
     if (t.id === 'q-') { curQty = Math.max(1, curQty - 1); $('q-n').textContent = curQty; }
     if (t.id === 'q+') { curQty = Math.min(99, curQty + 1); $('q-n').textContent = curQty; }
     if (t.id === 'm-add') {
+      $('m-warn').style.color = '';
+      if ((cur.colors || []).length && !curColor) { $('m-warn').textContent = 'Vui lòng chọn màu trước khi thêm vào giỏ.'; return; }
       if ((cur.sizes || []).length && !curSize) { $('m-warn').textContent = 'Vui lòng chọn size trước khi thêm vào giỏ.'; return; }
-      const key = cur.id + '|' + (curSize || '');
+      const key = cur.id + '|' + (curSize || '') + '|' + (curColor || '');
       const ex = cart.find(i => i.key === key);
       if (ex) ex.qty += curQty;
-      else cart.push({ key, id: cur.id, name: cur.name, price: Number(cur.price), image: mainImg(cur), selectedSize: curSize, qty: curQty });
-      saveCart(); closeAll(true); openCart();
+      else cart.push({ key, id: cur.id, name: cur.name, price: Number(cur.price), image: mainImg(cur), selectedSize: curSize, selectedColor: curColor, qty: curQty });
+      saveCart();   // ở lại trang sản phẩm để khách chọn tiếp, không tự mở giỏ hàng
+      $('m-warn').style.color = 'var(--bg)'; $('m-warn').textContent = '✓ Đã thêm vào giỏ hàng. Bạn có thể chọn tiếp màu, size hoặc sản phẩm khác.';
     }
     if (t.id === 'm-buy') {   // Mua ngay -> chuyển sang Zalo, tự sao chép thông tin sản phẩm để dán vào chat
+      $('m-warn').style.color = '';
+      if ((cur.colors || []).length && !curColor) { $('m-warn').textContent = 'Vui lòng chọn màu trước khi mua.'; return; }
       if ((cur.sizes || []).length && !curSize) { $('m-warn').textContent = 'Vui lòng chọn size trước khi mua.'; return; }
-      const msg = `Mình muốn mua: ${cur.name}\n${curSize ? 'Size: ' + curSize + '\n' : ''}Số lượng: ${curQty}\nGiá: ${money(cur.price)}`;
+      const msg = `Mình muốn mua: ${cur.name}\n${curColor ? 'Màu: ' + curColor + '\n' : ''}${curSize ? 'Size: ' + curSize + '\n' : ''}Số lượng: ${curQty}\nGiá: ${money(cur.price)}`;
       try { navigator.clipboard.writeText(msg); } catch (err) {}
       $('m-warn').style.color = '#0068ff'; $('m-warn').textContent = 'Đã sao chép thông tin sản phẩm — dán vào khung chat Zalo nhé!';
       window.open(cfg.zalo.link, '_blank');
@@ -524,7 +553,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
         <img src="${esc(i.image)}" alt="">
         <div style="flex:1">
           <div class="ci-n">${esc(i.name)}</div>
-          <div class="ci-s">${i.selectedSize ? 'Size ' + esc(i.selectedSize) + ' · ' : ''}${money(i.price)}</div>
+          <div class="ci-s">${i.selectedColor ? 'Màu ' + esc(i.selectedColor) + ' · ' : ''}${i.selectedSize ? 'Size ' + esc(i.selectedSize) + ' · ' : ''}${money(i.price)}</div>
           <div class="ci-r">
             <div><button data-k="${esc(i.key)}" data-a="-">−</button><span>${i.qty}</span><button data-k="${esc(i.key)}" data-a="+">+</button></div>
             <button class="ci-del" data-k="${esc(i.key)}" data-a="x">Xóa</button>
@@ -551,7 +580,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
 
     const formattedCode = `1607${orderInfo.orderId}`;
-    let itemsText = orderInfo.items.map(i => `• ${i.name} ${i.selectedSize ? `(Size: ${i.selectedSize})` : ''} - SL: ${i.qty}`).join('\n');
+    let itemsText = orderInfo.items.map(i => `• ${i.name} ${i.selectedColor ? `(Màu: ${i.selectedColor})` : ''} ${i.selectedSize ? `(Size: ${i.selectedSize})` : ''} - SL: ${i.qty}`).join('\n');
 
     let message = `🛒 *CÓ ĐƠN HÀNG MỚI!* (#${formattedCode})\n\n` +
                   `👤 *Khách hàng:* ${orderInfo.name}\n` +
@@ -704,7 +733,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
         if (imgs[k]) { const im = imgs[k], r = Math.max(80 / im.width, 96 / im.height), w = im.width * r, h = im.height * r; x.save(); x.beginPath(); x.rect(pad, top, 80, 96); x.clip(); x.drawImage(im, pad + (80 - w) / 2, top + (96 - h) / 2, w, h); x.restore(); }
         x.font = '700 18px Arial'; x.fillStyle = '#111';
         wrapT(x, it.name, W - pad * 2 - 96 - 150).slice(0, 2).forEach((t, q) => x.fillText(t, pad + 96, top + 24 + q * 24));
-        x.font = '400 16px Arial'; x.fillStyle = '#555'; x.fillText((it.selectedSize ? 'Size ' + it.selectedSize + '  ·  ' : '') + 'SL: ' + it.qty + '  ·  ' + money(it.price), pad + 96, top + 82);
+        x.font = '400 16px Arial'; x.fillStyle = '#555'; x.fillText((it.selectedColor ? 'Màu ' + it.selectedColor + '  ·  ' : '') + (it.selectedSize ? 'Size ' + it.selectedSize + '  ·  ' : '') + 'SL: ' + it.qty + '  ·  ' + money(it.price), pad + 96, top + 82);
         x.font = '700 18px Arial'; x.fillStyle = blue; x.textAlign = 'right'; x.fillText(money(it.price * it.qty), W - pad, top + 24); x.textAlign = 'left';
         y += rowH;
       });
@@ -719,7 +748,7 @@ nav a{display:block;white-space:nowrap;line-height:1;padding:3u 0 1u;text-decora
     } catch (e) { box.innerHTML = ''; console.error(e); }
   }
 
-  /* ===== Công cụ ảnh (Cloudinary) + trình chỉnh sửa trực tiếp: chỉ chạy khi mở từ trang admin (?edit=1) ===== */
+  /* ===== Công cụ ảnh (kho ảnh) + trình chỉnh sửa trực tiếp: chỉ chạy khi mở từ trang admin (?edit=1) ===== */
 /* ===== Công cụ ảnh dùng cho trang admin (không nạp ở trang khách) ===== */
 
 // Gắn watermark chữ lặp chéo lên ảnh (mật độ vừa phải, không có chữ ở góc)
@@ -740,26 +769,26 @@ async function addWatermark(file) {
   return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
 }
 
-// Tải ảnh lên Cloudinary (wm = true thì gắn watermark trước khi tải)
+// Tải ảnh lên kho ảnh (wm = true thì gắn watermark trước khi tải)
 async function uploadImage(file, wm = true) {
   const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
   const fd = new FormData();
   fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
   const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
   const j = await r.json();
-  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
+  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên kho ảnh');
   return j.secure_url;
 }
 
-// Ảnh có nằm trên Cloudinary của shop không
+// Ảnh có nằm trên kho ảnh của shop không
 const isCloud = u => typeof u === 'string' && u.includes(`res.cloudinary.com/${CLOUD_NAME}/`);
 const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '');
 
-// Xóa vĩnh viễn ảnh trên Cloudinary (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
+// Xóa vĩnh viễn ảnh trên kho ảnh (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
 async function deleteImage(u) {
   if (!isCloud(u)) return true;
   let key = localStorage.getItem('adminKey');
-  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên Cloudinary:'); if (!key) return false; localStorage.setItem('adminKey', key); }
+  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên kho ảnh:'); if (!key) return false; localStorage.setItem('adminKey', key); }
   try {
     const r = await fetch('/api/delete-image', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': key }, body: JSON.stringify({ public_id: pubId(u) }) });
     if (r.status === 401) localStorage.removeItem('adminKey');
@@ -924,7 +953,7 @@ async function deleteImage(u) {
     if (a === 'imgurl') { const old = gp(cfg, key); sp(cfg, key, v.trim()); if (old !== v.trim()) window.__trash.push(old); redraw(); }
     if (a === 'file' && e.target.files[0]) {
       const wm = $('e-wm').checked, old = gp(cfg, key);
-      say(wm ? '⏳ Đang gắn watermark & tải lên Cloudinary...' : '⏳ Đang tải lên Cloudinary...');
+      say(wm ? '⏳ Đang gắn watermark & tải lên kho ảnh...' : '⏳ Đang tải lên kho ảnh...');
       try {
         const url = await uploadImage(e.target.files[0], wm);
         sp(cfg, key, url); window.__trash.push(old);
