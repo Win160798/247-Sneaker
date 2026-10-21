@@ -787,11 +787,10 @@ const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace
 // Xóa vĩnh viễn ảnh trên kho ảnh (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
 async function deleteImage(u) {
   if (!isCloud(u)) return true;
-  let key = localStorage.getItem('adminKey');
-  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên kho ảnh:'); if (!key) return false; localStorage.setItem('adminKey', key); }
+  const key = localStorage.getItem('adminToken'); if (!key) return false;
   try {
     const r = await fetch('/api/delete-image', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': key }, body: JSON.stringify({ public_id: pubId(u) }) });
-    if (r.status === 401) localStorage.removeItem('adminKey');
+    if (r.status === 401) localStorage.removeItem('adminToken');
     return r.ok;
   } catch (e) { return false; }
 }
