@@ -9,7 +9,7 @@ const str = v => (v === undefined || v === null ? null : String(v));
 export async function onRequest({ request, env }) {
   const m = request.method, db = env.DB, t = new URL(request.url).searchParams.get('t');
   if (m === 'OPTIONS') return new Response(null, { status: 204 });
-  if (t === 'ping') return J({ ok: true, d1: !!db, adminKeySet: !!env.ADMIN_KEY });
+  if (t === 'ping') return J({ ok: true, d1: !!db, adminKeySet: !!env.ADMIN_KEY, loginSet: !!(env.ADMIN_USER && env.ADMIN_PASS) });
   if (!db) return J({ error: 'Chưa gắn D1 vào project Pages (tên biến phải là DB)' }, 500);
   try {
     if (m === 'GET') {
