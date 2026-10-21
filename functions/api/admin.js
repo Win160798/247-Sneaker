@@ -11,16 +11,32 @@ async function ensureColors(db) {
   colorsOk = true;
 }
 
+// Kiểm tra "thẻ phiên" đăng nhập (do /api/login cấp, ký bằng ADMIN_KEY)
+const _enc = new TextEncoder();
+const _b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+async function validToken(env, tok) {
+  const secret = env.SESSION_SECRET || env.ADMIN_KEY;
+  if (!secret || !tok || typeof tok !== 'string') return false;
+  const [p, s] = tok.split('.'); if (!p || !s) return false;
+  const k = await crypto.subtle.importKey('raw', _enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const ok = _b64u(await crypto.subtle.sign('HMAC', k, _enc.encode(p)));
+  if (ok.length !== s.length) return false;
+  let d = 0; for (let i = 0; i < ok.length; i++) d |= ok.charCodeAt(i) ^ s.charCodeAt(i);
+  if (d) return false;
+  try { return JSON.parse(atob(p.replace(/-/g, '+').replace(/_/g, '/'))).exp > Date.now() / 1000; } catch (e) { return false; }
+}
+
 export async function onRequest({ request, env }) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204 });
   if (request.method !== 'POST') return J({ error: 'Chỉ nhận POST' }, 405);
   const db = env.DB;
   if (!db) return J({ error: 'Chưa gắn D1 vào project Pages (tên biến phải là DB)' }, 500);
-  if (!env.ADMIN_KEY || request.headers.get('x-admin-key') !== env.ADMIN_KEY) return J({ error: 'Sai mã quản trị' }, 401);
+  if (!(await validToken(env, request.headers.get('x-admin-key')))) return J({ error: 'Phiên đăng nhập đã hết hạn hoặc chưa đăng nhập' }, 401);
   let b = {}; try { b = await request.json(); } catch (e) {}
 
   try {
     switch (b.op) {
+      case 'auth.check': return J({ ok: true });
       case 'settings.save':
         await db.prepare("INSERT INTO site_settings(id,data,updated_at) VALUES('main',?1,CURRENT_TIMESTAMP) ON CONFLICT(id) DO UPDATE SET data=?1,updated_at=CURRENT_TIMESTAMP").bind(JSON.stringify(b.data || {})).run();
         return J({ ok: true });
