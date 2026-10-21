@@ -15,7 +15,7 @@ export async function onRequest({ request, env }) {
     if (m === 'GET') {
       if (t === 'settings') { const r = await db.prepare("SELECT data FROM site_settings WHERE id='main'").first(); return J({ data: r ? JSON.parse(r.data) : null }); }
       if (t === 'categories') return J((await db.prepare('SELECT * FROM categories ORDER BY id').all()).results);
-      if (t === 'products') return J((await db.prepare('SELECT * FROM products ORDER BY id DESC').all()).results.map(r => ({ ...r, images: arr(r.images), sizes: arr(r.sizes) })));
+      if (t === 'products') return J((await db.prepare('SELECT * FROM products ORDER BY id DESC').all()).results.map(r => ({ ...r, images: arr(r.images), sizes: arr(r.sizes), colors: arr(r.colors) })));
       return J({ error: 'Thiếu tham số t' }, 400);
     }
     if (m === 'POST') {   // khách đặt hàng
