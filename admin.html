@@ -103,9 +103,9 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
       <div class="top"><h1>Sản phẩm</h1></div>
       <div class="tabs"><button class="on" data-t="pl">Danh sách</button><button data-t="pa">Thêm sản phẩm</button></div>
       <div id="t-pl">
-        <p class="hint" style="margin-bottom:8px">Bấm dấu ✕ đỏ trên ảnh để xóa vĩnh viễn ảnh đó (kể cả trên Cloudinary). Xóa sản phẩm cũng xóa luôn toàn bộ ảnh của sản phẩm.</p>
+        <p class="hint" style="margin-bottom:8px">Bấm dấu ✕ đỏ trên ảnh để xóa vĩnh viễn ảnh đó (xóa hẳn khỏi kho ảnh). Xóa sản phẩm cũng xóa luôn toàn bộ ảnh của sản phẩm.</p>
         <table>
-          <thead><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá bán</th><th>Size</th><th></th></tr></thead>
+          <thead><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Danh mục</th><th>Giá bán</th><th>Size / Màu</th><th></th></tr></thead>
           <tbody id="products-table-body"><tr><td colspan="6">Đang tải...</td></tr></tbody>
         </table>
       </div>
@@ -121,11 +121,12 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
               <label>Ảnh sản phẩm (tối đa 30 ảnh) *</label>
               <input type="file" id="product-images" accept="image/*" multiple required>
               <label class="wmk" style="margin-top:8px"><input type="checkbox" id="pwm" checked> Gắn watermark 247.Sneaker lên ảnh</label>
-              <div class="hint" style="margin-top:5px">Ảnh đầu tiên là ảnh đại diện. Ảnh được lưu về Cloudinary.</div>
+              <div class="hint" style="margin-top:5px">Ảnh đầu tiên là ảnh đại diện. Ảnh được lưu trữ an toàn trong kho ảnh của shop.</div>
               <div id="upload-preview" class="th"></div>
             </div>
             <div class="fg"><label>Size áp dụng (36 - 46)</label><div class="sizes" id="size-checkboxes-container"></div></div>
             <div class="fg"><label>Size khác (nếu có, cách nhau bằng dấu phẩy. VD: 35, 47, S, M, L)</label><input type="text" id="size-extra" placeholder="Để trống nếu không cần"></div>
+            <div class="fg"><label>Màu sắc (cách nhau bằng dấu phẩy. VD: Đen, Trắng, Đỏ)</label><input type="text" id="colors-in" placeholder="Để trống nếu sản phẩm không có nhiều màu"></div>
             <div class="fg"><label>Mô tả</label><textarea id="description" rows="3" placeholder="Chất liệu, thông số..."></textarea></div>
             <button class="btn" id="btn-submit" type="submit">ĐĂNG SẢN PHẨM</button>
             <div id="status" style="margin-top:10px"></div>
@@ -162,14 +163,14 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
     </section>
     <!-- ===== THƯ VIỆN ẢNH CLOUDINARY ===== -->
     <section class="v" id="v-media">
-      <div class="top"><h1>Thư viện ảnh Cloudinary</h1>
+      <div class="top"><h1>Thư viện ảnh</h1>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn g" id="md-reload">↻ Tải lại</button>
           <button class="btn g" id="md-unused">☑ Chọn tất cả ảnh không dùng</button>
           <button class="btn d" id="md-del" style="padding:10px 16px;font-size:13px">🗑 Xóa đã chọn (<span id="md-n">0</span>)</button>
         </div>
       </div>
-      <p class="hint" style="margin-bottom:8px">Hiển thị toàn bộ ảnh đang lưu trên Cloudinary. Nhãn <b style="color:#1b7a34">Đang dùng</b>: ảnh đang xuất hiện trên web (sản phẩm hoặc giao diện), xóa sẽ làm web mất ảnh. Nhãn <b style="color:#c0392b">Không dùng</b>: an toàn để xóa. Xóa là <b>vĩnh viễn</b>, không lấy lại được.</p>
+      <p class="hint" style="margin-bottom:8px">Hiển thị toàn bộ ảnh đang lưu trong kho ảnh. Nhãn <b style="color:#1b7a34">Đang dùng</b>: ảnh đang xuất hiện trên web (sản phẩm hoặc giao diện), xóa sẽ làm web mất ảnh. Nhãn <b style="color:#c0392b">Không dùng</b>: an toàn để xóa. Xóa là <b>vĩnh viễn</b>, không lấy lại được.</p>
       <div id="md-info" class="hint" style="margin-bottom:10px"></div>
       <div id="md-grid" class="mgrid"></div>
       <div style="text-align:center;margin-top:14px"><button class="btn g" id="md-more" style="display:none">Tải thêm ảnh</button></div>
@@ -184,6 +185,7 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
   <div class="grid"><div class="fg"><label>Giá bán (VNĐ)</label><input type="number" id="pe-price"></div><div class="fg"><label>Danh mục</label><select id="pe-cat"></select></div></div>
   <div class="fg"><label>Size (36 - 46)</label><div class="sizes" id="pe-sizes"></div></div>
   <div class="fg"><label>Size khác (cách nhau bằng dấu phẩy)</label><input type="text" id="pe-extra" placeholder="VD: 35, 47, S, M"></div>
+  <div class="fg"><label>Màu sắc (cách nhau bằng dấu phẩy)</label><input type="text" id="pe-colors" placeholder="VD: Đen, Trắng, Đỏ"></div>
   <div class="fg"><label>Mô tả</label><textarea id="pe-desc" rows="3"></textarea></div>
   <div id="pe-msg" style="font-weight:600;margin-bottom:8px"></div>
   <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn g" id="pe-cancel">Hủy</button><button class="btn" id="pe-ok">Lưu thay đổi</button></div>
@@ -235,26 +237,26 @@ async function addWatermark(file) {
   return new Promise(r => c.toBlob(r, png ? 'image/png' : 'image/jpeg', 0.9));
 }
 
-// Tải ảnh lên Cloudinary (wm = true thì gắn watermark trước khi tải)
+// Tải ảnh lên kho ảnh (wm = true thì gắn watermark trước khi tải)
 async function uploadImage(file, wm = true) {
   const blob = (wm && file.type !== 'image/svg+xml') ? await addWatermark(file) : file;
   const fd = new FormData();
   fd.append('file', blob); fd.append('upload_preset', UPLOAD_PRESET); fd.append('folder', '247sneaker');
   const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
   const j = await r.json();
-  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên Cloudinary');
+  if (!r.ok) throw new Error((j.error && j.error.message) || 'Lỗi tải ảnh lên kho ảnh');
   return j.secure_url;
 }
 
-// Ảnh có nằm trên Cloudinary của shop không
+// Ảnh có nằm trên kho ảnh của shop không
 const isCloud = u => typeof u === 'string' && u.includes(`res.cloudinary.com/${CLOUD_NAME}/`);
 const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '');
 
-// Xóa vĩnh viễn ảnh trên Cloudinary (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
+// Xóa vĩnh viễn ảnh trên kho ảnh (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
 async function deleteImage(u) {
   if (!isCloud(u)) return true;
   let key = localStorage.getItem('adminKey');
-  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên Cloudinary:'); if (!key) return false; localStorage.setItem('adminKey', key); }
+  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên kho ảnh:'); if (!key) return false; localStorage.setItem('adminKey', key); }
   try {
     const r = await fetch('/api/delete-image', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': key }, body: JSON.stringify({ public_id: pubId(u) }) });
     if (r.status === 401) localStorage.removeItem('adminKey');
@@ -329,7 +331,7 @@ $('g-title').oninput = e => gset('title', e.target.value);
 $('g-c1').oninput = e => gset('c.bg', e.target.value); $('g-c2').oninput = e => gset('c.card', e.target.value); $('g-c3').oninput = e => gset('c.ink', e.target.value);
 $('g-f1').onchange = e => gset('font.h', e.target.value); $('g-f2').onchange = e => gset('font.b', e.target.value); $('g-f3').onchange = e => gset('font.n', e.target.value);
 $('g-favf').onchange = async e => {
-  const f = e.target.files[0]; if (!f) return; say('⏳ Đang tải favicon lên Cloudinary...');
+  const f = e.target.files[0]; if (!f) return; say('⏳ Đang tải favicon lên kho ảnh...');
   try { const u = await uploadImage(f, $('g-favw').checked), old = C().favicon; gset('favicon', u); F.__trash.push(old); $('g-fav').src = u; say('✅ Đã đổi favicon. Nhớ bấm Lưu giao diện.'); } catch (er) { say('❌ ' + er.message); }
 };
 $('g-ok').onclick = () => $('gdlg').close();
@@ -401,17 +403,17 @@ async function loadProducts() {
       <td><b>${esc(item.name)}</b></td>
       <td><span class="badge">${esc(categoriesMap[item.category_id] || 'Chưa phân loại')}</span></td>
       <td><b>${Number(item.price).toLocaleString('vi-VN')} đ</b></td>
-      <td>${sizes.length ? esc(sizes.join(', ')) : 'Không có size'}</td>
+      <td>${sizes.length ? esc(sizes.join(', ')) : 'Không có size'}<br><small style="color:#6b7385">${(item.colors || []).length ? 'Màu: ' + esc(item.colors.join(', ')) : 'Không có màu'}</small></td>
       <td style="white-space:nowrap"><button class="btn g s" onclick="editProduct(${item.id})">✎ Sửa</button> <button class="btn d" onclick="deleteProduct(${item.id})">Xóa</button></td></tr>`;
   }).join('');
 }
 async function delImg(id, i) {
   const p = prodList.find(x => x.id === id), imgs = [...((p && p.images) || [])];
   if (imgs.length <= 1) return alert('Sản phẩm phải còn ít nhất 1 ảnh. Muốn bỏ hết ảnh hãy xóa cả sản phẩm.');
-  if (!confirm('Xóa VĨNH VIỄN ảnh này (kể cả trên Cloudinary)?')) return;
+  if (!confirm('Xóa VĨNH VIỄN ảnh này (kể cả trên kho ảnh)?')) return;
   const url = imgs.splice(i, 1)[0];
   try { await adm('product.update', { id, fields: { images: imgs, main_image: imgs[0], image_url: imgs[0] } }); } catch (er) { return alert('Lỗi: ' + er.message); }
-  if (!(await deleteImage(url))) alert('Đã gỡ ảnh khỏi sản phẩm nhưng CHƯA xóa được trên Cloudinary (kiểm tra mã quản trị và biến môi trường trên Cloudflare).');
+  if (!(await deleteImage(url))) alert('Đã gỡ ảnh khỏi sản phẩm nhưng CHƯA xóa được trên kho ảnh (kiểm tra mã quản trị và biến môi trường trên Cloudflare).');
   loadProducts();
 }
 async function addImgs(id, inp) {
@@ -437,10 +439,10 @@ $('add-product-form').addEventListener('submit', async e => {
   try {
     const imageUrls = [];
     for (let i = 0; i < files.length; i++) {
-      statusDiv.innerText = `⏳ Đang ${wm ? 'gắn watermark & ' : ''}tải ảnh ${i + 1}/${files.length} lên Cloudinary...`;
+      statusDiv.innerText = `⏳ Đang ${wm ? 'gắn watermark & ' : ''}tải ảnh ${i + 1}/${files.length} lên kho ảnh...`;
       imageUrls.push(await uploadImage(files[i], wm));
     }
-    const payload = { name, price: Number(price), main_image: imageUrls[0], images: imageUrls, sizes: selectedSizes, description };
+    const payload = { name, price: Number(price), main_image: imageUrls[0], images: imageUrls, sizes: selectedSizes, colors: [...new Set($('colors-in').value.split(',').map(s => s.trim()).filter(Boolean))], description };
     if (categoryId) payload.category_id = Number(categoryId);
     await adm('product.add', payload);
     statusDiv.innerText = `✅ Đăng sản phẩm thành công với ${imageUrls.length} ảnh!`;
@@ -450,11 +452,11 @@ $('add-product-form').addEventListener('submit', async e => {
 });
 async function deleteProduct(id) {
   const p = prodList.find(x => x.id === id);
-  if (!confirm('Xóa sản phẩm này? Toàn bộ ảnh của sản phẩm cũng sẽ bị xóa VĨNH VIỄN trên Cloudinary.')) return;
+  if (!confirm('Xóa sản phẩm này? Toàn bộ ảnh của sản phẩm cũng sẽ bị xóa VĨNH VIỄN trên kho ảnh.')) return;
   try { await adm('product.del', { id }); } catch (er) { return alert('Lỗi: ' + er.message); }
   const urls = [...new Set([...((p && p.images) || []), p && p.main_image].filter(Boolean))];
   let fail = 0; for (const u of urls) if (!(await deleteImage(u))) fail++;
-  if (fail) alert(`Đã xóa sản phẩm nhưng chưa xóa được ${fail} ảnh trên Cloudinary (kiểm tra mã quản trị và biến môi trường trên Cloudflare).`);
+  if (fail) alert(`Đã xóa sản phẩm nhưng chưa xóa được ${fail} ảnh trên kho ảnh (kiểm tra mã quản trị và biến môi trường trên Cloudflare).`);
   loadProducts();
 }
 
@@ -465,7 +467,7 @@ async function loadOrders() {
   try { data = await adm('orders.list'); } catch (e) { tbody.innerHTML = `<tr><td colspan="6">❌ ${esc(e.message)}</td></tr>`; return; }
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="6">Chưa có đơn hàng nào.</td></tr>'; return; }
   tbody.innerHTML = data.map(o => {
-    const items = Array.isArray(o.cart_items) ? o.cart_items.map(i => `• ${esc(i.name)} ${i.selectedSize ? `(Size: <b>${esc(i.selectedSize)}</b>)` : ''} - x${i.qty}`).join('<br>') : 'Không có';
+    const items = Array.isArray(o.cart_items) ? o.cart_items.map(i => `• ${esc(i.name)} ${i.selectedColor ? `(Màu: <b>${esc(i.selectedColor)}</b>)` : ''} ${i.selectedSize ? `(Size: <b>${esc(i.selectedSize)}</b>)` : ''} - x${i.qty}`).join('<br>') : 'Không có';
     return `<tr><td><b>#${o.id}</b></td><td><b>${esc(o.customer_name)}</b></td>
       <td>${esc(o.customer_phone)}<br><small style="color:#666">${esc(o.address)}</small></td>
       <td style="font-size:12px">${items}<br><i>Ghi chú: ${esc(o.note || 'Không')}</i></td>
@@ -489,6 +491,7 @@ function editProduct(id) {
   $('pe-cat').innerHTML = catOpts(p.category_id);
   $('pe-sizes').innerHTML = Array.from({ length: 11 }, (_, i) => { const s = String(36 + i); return `<label><input type="checkbox" class="pe-cb" value="${s}" ${sizes.includes(s) ? 'checked' : ''}> Size ${s}</label>`; }).join('');
   $('pe-extra').value = sizes.filter(s => !(/^\d+$/.test(s) && +s >= 36 && +s <= 46)).join(', ');
+  $('pe-colors').value = (p.colors || []).join(', ');
   $('pe-msg').textContent = ''; $('pdlg').showModal();
 }
 $('pe-cancel').onclick = () => $('pdlg').close();
@@ -499,7 +502,7 @@ $('pe-ok').onclick = async () => {
   const cat = $('pe-cat').value;
   $('pe-ok').disabled = true; $('pe-msg').textContent = '⏳ Đang lưu...';
   try {
-    await adm('product.update', { id: peId, fields: { name, price: Number($('pe-price').value) || 0, category_id: cat ? Number(cat) : null, sizes, description: $('pe-desc').value } });
+    await adm('product.update', { id: peId, fields: { name, price: Number($('pe-price').value) || 0, category_id: cat ? Number(cat) : null, sizes, colors: [...new Set($('pe-colors').value.split(',').map(s => s.trim()).filter(Boolean))], description: $('pe-desc').value } });
     $('pdlg').close(); loadProducts();
   } catch (e) { $('pe-msg').textContent = '❌ ' + e.message; }
   $('pe-ok').disabled = false;
@@ -553,7 +556,7 @@ function mdRender() {
   $('md-more').style.display = mdCursor ? '' : 'none'; $('md-n').textContent = mdSel.size;
 }
 async function mdLoad(more) {
-  if (!more) { mdList = []; mdCursor = null; mdSel.clear(); $('md-grid').innerHTML = ''; $('md-info').textContent = '⏳ Đang tải danh sách ảnh từ Cloudinary...'; }
+  if (!more) { mdList = []; mdCursor = null; mdSel.clear(); $('md-grid').innerHTML = ''; $('md-info').textContent = '⏳ Đang tải danh sách ảnh từ kho ảnh...'; }
   try {
     if (!more) { const [pr, st] = await Promise.all([pub('data?t=products'), pub('data?t=settings')]); mdUsed = JSON.stringify(pr) + JSON.stringify(st); }
     const r = await adm('media.list', { cursor: mdCursor });
@@ -567,7 +570,7 @@ $('md-grid').addEventListener('change', e => { const id = e.target.dataset.id; i
 $('md-del').onclick = async () => {
   if (!mdSel.size) return alert('Bạn chưa chọn ảnh nào.');
   const inUse = mdList.filter(r => mdSel.has(r.public_id) && mdIsUsed(r)).length;
-  if (!confirm(`Xóa VĨNH VIỄN ${mdSel.size} ảnh trên Cloudinary?` + (inUse ? `\n\n⚠ Có ${inUse} ảnh ĐANG DÙNG trên web, xóa sẽ làm web mất ảnh.` : '') + '\n\nKhông thể khôi phục.')) return;
+  if (!confirm(`Xóa VĨNH VIỄN ${mdSel.size} ảnh trên kho ảnh?` + (inUse ? `\n\n⚠ Có ${inUse} ảnh ĐANG DÙNG trên web, xóa sẽ làm web mất ảnh.` : '') + '\n\nKhông thể khôi phục.')) return;
   $('md-del').disabled = true; let n = 0;
   try {
     const ids = [...mdSel];
