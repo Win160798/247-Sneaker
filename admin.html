@@ -62,9 +62,49 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
 .mc input{position:absolute;top:6px;right:6px;width:20px;height:20px;cursor:pointer}
 .mc .mi{padding:6px 8px;font-size:11px;color:var(--mu);line-height:1.4}
 @media(max-width:900px){.app{grid-template-columns:1fr}.sb{position:static;height:auto;display:flex;flex-wrap:wrap;gap:4px}.sb button{width:auto}}
+
+/* ===== Màn hình đăng nhập (phối màu & thương hiệu theo web) ===== */
+:root{--bg:#8AA9E2}
+body:not(.in) .app{display:none}
+#login{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);align-items:center;justify-content:center;padding:20px;overflow:auto}
+body:not(.in) #login{display:flex}
+#login::after{content:"SNEAKER";position:fixed;left:0;right:0;bottom:-2vw;text-align:center;font:900 21vw/1 Arial,sans-serif;letter-spacing:-.04em;color:rgba(255,255,255,.2);pointer-events:none}
+.lg-card{position:relative;z-index:1;width:min(430px,100%);background:#fff;border-radius:40px;padding:34px 32px 26px;box-shadow:0 24px 60px rgba(30,50,120,.28);text-align:center}
+.lg-logo{width:92px;height:92px;object-fit:cover;border-radius:24px;margin:0 auto 12px;display:block}
+.lg-brand{font:800 24px Arial,sans-serif;color:var(--bg)}
+#login h1{font:400 15px/1.3 'Lexend Giga','Lexend',sans-serif;color:var(--bg);letter-spacing:.04em;margin:6px 0 22px}
+#login label{display:block;text-align:left;font:600 12px 'Lexend',sans-serif;color:var(--bg);margin:0 0 6px 14px}
+#login input[type=text],#login input[type=password]{width:100%;border:2px solid var(--bg);border-radius:99px;padding:13px 18px;font:400 15px 'Lexend',sans-serif;color:#222;outline:0;margin-bottom:14px;background:#fff}
+#login input:focus{box-shadow:0 0 0 4px color-mix(in srgb,var(--bg) 28%,#fff)}
+.lg-pw{position:relative}.lg-pw input{padding-right:46px!important}
+.lg-pw button{position:absolute;right:8px;top:6px;border:0;background:none;color:var(--bg);font-size:16px;width:34px;height:34px;cursor:pointer}
+#login label.lg-rm{display:flex;align-items:center;gap:8px;font:400 13px 'Lexend',sans-serif;color:#555;margin:2px 0 14px 8px}
+#login label.lg-rm input{width:auto;margin:0;accent-color:var(--bg)}
+#lg-msg{min-height:20px;color:#c0392b;font:600 13px 'Lexend',sans-serif;margin-bottom:6px}
+.lg-btn{width:100%;border:0;border-radius:99px;background:var(--bg);color:#fff;font:700 15px 'Lexend',sans-serif;padding:15px;cursor:pointer;transition:.15s;letter-spacing:.02em}
+.lg-btn:hover{background:#fff;color:var(--bg);box-shadow:inset 0 0 0 2px var(--bg)}.lg-btn:disabled{opacity:.6;cursor:default}
+.lg-back{display:inline-block;margin-top:14px;font:600 13px 'Lexend',sans-serif;color:var(--bg);text-decoration:none}
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arima:wght@700&family=Lexend:wght@400;600;700&family=Lexend+Giga:wght@400;600&display=swap">
 </head>
 <body>
+<div id="login">
+  <div class="lg-card">
+    <img id="lg-logo" class="lg-logo" alt="">
+    <div class="lg-brand" id="lg-brand">247 SNEAKER</div>
+    <h1>ĐĂNG NHẬP QUẢN TRỊ</h1>
+    <form id="lg-form" autocomplete="on">
+      <label for="lg-user">Tên đăng nhập</label>
+      <input id="lg-user" type="text" autocomplete="username" required>
+      <label for="lg-pass">Mật khẩu</label>
+      <div class="lg-pw"><input id="lg-pass" type="password" autocomplete="current-password" required><button type="button" id="lg-eye" aria-label="Hiện hoặc ẩn mật khẩu"><i class="fa-regular fa-eye"></i></button></div>
+      <label class="lg-rm"><input type="checkbox" id="lg-rem" checked> Ghi nhớ đăng nhập 30 ngày</label>
+      <div id="lg-msg" role="alert"></div>
+      <button class="lg-btn" id="lg-go" type="submit">ĐĂNG NHẬP</button>
+    </form>
+    <a class="lg-back" href="index.html">← Về trang web</a>
+  </div>
+</div>
 <datalist id="fl"></datalist>
 <div class="app">
   <aside class="sb">
@@ -78,6 +118,7 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
     <button data-v="media"><i class="fa-solid fa-images"></i> Thư viện ảnh</button>
     <h4>Liên kết</h4>
     <a href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem website</a>
+    <button id="logout"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
   </aside>
 
   <main>
@@ -95,7 +136,7 @@ label.up{display:inline-block;background:var(--p);color:#fff;padding:8px 11px;bo
         <button class="btn g" id="reset">Mặc định</button>
         <button class="btn" id="save"><i class="fa-solid fa-floppy-disk"></i> Lưu giao diện</button>
       </div>
-      <div class="fw" id="fw"><iframe id="fr" src="index.html?edit=1"></iframe></div>
+      <div class="fw" id="fw"><iframe id="fr" src="about:blank"></iframe></div>
     </section>
 
     <!-- ===== SẢN PHẨM ===== -->
@@ -255,11 +296,10 @@ const pubId = u => (u.split('/upload/')[1] || '').replace(/^v\d+\//, '').replace
 // Xóa vĩnh viễn ảnh trên kho ảnh (gọi qua /api/delete-image, giữ API secret ở phía máy chủ Cloudflare)
 async function deleteImage(u) {
   if (!isCloud(u)) return true;
-  let key = localStorage.getItem('adminKey');
-  if (!key) { key = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare) để xóa ảnh cũ trên kho ảnh:'); if (!key) return false; localStorage.setItem('adminKey', key); }
+  const key = localStorage.getItem('adminToken'); if (!key) return false;
   try {
     const r = await fetch('/api/delete-image', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': key }, body: JSON.stringify({ public_id: pubId(u) }) });
-    if (r.status === 401) localStorage.removeItem('adminKey');
+    if (r.status === 401) localStorage.removeItem('adminToken');
     return r.ok;
   } catch (e) { return false; }
 }
@@ -271,21 +311,14 @@ $('fl').innerHTML = FONTS.map(f => `<option value="${esc(f)}">`).join('');
 $('lg').src = U('def:logo');
 
 /* ===================== KẾT NỐI D1 QUA API (cần mã quản trị để ghi / xem đơn hàng) ===================== */
-let KEY = localStorage.getItem('adminKey') || '';
+let TOKEN = localStorage.getItem('adminToken') || '';
 async function api(path, opt = {}) {
-  for (let t = 0; t < 2; t++) {
-    if (!KEY) {
-      KEY = prompt('Nhập MÃ QUẢN TRỊ (biến ADMIN_KEY đã cài trên Cloudflare):') || '';
-      if (!KEY) throw new Error('Chưa nhập mã quản trị');
-      localStorage.setItem('adminKey', KEY);
-    }
-    const r = await fetch('/api/' + path, { method: opt.method || 'GET', headers: { 'content-type': 'application/json', 'x-admin-key': KEY }, body: opt.body ? JSON.stringify(opt.body) : undefined });
-    if (r.status === 401) { KEY = ''; localStorage.removeItem('adminKey'); if (t === 0) continue; }
-    const j = await r.json().catch(() => null);
-    if (!r.ok) throw new Error((j && j.error) || ('Máy chủ trả lỗi ' + r.status + ' — kiểm tra đã deploy file functions/api/[[path]].js và gắn D1 tên DB chưa (mở /api/ping để thử)'));
-    return j;
-  }
-  throw new Error('Sai mã quản trị');
+  if (!TOKEN) { showLogin(); throw new Error('Bạn chưa đăng nhập'); }
+  const r = await fetch('/api/' + path, { method: opt.method || 'GET', headers: { 'content-type': 'application/json', 'x-admin-key': TOKEN }, body: opt.body ? JSON.stringify(opt.body) : undefined });
+  if (r.status === 401) { TOKEN = ''; localStorage.removeItem('adminToken'); showLogin('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại'); throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại'); }
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((j && j.error) || ('Máy chủ trả lỗi ' + r.status + ' — kiểm tra đã deploy thư mục functions và gắn D1 tên DB chưa (mở /api/data?t=ping để thử)'));
+  return j;
 }
 const adm = (op, body = {}) => api('admin', { method: 'POST', body: { op, ...body } });
 const pub = async p => { const r = await fetch('/api/' + p); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || ('Lỗi ' + r.status)); return j; };
@@ -581,19 +614,56 @@ $('md-del').onclick = async () => {
 };
 document.querySelector('.sb button[data-v="media"]').addEventListener('click', () => { if (!mdList.length) mdLoad(false); });
 
-(async function checkApi() {
+async function checkApi() {
   const w = $('apiwarn');
   try {
     const r = await fetch('/api/data?t=ping'), j = await r.json();
     if (!j.ok) throw 0;
     if (!j.d1) { w.innerHTML = '⚠ API đã chạy nhưng <b>chưa gắn D1</b>: vào Pages → Settings → Bindings → thêm D1, tên biến đúng là <b>DB</b>, rồi deploy lại.'; w.style.display = 'block'; }
-    else if (!j.adminKeySet) { w.innerHTML = '⚠ Chưa cài biến <b>ADMIN_KEY</b> trên Cloudflare nên không thể thêm/sửa/xóa. Cài xong nhớ deploy lại.'; w.style.display = 'block'; }
+    else if (!j.adminKeySet || !j.loginSet) { w.innerHTML = '⚠ Chưa cài đủ biến đăng nhập trên Cloudflare: cần <b>ADMIN_USER</b>, <b>ADMIN_PASS</b> và <b>ADMIN_KEY</b> (rồi deploy lại), nếu không sẽ không đăng nhập được.'; w.style.display = 'block'; }
   } catch (e) {
     w.innerHTML = '⚠ <b>Máy chủ API chưa chạy</b> (Cloudflare chưa nhận thư mục <code>functions</code>). Kiểm tra: (1) thư mục <code>functions</code> phải nằm ở <b>gốc repo GitHub</b>, đúng đường dẫn <code>functions/api/data.js</code> và <code>functions/api/admin.js</code>; (2) project Pages phải kết nối GitHub (không phải kéo-thả file lên); (3) xem Deployments → bản mới nhất → Build log phải có dòng "Found Functions directory".';
     w.style.display = 'block';
   }
+}
+async function init() { await loadCategories(); await loadProducts(); await loadOrders(); }
+
+/* ===================== ĐĂNG NHẬP ===================== */
+let started = false;
+function showLogin(msg) { document.body.classList.remove('in'); if (msg) $('lg-msg').textContent = msg; setTimeout(() => { const u = $('lg-user'); if (u) u.focus(); }, 50); }
+function enter() {
+  document.body.classList.add('in');
+  if (started) return; started = true;
+  $('fr').src = 'index.html?edit=1';
+  checkApi(); init();
+}
+async function applyTheme() {   // phối màu & thương hiệu màn hình đăng nhập theo cấu hình đã lưu của web
+  try {
+    const s = await pub('data?t=settings'), c = merge(DEFAULTS, s.data);
+    document.documentElement.style.setProperty('--bg', c.c.bg);
+    $('lg-logo').src = U(c.logo); $('lg-brand').textContent = c.brand;
+    const ic = document.querySelector('link[rel="icon"]'); if (ic) ic.href = U(c.favicon);
+    document.title = 'Đăng nhập quản trị - ' + c.title;
+  } catch (e) { $('lg-logo').src = U('def:logo'); }
+}
+$('lg-eye').onclick = () => { const p = $('lg-pass'); p.type = p.type === 'password' ? 'text' : 'password'; };
+$('lg-form').addEventListener('submit', async e => {
+  e.preventDefault(); const btn = $('lg-go'), msg = $('lg-msg');
+  btn.disabled = true; msg.textContent = ''; btn.textContent = 'ĐANG ĐĂNG NHẬP...';
+  try {
+    const r = await fetch('/api/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ user: $('lg-user').value, pass: $('lg-pass').value, remember: $('lg-rem').checked }) });
+    const j = await r.json().catch(() => null);
+    if (!r.ok || !j || !j.token) throw new Error((j && j.error) || ('Không đăng nhập được (lỗi ' + r.status + '). Kiểm tra file functions/api/login.js đã được đưa lên chưa.'));
+    TOKEN = j.token; localStorage.setItem('adminToken', TOKEN); $('lg-pass').value = ''; enter();
+  } catch (er) { msg.textContent = er.message; }
+  btn.disabled = false; btn.textContent = 'ĐĂNG NHẬP';
+});
+$('logout').onclick = () => { if (confirm('Đăng xuất khỏi trang quản trị?')) { localStorage.removeItem('adminToken'); location.reload(); } };
+(async function boot() {
+  applyTheme();
+  if (TOKEN) { try { await adm('auth.check'); enter(); return; } catch (e) {} }
+  showLogin();
 })();
-(async function init() { await loadCategories(); await loadProducts(); await loadOrders(); })();
 </script>
 </body>
 </html>
